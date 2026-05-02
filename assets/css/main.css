@@ -1144,6 +1144,8 @@ textarea { resize: vertical; min-height: 100px; }
   .form-row { grid-template-columns: 1fr; }
   .menu-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .hero-decor { display: none; }
+  .home-about-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .home-about-grid .about-img-inner { height: 260px !important; }
 }
 @media (max-width: 480px) {
   .section { padding: 56px 0; }

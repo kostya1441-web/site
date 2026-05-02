@@ -148,6 +148,28 @@ function initToggles() {
   });
 }
 
+// ── Notification sound (Web Audio API) ───────────────────
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [880, 1100, 1320];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.15;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.3, start + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
+      osc.start(start);
+      osc.stop(start + 0.25);
+    });
+  } catch { /* silent if AudioContext unavailable */ }
+}
+
 // ── Real-time notifications (polling) ─────────────────────
 let lastOrderId = 0;
 function initNotifications() {
@@ -159,6 +181,7 @@ function initNotifications() {
       if (json.new_orders?.length) {
         lastOrderId = json.new_orders[json.new_orders.length - 1].id;
         dot?.classList.remove('hidden');
+        playNotificationSound();
         json.new_orders.forEach(o => {
           adminToast(`Новый заказ #${o.id} — ${o.name}`, o.type === 'delivery' ? '🚴' : '🏠');
         });

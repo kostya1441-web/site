@@ -59,9 +59,9 @@ $events = get_upcoming_events(4);
 <!-- ── About snippet ─────────────────────────────────────── -->
 <section class="section">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+    <div class="home-about-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
       <div class="fade-up">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:420px">
+        <div class="about-img-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:420px">
           <div style="background:var(--bg-card2);border-radius:var(--radius);grid-row:span 2;display:flex;align-items:center;justify-content:center;font-size:5rem;opacity:0.4">🎻</div>
           <div style="background:var(--bg-card);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.4">🕯</div>
           <div style="background:var(--bg-card2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.4">🍸</div>

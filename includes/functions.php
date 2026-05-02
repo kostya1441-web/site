@@ -38,7 +38,7 @@ function upload_image(array $file, string $prefix = 'img'): ?string {
     if (!is_dir(UPLOAD_DIR)) mkdir(UPLOAD_DIR, 0755, true);
     $name = $prefix . '_' . uniqid() . '.' . $ext;
     if (!move_uploaded_file($file['tmp_name'], UPLOAD_DIR . $name)) return null;
-    return UPLOAD_URL . $name;
+    return '/assets/images/uploads/' . $name;
 }
 
 function get_menu_all(): array {

@@ -7,7 +7,7 @@ admin_require();
 $lastId = (int)($_GET['last'] ?? 0);
 
 $newOrders = DB::fetchAll(
-    'SELECT id, name, phone, type, total, created_at FROM orders WHERE id > ? ORDER BY id ASC LIMIT 10',
+    'SELECT id, name, phone, type, total, created_at FROM orders WHERE id > ? AND status IN ("new","preparing","ready","on_way") ORDER BY id ASC LIMIT 10',
     [$lastId]
 );
 
