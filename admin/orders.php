@@ -8,8 +8,8 @@ $view        = $_GET['view'] ?? 'active'; // active | archive
 $statusFilter = $_GET['status'] ?? '';
 $typeFilter   = $_GET['type'] ?? '';
 
-$activeStatuses  = ['new', 'preparing', 'ready', 'on_way'];
-$archiveStatuses = ['delivered', 'cancelled'];
+$activeStatuses  = ['new', 'preparing', 'on_way'];
+$archiveStatuses = ['ready', 'delivered', 'cancelled'];
 
 $sql = 'SELECT * FROM orders WHERE 1=1';
 $params = [];
@@ -44,7 +44,7 @@ $statusLabels = [
 $pickupStatuses   = ['new','preparing','ready','cancelled'];
 $deliveryStatuses = ['new','preparing','on_way','delivered','cancelled'];
 
-$lastOrderId = (int)(DB::fetch('SELECT MAX(id) as m FROM orders WHERE status IN ("new","preparing","ready","on_way")')['m'] ?? 0);
+$lastOrderId = (int)(DB::fetch('SELECT MAX(id) as m FROM orders WHERE status IN ("new","preparing","on_way")')['m'] ?? 0);
 
 admin_head('Заказы');
 admin_topbar('Заказы', $view === 'archive' ? 'Архив заказов' : 'Активные заказы');
@@ -70,10 +70,10 @@ admin_topbar('Заказы', $view === 'archive' ? 'Архив заказов' :
     <a href="/admin/orders.php?view=active" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline' ?>">Все активные</a>
     <a href="/admin/orders.php?view=active&status=new"       class="btn btn-sm <?= $statusFilter==='new'       ? 'btn-primary' : 'btn-outline' ?>">Новые</a>
     <a href="/admin/orders.php?view=active&status=preparing" class="btn btn-sm <?= $statusFilter==='preparing' ? 'btn-primary' : 'btn-outline' ?>">Готовятся</a>
-    <a href="/admin/orders.php?view=active&status=ready"     class="btn btn-sm <?= $statusFilter==='ready'     ? 'btn-primary' : 'btn-outline' ?>">Готовы</a>
     <a href="/admin/orders.php?view=active&status=on_way"    class="btn btn-sm <?= $statusFilter==='on_way'    ? 'btn-primary' : 'btn-outline' ?>">В пути</a>
   <?php else: ?>
     <a href="/admin/orders.php?view=archive" class="btn btn-sm <?= !$statusFilter ? 'btn-primary' : 'btn-outline' ?>">Все архивные</a>
+    <a href="/admin/orders.php?view=archive&status=ready"     class="btn btn-sm <?= $statusFilter==='ready'     ? 'btn-primary' : 'btn-outline' ?>">Готовы</a>
     <a href="/admin/orders.php?view=archive&status=delivered" class="btn btn-sm <?= $statusFilter==='delivered' ? 'btn-primary' : 'btn-outline' ?>">Доставлены</a>
     <a href="/admin/orders.php?view=archive&status=cancelled" class="btn btn-sm <?= $statusFilter==='cancelled' ? 'btn-primary' : 'btn-outline' ?>">Отменены</a>
   <?php endif; ?>
