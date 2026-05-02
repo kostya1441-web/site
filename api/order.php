@@ -16,7 +16,6 @@ $type    = $body['type'] === 'delivery' ? 'delivery' : 'pickup';
 $address = trim($body['address'] ?? '');
 $comment = trim($body['comment'] ?? '');
 $items   = $body['items'] ?? [];
-$total   = (float)($body['total'] ?? 0);
 
 if (!$name || mb_strlen($name) < 2) {
     json_response(['success' => false, 'message' => 'Введите имя']);
@@ -65,47 +64,54 @@ foreach ($validatedItems as $vi) {
     DB::insert('order_items', array_merge(['order_id' => $orderId], $vi));
 }
 
-// ── ЮKassa payment ──────────────────────────────────────
-$yukassaEnabled = YUKASSA_SHOP_ID !== 'YOUR_SHOP_ID';
+// ── Альфа-Банк payment ───────────────────────────────────
+$alfabankEnabled = ALFABANK_USERNAME !== 'YOUR_USERNAME';
 
-if ($yukassaEnabled) {
-    $paymentUrl = createYukassaPayment($orderId, $serverTotal, $name);
-    if ($paymentUrl) {
-        json_response(['success' => true, 'order_id' => $orderId, 'payment_url' => $paymentUrl]);
+if ($alfabankEnabled) {
+    $result = createAlfabankPayment($orderId, $serverTotal);
+    if ($result) {
+        DB::update('orders', ['payment_id' => $result['orderId']], 'id=?', [$orderId]);
+        json_response(['success' => true, 'order_id' => $orderId, 'payment_url' => $result['formUrl']]);
     }
 }
 
-// Fallback: redirect to confirm without payment
+// Fallback: no payment configured
 json_response(['success' => true, 'order_id' => $orderId]);
 
-// ── ЮKassa helper ────────────────────────────────────────
-function createYukassaPayment(int $orderId, float $amount, string $customerName): ?string {
-    $idempotenceKey = 'order-' . $orderId . '-' . time();
-    $payload = [
-        'amount'       => ['value' => number_format($amount, 2, '.', ''), 'currency' => 'RUB'],
-        'confirmation' => ['type' => 'redirect', 'return_url' => YUKASSA_RETURN_URL . '?id=' . $orderId],
-        'capture'      => true,
-        'description'  => 'Заказ #' . str_pad($orderId, 5, '0', STR_PAD_LEFT) . ' — Кафе-бар «Квартирник»',
-        'metadata'     => ['order_id' => $orderId],
+// ── Альфа-Банк helper ────────────────────────────────────
+function createAlfabankPayment(int $orderId, float $amount): ?array
+{
+    $baseUrl = ALFABANK_TEST_MODE
+        ? 'https://alfa.rbsuat.com/payment/rest/'
+        : 'https://pay.alfabank.ru/payment/rest/';
+
+    $params = [
+        'userName'    => ALFABANK_USERNAME,
+        'password'    => ALFABANK_PASSWORD,
+        'orderNumber' => 'order-' . $orderId . '-' . time(),
+        'amount'      => (int)round($amount * 100), // в копейках
+        'returnUrl'   => ALFABANK_RETURN_URL . '?id=' . $orderId,
+        'failUrl'     => ALFABANK_RETURN_URL . '?id=' . $orderId . '&fail=1',
+        'description' => 'Заказ #' . str_pad($orderId, 5, '0', STR_PAD_LEFT) . ' — Кафе-бар «Квартирник»',
+        'language'    => 'ru',
     ];
 
-    $ch = curl_init('https://api.yookassa.ru/v3/payments');
+    $ch = curl_init($baseUrl . 'register.do');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_USERPWD        => YUKASSA_SHOP_ID . ':' . YUKASSA_SECRET_KEY,
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'Idempotence-Key: ' . $idempotenceKey,
-        ],
+        CURLOPT_POSTFIELDS     => http_build_query($params),
+        CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
         CURLOPT_TIMEOUT        => 10,
+        CURLOPT_SSL_VERIFYPEER => !ALFABANK_TEST_MODE,
     ]);
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($httpCode !== 200) return null;
+    if ($httpCode !== 200 || !$response) return null;
     $data = json_decode($response, true);
-    return $data['confirmation']['confirmation_url'] ?? null;
+    if (!empty($data['errorCode']) || empty($data['formUrl'])) return null;
+
+    return $data; // ['orderId' => '...', 'formUrl' => '...']
 }

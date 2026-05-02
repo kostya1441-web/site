@@ -1,43 +1,45 @@
 <?php
-// ЮKassa webhook handler
+// Альфа-Банк callback (уведомление об оплате)
+// Банк шлёт GET-запрос: ?mdOrder=ALFA_ORDER_ID&orderNumber=order-ID-TIMESTAMP&operation=deposited&status=1
 require_once __DIR__ . '/../includes/functions.php';
 
-$body = file_get_contents('php://input');
-$event = json_decode($body, true);
+$mdOrder     = $_GET['mdOrder'] ?? '';
+$orderNumber = $_GET['orderNumber'] ?? '';
 
-if (!$event || !isset($event['event'])) {
+if (!$mdOrder && !$orderNumber) {
     http_response_code(400);
     exit('Bad request');
 }
 
-// Verify IP (ЮKassa sends from specific IPs)
-$allowedIPs = ['185.71.76.0/27','185.71.77.0/27','77.75.153.0/25','77.75.156.11','77.75.156.35'];
-$clientIP = $_SERVER['REMOTE_ADDR'] ?? '';
-// In production — uncomment IP validation:
-// if (!ipInRanges($clientIP, $allowedIPs)) { http_response_code(403); exit; }
+// Верифицируем статус через API банка (не доверяем параметрам из запроса)
+$paymentStatus = getAlfabankOrderStatus($mdOrder);
 
-if ($event['event'] === 'payment.succeeded') {
-    $payment = $event['object'];
-    $orderId = (int)($payment['metadata']['order_id'] ?? 0);
-    $paymentId = $payment['id'] ?? '';
-
-    if ($orderId) {
-        DB::update('orders',
-            ['payment_status' => 'paid', 'payment_id' => $paymentId],
-            'id = ? AND payment_status = ?',
-            [$orderId, 'pending']
-        );
-    }
+if ($paymentStatus === null) {
+    http_response_code(500);
+    exit('Status check failed');
 }
 
-if ($event['event'] === 'payment.canceled') {
-    $payment = $event['object'];
-    $orderId = (int)($payment['metadata']['order_id'] ?? 0);
-    if ($orderId) {
+// Извлекаем наш orderId из orderNumber (формат: order-ID-timestamp)
+$ourOrderId = 0;
+if (preg_match('/^order-(\d+)-/', $orderNumber, $m)) {
+    $ourOrderId = (int)$m[1];
+} elseif ($mdOrder) {
+    $row = DB::fetch('SELECT id FROM orders WHERE payment_id=?', [$mdOrder]);
+    $ourOrderId = (int)($row['id'] ?? 0);
+}
+
+if ($ourOrderId) {
+    if ($paymentStatus === 2) { // оплачен
+        DB::update('orders',
+            ['payment_status' => 'paid', 'payment_id' => $mdOrder],
+            'id=? AND payment_status=?',
+            [$ourOrderId, 'pending']
+        );
+    } elseif (in_array($paymentStatus, [3, 6])) { // отменён
         DB::update('orders',
             ['payment_status' => 'failed'],
-            'id = ? AND payment_status = ?',
-            [$orderId, 'pending']
+            'id=? AND payment_status=?',
+            [$ourOrderId, 'pending']
         );
     }
 }
@@ -45,17 +47,31 @@ if ($event['event'] === 'payment.canceled') {
 http_response_code(200);
 echo 'OK';
 
-function ipInRanges(string $ip, array $cidrs): bool {
-    $ipLong = ip2long($ip);
-    foreach ($cidrs as $cidr) {
-        if (strpos($cidr, '/') === false) {
-            if ($ip === $cidr) return true;
-            continue;
-        }
-        [$subnet, $mask] = explode('/', $cidr);
-        $subnetLong = ip2long($subnet);
-        $maskLong   = ~((1 << (32 - (int)$mask)) - 1);
-        if (($ipLong & $maskLong) === ($subnetLong & $maskLong)) return true;
-    }
-    return false;
+function getAlfabankOrderStatus(string $alfaOrderId): ?int
+{
+    if (!$alfaOrderId) return null;
+
+    $baseUrl = ALFABANK_TEST_MODE
+        ? 'https://alfa.rbsuat.com/payment/rest/'
+        : 'https://pay.alfabank.ru/payment/rest/';
+
+    $url = $baseUrl . 'getOrderStatusExtended.do?' . http_build_query([
+        'userName' => ALFABANK_USERNAME,
+        'password' => ALFABANK_PASSWORD,
+        'orderId'  => $alfaOrderId,
+        'language' => 'ru',
+    ]);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_SSL_VERIFYPEER => !ALFABANK_TEST_MODE,
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if (!$response) return null;
+    $data = json_decode($response, true);
+    return isset($data['orderStatus']) ? (int)$data['orderStatus'] : null;
 }
