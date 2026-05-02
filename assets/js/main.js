@@ -129,19 +129,17 @@ function initAddToCart() {
 
 // ── Menu tabs ─────────────────────────────────────────────
 function initMenuTabs() {
-  const tabs = document.querySelectorAll('.menu-tab');
-  const cats = document.querySelectorAll('.menu-category');
+  const tabs = document.querySelectorAll('#cat-tabs .menu-tab');
+  const cats = document.querySelectorAll('.menu-category[data-cat]');
   if (!tabs.length) return;
 
-  function showTab(slug) {
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.slug === slug));
-    cats.forEach(c => c.classList.toggle('visible', c.dataset.slug === slug));
-  }
-
-  if (tabs.length) showTab(tabs[0].dataset.slug);
-
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => showTab(tab.dataset.slug));
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const cat = tab.dataset.cat;
+      cats.forEach(c => c.classList.toggle('visible', cat === 'all' || c.dataset.cat === cat));
+    });
   });
 }
 

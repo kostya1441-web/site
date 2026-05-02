@@ -75,22 +75,4 @@ $type_icons = ['food' => '🍽', 'drinks' => '☕', 'bar' => '🍸'];
   </div>
 </section>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const tabs = document.querySelectorAll('#cat-tabs .menu-tab');
-  const sections = document.querySelectorAll('.menu-category[data-cat]');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const cat = tab.dataset.cat;
-      sections.forEach(s => {
-        s.classList.toggle('visible', cat === 'all' || s.dataset.cat === cat);
-      });
-    });
-  });
-});
-</script>
-
 <?php require_once 'includes/footer.php'; ?>
