@@ -23,47 +23,42 @@ $item_icons  = ['food' => '🍽', 'drinks' => '☕', 'bar' => '🍸'];
       <div style="text-align:center;padding:80px 0;color:var(--text-muted)">Меню скоро появится</div>
     <?php else: ?>
 
-    <!-- Type tabs (food / drinks / bar) -->
+    <!-- Type tabs (all / food / drinks / bar) -->
     <div class="menu-tabs" id="type-tabs">
+      <button class="menu-tab active" data-type="all">🍽 Всё меню</button>
       <?php
       $types = [];
       foreach ($menu as $cat) {
           $types[$cat['type']] = $cat['type'];
       }
-      $first = true;
-      foreach ($types as $type):
-      ?>
-      <button class="menu-tab <?= $first ? 'active' : '' ?>" data-type="<?= $type ?>">
+      foreach ($types as $type): ?>
+      <button class="menu-tab" data-type="<?= $type ?>">
         <?= $type_labels[$type] ?? $type ?>
       </button>
-      <?php $first = false; endforeach; ?>
+      <?php endforeach; ?>
     </div>
 
     <!-- Categories per type -->
-    <?php
-    $first_type = true;
-    foreach ($types as $type):
-    ?>
-    <div class="menu-type-section <?= $first_type ? 'visible' : '' ?>" data-type="<?= $type ?>">
+    <?php foreach ($types as $type): ?>
+    <div class="menu-type-section visible" data-type="<?= $type ?>">
       <!-- Sub-tabs for categories within this type -->
       <?php
       $type_cats = array_filter($menu, fn($c) => $c['type'] === $type);
       if (count($type_cats) > 1):
       ?>
-      <div class="menu-tabs" style="margin-bottom:32px">
-        <?php $fc = true; foreach ($type_cats as $cat): ?>
-        <button class="menu-tab <?= $fc ? 'active' : '' ?>" data-slug="<?= h($cat['slug']) ?>">
+      <div class="menu-tabs menu-cat-tabs" style="margin-bottom:32px" data-type="<?= $type ?>">
+        <button class="menu-tab active" data-slug="all-<?= $type ?>">Все</button>
+        <?php foreach ($type_cats as $cat): ?>
+        <button class="menu-tab" data-slug="<?= h($cat['slug']) ?>">
           <?= h($cat['name']) ?>
         </button>
-        <?php $fc = false; endforeach; ?>
+        <?php endforeach; ?>
       </div>
       <?php endif; ?>
 
-      <?php $fc = true; foreach ($type_cats as $cat): ?>
-      <div class="menu-category <?= $fc ? 'visible' : '' ?>" data-slug="<?= h($cat['slug']) ?>">
-        <?php if (count($type_cats) === 1): ?>
-          <h2 class="menu-category-title"><?= h($cat['name']) ?></h2>
-        <?php endif; ?>
+      <?php foreach ($type_cats as $cat): ?>
+      <div class="menu-category visible" data-slug="<?= h($cat['slug']) ?>" data-type-slug="<?= $type ?>">
+        <h2 class="menu-category-title"><?= h($cat['name']) ?></h2>
         <?php if (empty($cat['items'])): ?>
           <p style="color:var(--text-muted);padding:24px 0">Позиции появятся скоро</p>
         <?php else: ?>
@@ -98,27 +93,47 @@ $item_icons  = ['food' => '🍽', 'drinks' => '☕', 'bar' => '🍸'];
         </div>
         <?php endif; ?>
       </div>
-      <?php $fc = false; endforeach; ?>
+      <?php endforeach; ?>
     </div>
-    <?php $first_type = false; endforeach; ?>
+    <?php endforeach; ?>
 
     <?php endif; ?>
   </div>
 </section>
 
 <script>
-// Enhanced tab logic for type + category tabs
 document.addEventListener('DOMContentLoaded', () => {
-  // Type tabs
   const typeTabs = document.querySelectorAll('#type-tabs .menu-tab');
   const typeSections = document.querySelectorAll('.menu-type-section');
+
   typeTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       typeTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const type = tab.dataset.type;
-      typeSections.forEach(s => {
-        s.classList.toggle('visible', s.dataset.type === type);
+      if (type === 'all') {
+        typeSections.forEach(s => s.classList.add('visible'));
+        // Show all categories in each section
+        document.querySelectorAll('.menu-category').forEach(c => c.classList.add('visible'));
+        document.querySelectorAll('.menu-cat-tabs .menu-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.menu-cat-tabs .menu-tab[data-slug^="all-"]').forEach(t => t.classList.add('active'));
+      } else {
+        typeSections.forEach(s => s.classList.toggle('visible', s.dataset.type === type));
+      }
+    });
+  });
+
+  // Category sub-tabs within each type
+  document.querySelectorAll('.menu-cat-tabs').forEach(tabRow => {
+    const sectionType = tabRow.dataset.type;
+    tabRow.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabRow.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const slug = tab.dataset.slug;
+        document.querySelectorAll(`.menu-category[data-type-slug="${sectionType}"]`).forEach(cat => {
+          cat.classList.toggle('visible', slug.startsWith('all-') || cat.dataset.slug === slug);
+        });
       });
     });
   });
