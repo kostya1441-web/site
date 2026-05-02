@@ -43,8 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
-        DB::query('DELETE FROM menu_items WHERE id=?', [$id]);
-        $alert = 'Блюдо удалено';
+        $inOrders = DB::fetch('SELECT COUNT(*) as c FROM order_items WHERE menu_item_id=?', [$id])['c'] ?? 0;
+        if ($inOrders > 0) {
+            DB::update('menu_items', ['active' => 0], 'id=?', [$id]);
+            $alert = 'Блюдо скрыто из меню (оно есть в заказах, поэтому не удалено)';
+            $alertType = 'error';
+        } else {
+            DB::query('DELETE FROM menu_items WHERE id=?', [$id]);
+            $alert = 'Блюдо удалено';
+        }
     }
 }
 
