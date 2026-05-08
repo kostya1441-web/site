@@ -1,9 +1,20 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
 
 $pageTitle  = 'Правила сервера — ' . SITE_NAME;
 $activePage = 'rules';
+
+require_once __DIR__ . '/includes/db.php';
+$db = getDB();
+$custom_rules = null;
+if ($db) {
+    $stmt = $db->prepare("SELECT `value` FROM settings WHERE `key`='rules_content'");
+    $stmt->execute();
+    $val = $stmt->fetchColumn();
+    if ($val) $custom_rules = $val;
+}
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -27,6 +38,13 @@ require_once __DIR__ . '/includes/header.php';
             <a href="#punishments" class="rules-nav-link">Наказания</a>
         </div>
 
+        <?php if ($custom_rules): ?>
+        <div class="rules-content">
+            <div class="rules-section">
+                <?= $custom_rules /* Admin-managed HTML content */ ?>
+            </div>
+        </div>
+        <?php else: ?>
         <div class="rules-content">
 
             <div class="rules-section" id="general">
@@ -104,6 +122,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
         </div>
+        <?php endif; ?>
     </div>
 </section>
 

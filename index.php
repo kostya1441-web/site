@@ -2,6 +2,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
 
 $pageTitle  = SITE_NAME . ' — CS2 Сервер';
 $activePage = 'home';
@@ -16,12 +17,18 @@ if ($db) {
     $top_players = $stmt ? $stmt->fetchAll() : [];
 }
 
-// Последние 3 новости (из БД или статично)
-$news = [
-    ['date' => '2025-05-01', 'title' => 'Обновление плагинов',      'text' => 'Обновили LvlRanks до последней версии, исправлены баги с очками.'],
-    ['date' => '2025-04-20', 'title' => 'Новая карта на сервере',    'text' => 'На Dust2 Only добавлена ротация de_anubis по просьбам игроков.'],
-    ['date' => '2025-04-10', 'title' => 'Акция на привилегии -30%',  'text' => 'До конца апреля все привилегии со скидкой 30%!'],
-];
+// Последние 3 новости
+$news = [];
+if ($db) {
+    $news = $db->query('SELECT * FROM news WHERE published=1 ORDER BY created_at DESC LIMIT 3')->fetchAll();
+}
+if (!$news) {
+    $news = [
+        ['created_at' => date('Y-m-d'), 'title' => 'Открытие сервера!', 'content' => 'Рады сообщить об открытии нашего CS2 сервера. Присоединяйтесь!'],
+        ['created_at' => date('Y-m-d', strtotime('-3 days')), 'title' => 'Обновление плагинов', 'content' => 'Обновлены LvlRanks и другие плагины до последних версий.'],
+        ['created_at' => date('Y-m-d', strtotime('-7 days')), 'title' => 'Добро пожаловать!', 'content' => 'Следи за обновлениями и событиями в разделе новостей.'],
+    ];
+}
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -31,14 +38,18 @@ require_once __DIR__ . '/includes/header.php';
     <div class="hero-bg"></div>
     <div class="container hero-content">
         <div class="hero-text">
-            <h1 class="hero-title">Лучший CS2 сервер<br>— <span class="accent"><?= h(SITE_NAME) ?></span></h1>
+            <div class="hero-badge">СЕРВЕР ОНЛАЙН</div>
+            <h1 class="hero-title">Лучший CS2<br><span class="glow"><?= h(SITE_NAME) ?></span></h1>
             <p class="hero-sub">Играй, прокачивайся, доминируй. Справедливый античит, топовые плагины и дружное комьюнити.</p>
             <div class="hero-btns">
                 <a href="steam://connect/<?= h(SERVERS[0]['ip']) ?>:<?= SERVERS[0]['port'] ?>" class="btn btn-primary btn-lg">
-                    Играть сейчас
+                    ▶ Играть сейчас
                 </a>
                 <a href="/rating.php" class="btn btn-outline btn-lg">Рейтинг игроков</a>
             </div>
+            <?php if (isLoggedIn()): ?>
+            <a href="/profile.php" style="font-size:13px;color:var(--text-muted)">Войти как <?= h(getCurrentUser()['name']) ?> →</a>
+            <?php endif; ?>
         </div>
         <div class="hero-stats">
             <?php foreach (SERVERS as $idx => $srv): ?>
@@ -178,9 +189,9 @@ require_once __DIR__ . '/includes/header.php';
         <div class="news-grid">
             <?php foreach ($news as $n): ?>
             <article class="news-card">
-                <time class="news-date"><?= date('d.m.Y', strtotime($n['date'])) ?></time>
+                <time class="news-date"><?= date('d.m.Y', strtotime($n['created_at'])) ?></time>
                 <h3 class="news-title"><?= h($n['title']) ?></h3>
-                <p class="news-text"><?= h($n['text']) ?></p>
+                <p class="news-text"><?= h(mb_substr($n['content'], 0, 100)) ?>...</p>
             </article>
             <?php endforeach; ?>
         </div>

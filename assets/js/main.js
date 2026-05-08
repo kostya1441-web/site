@@ -37,6 +37,17 @@ if (document.querySelector('.server-card')) {
     setInterval(loadServerStatus, 30000); // обновляем каждые 30 сек
 }
 
+// User menu dropdown
+const userMenuBtn = document.getElementById('userMenuBtn');
+const userDropdown = document.getElementById('userDropdown');
+if (userMenuBtn && userDropdown) {
+    userMenuBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => userDropdown.classList.remove('open'));
+}
+
 // Плавная прокрутка к якорям (правила)
 document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
