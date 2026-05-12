@@ -230,6 +230,8 @@ function changeConnection(mod) {
         document.getElementById('rank_pack_connection').setAttribute("style", "display: block;");
     } else if (mod == 'Vips') {
         document.getElementById('con_table_name').value = "vip_";
+    } else if (mod == 'IksAdmin') {
+        document.getElementById('con_table_name').value = "";
     } else if (mod == 'SourceBans') {
         document.getElementById('con_table_name').value = "sb_";
     } else if (mod == 'lk'){

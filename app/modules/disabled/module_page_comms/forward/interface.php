@@ -2,7 +2,7 @@
     /**
      * @author Anastasia Sidak <m0st1ce.nastya@gmail.com>
      *
-     * @link https://steamcommunity.comprofiles/76561198038416053
+     * @link https://steamcommunity.com/profiles/76561198038416053
      * @link https://github.com/M0st1ce
      *
      * @license GNU General Public License Version 3
@@ -36,35 +36,45 @@
                 </thead>
                 <tbody>
                 <?php for ( $i = 0, $sz = sizeof( $res ); $i < $sz; $i++ ):
-                    $General->get_js_relevance_avatar( $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[$i]['authid'] ) : $res[$i]['authid'] );
-                    $res[$i]['aid'] != '0' && $General->get_js_relevance_avatar( $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['admin_authid'] ) : $res[ $i ]['admin_authid'] )?><tr>
-                        <th class="text-center tb-game"><img <?php $i  < '20' ? print 'src' : print 'data-src'?>="<?php echo $General->arr_general['site'] ?>storage/cache/img/mods/<?php echo $mod?>.png"></th>
-                        <th class="text-center"><?php echo date('Y-m-d', $res[ $i ]['created']) ?></th>
-                        <th class="text-center tb-type"><?php $res[ $i ]['type'] == 1 ? $General->get_icon( 'zmdi', 'mic', null ) : $General->get_icon( 'zmdi', 'comment-text', null )?></th>
+                    // steam_id в IksAdmin уже SteamID64
+                    $player_steam64 = (string) $res[$i]['steam_id'];
+                    $admin_steam64  = !empty($res[$i]['admin_steam_id']) ? (string) $res[$i]['admin_steam_id'] : '';
+                    $General->get_js_relevance_avatar( $player_steam64 );
+                    !empty($admin_steam64) && $General->get_js_relevance_avatar( $admin_steam64 );
+                ?><tr>
+                        <th class="text-center tb-game"><img <?php $i < '20' ? print 'src' : print 'data-src'?>="<?php echo $General->arr_general['site'] ?>storage/cache/img/mods/<?php echo $mod?>.png"></th>
+                        <th class="text-center"><?php echo date('Y-m-d', $res[$i]['created_at']) ?></th>
+                        <th class="text-center tb-type"><?php
+                            // mute_type: 0=voice(mute), 1=chat(gag), 2=both(silence)
+                            if ($res[$i]['mute_type'] == 1) {
+                                $General->get_icon('zmdi', 'comment-text', null);
+                            } elseif ($res[$i]['mute_type'] == 2) {
+                                $General->get_icon('zmdi', 'mic-off', null);
+                            } else {
+                                $General->get_icon('zmdi', 'mic', null);
+                            }
+                        ?></th>
                         <?php if( $General->arr_general['avatars'] != 0 ) {?>
-                        <th class="text-right tb-avatar pointer" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['authid'] ) : $res[ $i ]['authid']?>/0/?search=1' "<?php } ?>><img class="rounded-circle" id="<?php echo con_steam32to64($res[ $i ]['authid']) ?>"<?php echo $i  < '20' ? 'src' : 'data-src'?>="<?php echo $General->getAvatar( con_steam32to64( $res[ $i ]['authid'] ), 2 )?>"></th>
-                        </th>
+                        <th class="text-right tb-avatar pointer" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php echo $player_steam64?>/0/?search=1' "<?php } ?>><img class="rounded-circle" id="<?php echo $player_steam64?>"<?php echo $i < '20' ? 'src' : 'data-src'?>="<?php echo $General->getAvatar($player_steam64, 2)?>"></th>
                         <?php } ?>
-                        <th class="text-left pointer" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['authid'] ) : $res[ $i ]['authid']?>/0/?search=1' "<?php } ?>>
-                            <a <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>href="<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['authid'] ) : $res[ $i ]['authid']?>/0"<?php } ?>><?php echo action_text_clear( action_text_trim($res[ $i ]['name'], 13) )?></a>
+                        <th class="text-left pointer" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php echo $player_steam64?>/0/?search=1' "<?php } ?>>
+                            <a <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1'){ ?>href="<?php echo $General->arr_general['site'] ?>profiles/<?php echo $player_steam64?>/0"<?php } ?>><?php echo action_text_clear( action_text_trim($res[$i]['name'], 13) )?></a>
                         </th>
                         <?php if( $General->arr_general['avatars'] != 0 ) {?>
-                        <th class="text-right tb-avatar <?php $res[ $i ]['aid'] != '0' && print 'a-type'?>" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && $res[ $i ]['aid'] != '0'){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['admin_authid'] ) : $res[ $i ]['admin_authid']?>/0' "<?php } ?>><img class="rounded-circle" id="<?php echo con_steam32to64($res[ $i ]['admin_authid']) ?>"<?php echo $i  < '20' ? 'src' : 'data-src'?>="<?php echo $res[ $i ]['admin_authid'] != 'STEAM_ID_SERVER' ? $General->getAvatar( con_steam32to64( $res[ $i ]['admin_authid'] ), 2 ) : $General->arr_general['site'].'storage/cache/img/avatars_random/20.jpg'?>"></th><?php }?>
-                        <th class="text-left <?php $res[ $i ]['aid'] != '0' && print 'pointer'?>" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && $res[ $i ]['aid'] != '0'): ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['admin_authid'] ) : $res[ $i ]['admin_authid']?>/0' "<?php endif; ?>>
-                            <a <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && $res[ $i ]['aid'] != '0'): ?>href="<?php echo $General->arr_general['site'] ?>profiles/<?php print $General->arr_general['only_steam_64'] === 1 ? con_steam32to64( $res[ $i ]['admin_authid'] ) : $res[ $i ]['admin_authid']?>/0/?search=1"<?php endif; ?>><?php echo action_text_clear( action_text_trim($res[ $i ]['user'], 13) )?></a>
+                        <th class="text-right tb-avatar <?php !empty($admin_steam64) && print 'a-type'?>" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && !empty($admin_steam64)){ ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php echo $admin_steam64?>/0' "<?php } ?>><img class="rounded-circle" id="<?php echo $admin_steam64?>"<?php echo $i < '20' ? 'src' : 'data-src'?>="<?php echo !empty($admin_steam64) ? $General->getAvatar($admin_steam64, 2) : $General->arr_general['site'].'storage/cache/img/avatars_random/20.jpg'?>"></th><?php }?>
+                        <th class="text-left <?php !empty($admin_steam64) && print 'pointer'?>" <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && !empty($admin_steam64)): ?>onclick="location.href = '<?php echo $General->arr_general['site'] ?>profiles/<?php echo $admin_steam64?>/0' "<?php endif; ?>>
+                            <a <?php if ($Modules->array_modules['module_page_profiles']['setting']['status'] == '1' && !empty($admin_steam64)): ?>href="<?php echo $General->arr_general['site'] ?>profiles/<?php echo $admin_steam64?>/0/?search=1"<?php endif; ?>><?php echo action_text_clear( action_text_trim($res[$i]['admin_name'], 13) )?></a>
                         </th>
-                        <th class="text-left"><?php echo $res[ $i ]['reason'] ?></th>
+                        <th class="text-left"><?php echo htmlspecialchars($res[$i]['reason']) ?></th>
                         <th class="text-center"><?php
-                            if ( $res[ $i ]['length'] == '0' && $res[ $i ]['RemoveType'] != 'U' ) {
-                                echo $comms_type['0'];
-                            } elseif ( $res[$i]['RemoveType'] == 'U') {
-                                echo $comms_type['1'];
-                            } elseif ( $res[$i]['length'] < '0' && time() >= $res[$i]['ends'] ) {
-                                echo $comms_type['2'];
-                            } elseif (time() >= $res[$i]['ends'] && $res[$i]['length'] != '0') {
-                                echo '<div class="color-green"><strike>' . $Modules->action_time_exchange( $res[$i]['length'] ) . '</strike></div>';
-                            }  else {
-                                echo $Modules->action_time_exchange( $res[$i]['length'] );
+                            if ( $res[$i]['deleted_at'] !== null ) {
+                                echo $comms_type[1]; // Снят вручную
+                            } elseif ( $res[$i]['duration'] == 0 ) {
+                                echo $comms_type[0]; // Навсегда
+                            } elseif ( time() >= $res[$i]['end_at'] ) {
+                                echo '<div class="color-green"><strike>' . $Modules->action_time_exchange( intval($res[$i]['duration'] / 60) ) . '</strike></div>';
+                            } else {
+                                echo $Modules->action_time_exchange( intval($res[$i]['duration'] / 60) );
                             }?>
                         </th>
                     </tr>
