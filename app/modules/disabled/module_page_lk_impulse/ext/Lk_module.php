@@ -546,6 +546,24 @@ class Lk_module{
 			$this->message($this->Translate->get_translate_module_phrase('module_page_lk_impulse','_EnterSteam'),'error');
 		if(!preg_match('/^STEAM_[0-9]{1,2}:[0-1]:\d+$/',$post['steam']))
 				$this->message($this->Translate->get_translate_module_phrase('module_page_lk_impulse','_SteamError'),'error');
+
+		// Покупка VIP-пакета
+		if(!empty($post['vip_package_id'])) {
+			if(!preg_match('/^\d+$/', $post['vip_package_id']))
+				$this->message('Неверный пакет VIP', 'error');
+			$param = ['id' => (int)$post['vip_package_id']];
+			$package = $this->db->queryAll('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+				"SELECT * FROM lk_vip_packages WHERE id = :id AND status = 1", $param);
+			if(empty($package))
+				$this->message('VIP пакет не найден или недоступен', 'error');
+			$post['amount'] = $package[0]['price'];
+			$post['vip_promo'] = 'vip:'.$post['vip_package_id'];
+			$this->LkNotExistGateway($post['gatewayPay']);
+			$this->setPay($post);
+			return;
+		}
+
+		// Обычное пополнение баланса
 		else if(empty($post['amount']))
 				$this->message($this->Translate->get_translate_module_phrase('module_page_lk_impulse','_EnterAmount'), 'error');
 		else if(!preg_match('/^[0-9]{1,5}.[0-9]{1,2}$/', $this->WM($post['amount'])))
@@ -561,9 +579,101 @@ class Lk_module{
 		$this->setPay($post);
 	}
 
+	// ---- VIP Package Management ----
+
+	public function LkGetVipPackages() {
+		return $this->db->queryAll('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"SELECT * FROM lk_vip_packages ORDER BY price ASC");
+	}
+
+	public function LkGetVipPackagesActive() {
+		return $this->db->queryAll('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"SELECT * FROM lk_vip_packages WHERE status = 1 ORDER BY price ASC");
+	}
+
+	public function LkGetPlayerVip($steam32) {
+		if (empty($this->db->db_data['Vips'])) return [];
+		$parts = explode(':', $steam32);
+		$account_id = (int)$parts[2] * 2 + (int)$parts[1];
+		$vipUid = $this->db->db_data['Vips'][0]['USER_ID'];
+		$vipDb  = $this->db->db_data['Vips'][0]['DB_num'];
+		return $this->db->queryAll('Vips', $vipUid, $vipDb,
+			"SELECT * FROM vip_users WHERE account_id = :id",
+			['id' => $account_id]);
+	}
+
+	public function LkAddVipPackage($post) {
+		if (!isset($_SESSION['user_admin']) || IN_LR != true) exit;
+		if (empty($post['pkg_name']))
+			$this->message('Введите название пакета', 'error');
+		if (empty($post['pkg_group']))
+			$this->message('Введите группу VIP', 'error');
+		if (!preg_match('/^\d+$/', $post['pkg_days']) || (int)$post['pkg_days'] < 1)
+			$this->message('Неверное количество дней', 'error');
+		if (!is_numeric($post['pkg_price']) || (float)$post['pkg_price'] < 0.01)
+			$this->message('Неверная цена', 'error');
+		if (!preg_match('/^\d+$/', $post['pkg_sid']))
+			$this->message('Неверный Server ID', 'error');
+		$params = [
+			'name'     => htmlspecialchars(strip_tags($post['pkg_name']), ENT_QUOTES),
+			'group'    => htmlspecialchars(strip_tags($post['pkg_group']), ENT_QUOTES),
+			'days'     => (int)$post['pkg_days'],
+			'price'    => (float)$post['pkg_price'],
+			'sid'      => (int)$post['pkg_sid'],
+			'desc'     => htmlspecialchars(strip_tags($post['pkg_desc'] ?? ''), ENT_QUOTES),
+			'status'   => isset($post['pkg_status']) ? 1 : 0,
+		];
+		$this->db->query('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"INSERT INTO lk_vip_packages (name, vip_group, duration_days, price, sid, description, status) VALUES (:name, :group, :days, :price, :sid, :desc, :status)",
+			$params);
+		$this->message('Пакет добавлен', 'success');
+	}
+
+	public function LkEditVipPackage($post) {
+		if (!isset($_SESSION['user_admin']) || IN_LR != true) exit;
+		if (!preg_match('/^\d+$/', $post['pkg_id']))
+			$this->message('Ошибка ID', 'error');
+		if (empty($post['pkg_name']))
+			$this->message('Введите название пакета', 'error');
+		if (empty($post['pkg_group']))
+			$this->message('Введите группу VIP', 'error');
+		if (!preg_match('/^\d+$/', $post['pkg_days']) || (int)$post['pkg_days'] < 1)
+			$this->message('Неверное количество дней', 'error');
+		if (!is_numeric($post['pkg_price']) || (float)$post['pkg_price'] < 0.01)
+			$this->message('Неверная цена', 'error');
+		if (!preg_match('/^\d+$/', $post['pkg_sid']))
+			$this->message('Неверный Server ID', 'error');
+		$params = [
+			'id'       => (int)$post['pkg_id'],
+			'name'     => htmlspecialchars(strip_tags($post['pkg_name']), ENT_QUOTES),
+			'group'    => htmlspecialchars(strip_tags($post['pkg_group']), ENT_QUOTES),
+			'days'     => (int)$post['pkg_days'],
+			'price'    => (float)$post['pkg_price'],
+			'sid'      => (int)$post['pkg_sid'],
+			'desc'     => htmlspecialchars(strip_tags($post['pkg_desc'] ?? ''), ENT_QUOTES),
+			'status'   => isset($post['pkg_status']) ? 1 : 0,
+		];
+		$this->db->query('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"UPDATE lk_vip_packages SET name=:name, vip_group=:group, duration_days=:days, price=:price, sid=:sid, description=:desc, status=:status WHERE id=:id",
+			$params);
+		$this->message('Пакет обновлён', 'success');
+	}
+
+	public function LkDeleteVipPackage($post) {
+		if (!isset($_SESSION['user_admin']) || IN_LR != true) exit;
+		if (!preg_match('/^\d+$/', $post['pkg_delete']))
+			$this->message('Ошибка ID', 'error');
+		$this->db->query('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"DELETE FROM lk_vip_packages WHERE id = :id",
+			['id' => (int)$post['pkg_delete']]);
+		$this->message('Пакет удалён', 'success');
+	}
+
 	protected function setPay($post){
 		$data = $this->LkGetGatewayOn($post['gatewayPay']);
 		$order = time() % 100000;
+		// Для VIP-покупок используем vip_promo как метку пакета
+		if (!empty($post['vip_promo'])) $post['promocode'] = $post['vip_promo'];
 		$desc = $this->Translate->get_translate_module_phrase('module_page_lk_impulse','_OnPayUserDesc').$post['steam'];
 		$lk_sign = $this->Encoder($data[0]['id'].','.$order.','.$post['amount'].','.$post['steam']);
 		switch ($post['gatewayPay']) {

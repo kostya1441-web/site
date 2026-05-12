@@ -32,6 +32,7 @@ if(isset($Db->db_data['lk'])){
         'lk_pays',
         'lk_pay_service',
         'lk_promocodes',
+        'lk_vip_packages',
     );
     foreach ($checkTable as $key) {
        if(!$Db->mysql_table_search('lk', $Db->db_data['lk'][0]['USER_ID'], $Db->db_data['lk'][0]['DB_num'], $key)){
@@ -71,6 +72,7 @@ if( isset( $_POST['table_install'] ) ) {
           "CREATE TABLE IF NOT EXISTS `lk_pays` ( `pay_id` INT NOT NULL AUTO_INCREMENT , `pay_order` INT NOT NULL , `pay_auth` TEXT NOT NULL , `pay_summ` FLOAT NOT NULL , `pay_data` TEXT NOT NULL , `pay_system` TEXT NOT NULL , `pay_promo` TEXT NOT NULL , `pay_status` INT NOT NULL DEFAULT '0' , PRIMARY KEY (`pay_id`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;",
           "CREATE TABLE IF NOT EXISTS `lk_pay_service` ( `id` INT NOT NULL , `name_kassa` TEXT NOT NULL , `shop_id` TEXT NOT NULL , `secret_key_1` TEXT NOT NULL , `secret_key_2` TEXT NOT NULL , `status` INT NOT NULL DEFAULT '0' ) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;",
           "CREATE TABLE IF NOT EXISTS `lk_promocodes` ( `id` INT NOT NULL AUTO_INCREMENT , `code` TEXT NOT NULL , `percent` FLOAT NOT NULL , `attempts` INT NOT NULL , `auth1` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;",
+          "CREATE TABLE IF NOT EXISTS `lk_vip_packages` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(128) NOT NULL , `vip_group` VARCHAR(64) NOT NULL , `duration_days` INT NOT NULL DEFAULT '30' , `price` FLOAT NOT NULL , `sid` INT NOT NULL DEFAULT '1' , `description` TEXT NOT NULL , `status` INT NOT NULL DEFAULT '1' , PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;",
         );
         foreach($sql as $key){
             $Db->query('lk', $Db->db_data['lk'][0]['USER_ID'], $Db->db_data['lk'][0]['DB_num'], $key);

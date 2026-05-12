@@ -226,11 +226,18 @@ class Basefunction{
 
 	/**
      * Фунция запроса обновления баланса игрока.
+     * Если платёж — покупка VIP-пакета (pay_promo начинается с 'vip:'), выдаёт VIP вместо баланса.
      *
      * @param string $steam         Steam ID игрока к зачислению.
      * @param int $summ        	 	Сумма пополнения.
      */
 	public function BUpdateBalancePlayer($steam,$summ){
+		$promo = isset($this->pay[0]['pay_promo']) ? $this->pay[0]['pay_promo'] : '';
+		if (strncmp($promo, 'vip:', 4) === 0) {
+			$this->BGiveVip((int)substr($promo, 4));
+			return;
+		}
+
 		preg_match('/:[0-9]{1}:\d+/i', $steam, $auth);
 
 		 $params = [
@@ -242,6 +249,62 @@ class Basefunction{
 			$this->db->query('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'], "UPDATE lk SET cash = cash + :cash, all_cash = all_cash + :all_cash WHERE auth LIKE :auth", $params);
 		else if($this->db->db_data['lk'][0]['mod'] == 2)
 			$this->db->query('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'], "UPDATE lk_system SET money = money + :cash, all_money = all_money + :all_cash WHERE auth LIKE :auth", $params);
+	}
+
+	/**
+	 * Выдать VIP игроку в таблицу vip_users (cs2-vip плагин Pisex).
+	 * Если у игрока уже есть VIP на этом сервере — продлевает срок.
+	 *
+	 * @param int $package_id  ID пакета из lk_vip_packages.
+	 */
+	public function BGiveVip($package_id) {
+		if (empty($this->db->db_data['Vips'])) {
+			$this->LkAddLog('_VipNoDB', ['package_id' => $package_id, 'steam' => $this->decod[3]]);
+			return;
+		}
+
+		$param = ['id' => (int)$package_id];
+		$package = $this->db->queryAll('lk', $this->db->db_data['lk'][0]['USER_ID'], $this->db->db_data['lk'][0]['DB_num'],
+			"SELECT * FROM lk_vip_packages WHERE id = :id AND status = 1", $param);
+		if (empty($package)) {
+			$this->LkAddLog('_VipPackageNotFound', ['package_id' => $package_id, 'steam' => $this->decod[3]]);
+			return;
+		}
+
+		$steam32 = $this->decod[3];
+		$parts   = explode(':', $steam32);
+		$account_id = (int)$parts[2] * 2 + (int)$parts[1];
+
+		$duration   = (int)$package[0]['duration_days'] * 86400;
+		$sid        = (int)$package[0]['sid'];
+		$group      = $package[0]['vip_group'];
+
+		$vipUid  = $this->db->db_data['Vips'][0]['USER_ID'];
+		$vipDb   = $this->db->db_data['Vips'][0]['DB_num'];
+
+		$existing = $this->db->queryAll('Vips', $vipUid, $vipDb,
+			"SELECT * FROM vip_users WHERE account_id = :id AND sid = :sid",
+			['id' => $account_id, 'sid' => $sid]);
+
+		if (!empty($existing)) {
+			$new_expires = max((int)time(), (int)$existing[0]['expires']) + $duration;
+			$this->db->query('Vips', $vipUid, $vipDb,
+				"UPDATE vip_users SET expires = :exp, `group` = :grp WHERE account_id = :id AND sid = :sid",
+				['exp' => $new_expires, 'grp' => $group, 'id' => $account_id, 'sid' => $sid]);
+		} else {
+			$expires = (int)time() + $duration;
+			$this->db->query('Vips', $vipUid, $vipDb,
+				"INSERT INTO vip_users (account_id, name, lastvisit, sid, `group`, expires) VALUES (:id, :name, 0, :sid, :grp, :exp)",
+				['id' => $account_id, 'name' => $steam32, 'sid' => $sid, 'grp' => $group, 'exp' => $expires]);
+		}
+
+		$this->LkAddLog('_VipGiven', [
+			'steam'    => $steam32,
+			'package'  => $package[0]['name'],
+			'group'    => $group,
+			'days'     => $package[0]['duration_days'],
+			'sid'      => $sid,
+		]);
 	}
 
 	/**

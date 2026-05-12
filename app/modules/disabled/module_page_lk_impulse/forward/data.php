@@ -26,11 +26,28 @@ else if(isset($_POST['steamidload']))
 {
     $LK->LkLoadPlayerProfile($_POST['steamidload']); exit;
 }
+else if(isset($_POST['get_player_vip']) && isset($_SESSION['steamid32']))
+{
+    $vip = $LK->LkGetPlayerVip($_SESSION['steamid32']);
+    exit(trim(json_encode(['vip' => $vip])));
+}
 
 if(isset( $_SESSION['user_admin'] )  && isset($_GET['section']))
 {
 
     switch ($_GET['section']) {
+        case 'vip_packages':
+            if(isset($_POST['pkg_name']))
+            {
+                if(isset($_POST['pkg_id'])) $LK->LkEditVipPackage($_POST);
+                else $LK->LkAddVipPackage($_POST);
+                exit;
+            }
+            else if(isset($_POST['pkg_delete']))
+            {
+                $LK->LkDeleteVipPackage($_POST); exit;
+            }
+        break;
         case 'users':
              if(isset($_POST['user']))
             {
@@ -149,6 +166,12 @@ if(isset($Db->db_data['lk'])){
 }
 
 $LK->LkBalancePlayer();
+
+// Загружаем активные VIP-пакеты для отображения на главной странице.
+$vip_packages = $LK->LkGetVipPackagesActive();
+
+// VIP текущего игрока.
+$player_vip = isset($_SESSION['steamid32']) ? $LK->LkGetPlayerVip($_SESSION['steamid32']) : [];
 
 // Задаём заголовок страницы.
 $Modules->set_page_title( $General->arr_general['short_name'] . ' :: ' . $Translate->translate('module_page_lk_impulse','_LK'));
