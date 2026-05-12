@@ -57,10 +57,12 @@ class Translate {
         $result_translation = [];
 
         // Сканирование папки с модулями.
-        $scan_modules = array_diff( scandir( MODULES, 1 ), array( '..', '.', 'disabled' ) );
+        $scan_modules_raw = scandir( MODULES, 1 );
+        $scan_modules = $scan_modules_raw ? array_diff( $scan_modules_raw, array( '..', '.', 'disabled' ) ) : [];
 
         // Сканирование папки с Паками рангов.
-        $scan_ranks_pack = array_diff( scandir( RANKS_PACK, 1 ), array( '..', '.' ) );
+        $scan_ranks_pack_raw = scandir( RANKS_PACK, 1 );
+        $scan_ranks_pack = $scan_ranks_pack_raw ? array_diff( $scan_ranks_pack_raw, array( '..', '.' ) ) : [];
 
         // Цикл перебора описания модулей.
         for ( $i = 0, $c = sizeof( $scan_modules ); $i < $c; $i++ ) {
@@ -74,6 +76,7 @@ class Translate {
             }
         }
 
+        $rank_pack = [];
         for ( $i = 0, $c = sizeof( $scan_ranks_pack ); $i < $c; $i++ ):
             $rank_pack[ 'ranks_' . $scan_ranks_pack[ $i ] ] = json_decode( file_get_contents( RANKS_PACK . $scan_ranks_pack[ $i ] . '/title.json' ) , true);
         endfor;
