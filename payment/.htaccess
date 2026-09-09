@@ -1,0 +1,4 @@
+# Разрешаем доступ только к callback.php (webhook Сбербанка), остальные файлы — только через require
+<FilesMatch "^(?!callback\.php$).*\.php$">
+    Require all denied
+</FilesMatch>
