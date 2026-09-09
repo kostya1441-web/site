@@ -1,9 +1,36 @@
 document.addEventListener('DOMContentLoaded', function () {
     var toggle = document.getElementById('navToggle');
     var nav = document.getElementById('mainNav');
+    var navClose = document.getElementById('navClose');
+    var backdrop = document.getElementById('navBackdrop');
+
+    function openNav() {
+        nav.classList.add('open');
+        if (backdrop) backdrop.classList.add('show');
+        document.body.classList.add('nav-open-lock');
+    }
+
+    function closeNav() {
+        nav.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('show');
+        document.body.classList.remove('nav-open-lock');
+    }
+
     if (toggle && nav) {
         toggle.addEventListener('click', function () {
-            nav.classList.toggle('open');
+            nav.classList.contains('open') ? closeNav() : openNav();
+        });
+    }
+    if (navClose) navClose.addEventListener('click', closeNav);
+    if (backdrop) backdrop.addEventListener('click', closeNav);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeNav();
+    });
+
+    if (nav) {
+        nav.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeNav);
         });
     }
 

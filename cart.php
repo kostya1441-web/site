@@ -18,6 +18,7 @@ require __DIR__ . '/includes/header.php';
                 <a class="btn" href="/catalog.php">Перейти в каталог</a>
             </div>
         <?php else: ?>
+            <div class="cart-table-wrap">
             <table class="cart-table">
                 <thead>
                 <tr>
@@ -46,6 +47,7 @@ require __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
 
             <div class="cart-summary">
                 <div class="cart-summary-row cart-summary-total">
