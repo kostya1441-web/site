@@ -1,0 +1,7 @@
+/uploads/products/*
+/uploads/categories/*
+!/uploads/products/.gitkeep
+!/uploads/categories/.gitkeep
+
+.DS_Store
+*.log

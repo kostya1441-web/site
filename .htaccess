@@ -1,0 +1,10 @@
+Options -Indexes
+
+<IfModule mod_php.c>
+    php_flag display_errors off
+</IfModule>
+
+# Закрываем прямой доступ к служебным папкам и файлам
+<FilesMatch "\.(sql|log|md)$">
+    Require all denied
+</FilesMatch>
