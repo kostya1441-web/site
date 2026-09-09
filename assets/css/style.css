@@ -130,6 +130,16 @@ a.topbar-item:hover { text-decoration: none; }
 .logo-sm .logo-badge { width: 32px; height: 32px; }
 .logo-sm .logo-badge svg { width: 18px; height: 18px; }
 
+/* Логотип-картинка "Ваш фермер" */
+.logo-img { height: 44px; width: auto; display: block; border-radius: 8px; }
+.logo-sm .logo-img { height: 32px; }
+.logo-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #fff; border-radius: 12px; padding: 5px; box-shadow: var(--shadow-sm); flex-shrink: 0;
+}
+.logo-chip .logo-img { height: 30px; border-radius: 6px; }
+.logo-chip-lg .logo-img { height: 46px; border-radius: 8px; }
+
 .main-nav ul { display: flex; gap: 30px; }
 .main-nav > ul > li > a { color: var(--color-text); font-weight: 600; font-size: 15px; position: relative; padding: 6px 0; }
 .main-nav > ul > li > a:hover { color: var(--color-primary-dark); text-decoration: none; }

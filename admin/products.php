@@ -44,7 +44,7 @@ require __DIR__ . '/includes/admin_header.php';
 </div>
 
 <div class="admin-card">
-    <div style="overflow-x:auto;">
+    <div class="table-scroll">
     <table class="admin-table">
         <thead>
         <tr><th>Фото</th><th>Название</th><th>Категория</th><th>Цена</th><th>В наличии</th><th>Активен</th><th></th></tr>

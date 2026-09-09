@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `payment_status` ENUM('pending','paid','failed','refunded') NOT NULL DEFAULT 'pending',
   `sber_order_id` VARCHAR(64) NULL,
   `status` ENUM('new','processing','ready','shipped','completed','cancelled') NOT NULL DEFAULT 'new',
+  `archived_at` DATETIME NULL DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

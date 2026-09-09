@@ -6,7 +6,10 @@ $siteName = setting('site_name', 'Ваш фермер');
 <footer class="site-footer">
     <div class="container footer-inner">
         <div class="footer-col footer-brand">
-            <div class="logo footer-logo"><span class="logo-badge"><?= icon('leaf') ?></span> <?= e($siteName) ?></div>
+            <div class="logo footer-logo">
+                <span class="logo-chip"><img src="/assets/img/logo-icon.jpg" alt="<?= e($siteName) ?>" class="logo-img"></span>
+                <?= e($siteName) ?>
+            </div>
             <p><?= e(setting('site_tagline')) ?></p>
             <div class="footer-badges">
                 <span class="footer-badge"><span class="ico"><?= icon('truck') ?></span> Доставка по городу</span>

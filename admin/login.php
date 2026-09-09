@@ -34,12 +34,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Вход в админку — <?= e(setting('site_name')) ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/admin/assets/css/admin.css">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 </head>
 <body class="admin-body">
 <div class="login-wrap">
     <div class="login-box">
-        <h1>🌾 Вход в админку</h1>
+        <img src="/assets/img/logo-icon.jpg" alt="<?= e(setting('site_name')) ?>" class="login-logo">
+        <h1>Вход в админку</h1>
         <?php if ($error): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>
         <form method="post" action="/admin/login.php">
             <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">

@@ -16,7 +16,7 @@ require __DIR__ . '/includes/admin_header.php';
 </div>
 
 <div class="admin-card">
-    <div style="overflow-x:auto;">
+    <div class="table-scroll">
     <table class="admin-table">
         <thead><tr><th>Фото</th><th>Название</th><th>Товаров</th><th>Активна</th><th></th></tr></thead>
         <tbody>

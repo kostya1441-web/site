@@ -22,6 +22,9 @@ $phoneHref = e(preg_replace('/[^0-9+]/', '', setting('phone')));
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/assets/css/style.css">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 </head>
 <body>
 <header class="site-header">
@@ -43,13 +46,13 @@ $phoneHref = e(preg_replace('/[^0-9+]/', '', setting('phone')));
     <div class="header-main">
         <div class="container header-inner">
             <a href="/index.php" class="logo">
-                <span class="logo-badge"><?= icon('leaf') ?></span>
+                <img src="/assets/img/logo-icon.jpg" alt="<?= e($siteName) ?>" class="logo-img">
                 <span class="logo-text"><?= e($siteName) ?></span>
             </a>
 
             <nav class="main-nav" id="mainNav">
                 <div class="main-nav-head">
-                    <span class="logo logo-sm"><span class="logo-badge"><?= icon('leaf') ?></span><?= e($siteName) ?></span>
+                    <span class="logo logo-sm"><img src="/assets/img/logo-icon.jpg" alt="<?= e($siteName) ?>" class="logo-img"><?= e($siteName) ?></span>
                     <button class="nav-close" id="navClose" aria-label="Закрыть меню"><span class="ico"><?= icon('close') ?></span></button>
                 </div>
                 <ul>
