@@ -4,7 +4,7 @@
  * Веб-установщик «Ваш фермер» — для хостингов без доступа к консоли.
  *
  * Открывается в браузере: https://ваш-домен.ру/install.php
- * Шаги: проверка сервера → подключение к БД → создание администратора.
+ * Шаги: проверка сервера → подключение к MySQL → создание администратора.
  *
  * ВАЖНО: после установки файл нужно удалить. Повторный запуск при уже
  * созданном администраторе блокируется.
@@ -18,9 +18,9 @@ use App\Core\Database;
 use App\Models\Setting;
 use App\Models\User;
 
-$step   = (int) ($_GET['step'] ?? 1);
-$errors = [];
-$notice = null;
+$step       = (int) ($_GET['step'] ?? 1);
+$errors     = [];
+$manualCode = null;
 
 $localConfigPath = APP_ROOT . '/config/config.local.php';
 
@@ -29,11 +29,7 @@ function has_admin(): bool
 {
     try {
         $db = Database::instance();
-        $exists = $db->driver() === 'mysql'
-            ? $db->first("SHOW TABLES LIKE 'users'")
-            : $db->first("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
-
-        return $exists !== null && (int) $db->value('SELECT COUNT(*) FROM users') > 0;
+        return $db->tableExists('users') && (int) $db->value('SELECT COUNT(*) FROM users') > 0;
     } catch (Throwable $e) {
         return false;
     }
@@ -47,71 +43,82 @@ function has_admin(): bool
  */
 $installed = is_file($localConfigPath) && has_admin();
 
+/** Угадываем адрес сайта, чтобы подставить в конфиг. */
+function detect_base_url(): string
+{
+    $scheme = (($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https' : 'http';
+    $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    return $scheme . '://' . $host;
+}
+
+/** Проверки окружения для первого шага. */
+function requirements(): array
+{
+    return [
+        ['PHP 8.1 или новее', PHP_VERSION_ID >= 80100, 'Текущая версия: ' . PHP_VERSION],
+        ['Расширение pdo_mysql', extension_loaded('pdo_mysql'), 'Работа с базой MySQL — обязательно'],
+        ['Расширение mbstring', extension_loaded('mbstring'), 'Работа с кириллицей'],
+        ['Расширение curl', extension_loaded('curl'), 'Запросы к эквайрингу Сбербанка'],
+        ['Расширение gd', extension_loaded('gd'), 'Уменьшение загружаемых фотографий'],
+        ['Папка config доступна для записи', is_writable(APP_ROOT . '/config'), APP_ROOT . '/config'],
+        ['Папка storage доступна для записи', is_writable(APP_ROOT . '/storage'), APP_ROOT . '/storage'],
+        ['Папка public/uploads доступна для записи', is_writable(APP_ROOT . '/public/uploads'), APP_ROOT . '/public/uploads'],
+    ];
+}
+
 // ── Обработка форм ─────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$installed) {
     if (!Csrf::check($_POST['_token'] ?? null)) {
         $errors[] = 'Сессия устарела, обновите страницу.';
     } elseif (($_POST['action'] ?? '') === 'database') {
-        $driver = ($_POST['driver'] ?? 'mysql') === 'sqlite' ? 'sqlite' : 'mysql';
+        $host = trim($_POST['host'] ?? 'localhost');
+        $port = trim($_POST['port'] ?? '3306') ?: '3306';
+        $name = trim($_POST['database'] ?? '');
+        $user = trim($_POST['username'] ?? '');
+        $pass = (string) ($_POST['password'] ?? '');
 
-        if ($driver === 'mysql') {
-            $host = trim($_POST['host'] ?? 'localhost');
-            $port = trim($_POST['port'] ?? '3306') ?: '3306';
-            $name = trim($_POST['database'] ?? '');
-            $user = trim($_POST['username'] ?? '');
-            $pass = (string) ($_POST['password'] ?? '');
-
-            if ($name === '' || $user === '') {
-                $errors[] = 'Укажите имя базы данных и пользователя.';
-            } else {
-                try {
-                    new PDO(
-                        sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $name),
-                        $user,
-                        $pass,
-                        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-                    );
-                } catch (PDOException $e) {
-                    $errors[] = 'Не удалось подключиться: ' . $e->getMessage();
-                }
-            }
-
-            if (!$errors) {
-                $config = "<?php\n\nreturn [\n"
-                    . "    'app' => [\n"
-                    . "        'url'   => " . var_export(detect_base_url(), true) . ",\n"
-                    . "        'debug' => false,\n"
-                    . "    ],\n"
-                    . "    'db' => [\n"
-                    . "        'driver' => 'mysql',\n"
-                    . "        'mysql'  => [\n"
-                    . "            'host'     => " . var_export($host, true) . ",\n"
-                    . "            'port'     => " . var_export($port, true) . ",\n"
-                    . "            'database' => " . var_export($name, true) . ",\n"
-                    . "            'username' => " . var_export($user, true) . ",\n"
-                    . "            'password' => " . var_export($pass, true) . ",\n"
-                    . "        ],\n"
-                    . "    ],\n"
-                    . "];\n";
-
-                if (@file_put_contents($localConfigPath, $config) === false) {
-                    $errors[]   = 'Не удалось записать config/config.local.php — нет прав на запись.';
-                    $manualCode = $config;
-                } else {
-                    @chmod($localConfigPath, 0640);
-                    header('Location: install.php?step=3');
-                    exit;
-                }
-            }
+        if ($name === '' || $user === '') {
+            $errors[] = 'Укажите имя базы данных и пользователя.';
         } else {
+            try {
+                $probe = new PDO(
+                    sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $name),
+                    $user,
+                    $pass,
+                    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+
+                // Предупреждаем про кодировку заранее: с latin1 кириллица превратится в «?????»
+                $charset = $probe->query('SELECT @@character_set_database')->fetchColumn();
+                if (!str_starts_with((string) $charset, 'utf8')) {
+                    $errors[] = 'Кодировка базы — ' . $charset . '. Нужна utf8mb4, иначе кириллица сохранится '
+                        . 'неправильно. В phpMyAdmin: «Операции» → «Сравнение» → utf8mb4_unicode_ci.';
+                }
+            } catch (PDOException $e) {
+                $errors[] = 'Не удалось подключиться: ' . $e->getMessage();
+            }
+        }
+
+        if (!$errors) {
             $config = "<?php\n\nreturn [\n"
-                . "    'app' => ['url' => " . var_export(detect_base_url(), true) . ", 'debug' => false],\n"
-                . "    'db'  => ['driver' => 'sqlite'],\n"
+                . "    'app' => [\n"
+                . "        'url'   => " . var_export(detect_base_url(), true) . ",\n"
+                . "        'debug' => false,\n"
+                . "    ],\n"
+                . "    'db' => [\n"
+                . "        'host'     => " . var_export($host, true) . ",\n"
+                . "        'port'     => " . var_export($port, true) . ",\n"
+                . "        'database' => " . var_export($name, true) . ",\n"
+                . "        'username' => " . var_export($user, true) . ",\n"
+                . "        'password' => " . var_export($pass, true) . ",\n"
+                . "    ],\n"
                 . "];\n";
+
             if (@file_put_contents($localConfigPath, $config) === false) {
                 $errors[]   = 'Не удалось записать config/config.local.php — нет прав на запись.';
                 $manualCode = $config;
             } else {
+                @chmod($localConfigPath, 0640);
                 header('Location: install.php?step=3');
                 exit;
             }
@@ -143,9 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$installed) {
                     );
                 }
 
-                $schemaFile = APP_ROOT . '/database/schema.' . $db->driver() . '.sql';
-                $sql        = (string) file_get_contents($schemaFile);
-
+                $sql = (string) file_get_contents(APP_ROOT . '/database/schema.sql');
                 foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
                     if (str_starts_with($statement, '--') && !str_contains($statement, 'CREATE')) {
                         continue;
@@ -166,37 +171,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$installed) {
                     seed_demo_data();
                 }
 
-                $step   = 4;
-                $notice = 'Магазин установлен.';
+                $step = 4;
             } catch (Throwable $e) {
                 $errors[] = 'Ошибка установки: ' . $e->getMessage();
             }
         }
     }
-}
-
-/** Угадываем адрес сайта, чтобы подставить в конфиг. */
-function detect_base_url(): string
-{
-    $scheme = (($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https' : 'http';
-    $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    return $scheme . '://' . $host;
-}
-
-/** Проверки окружения для первого шага. */
-function requirements(): array
-{
-    return [
-        ['PHP 8.1 или новее', PHP_VERSION_ID >= 80100, 'Текущая версия: ' . PHP_VERSION],
-        ['Расширение pdo_mysql (для MySQL)', extension_loaded('pdo_mysql'), 'Нужно для работы с базой MySQL'],
-        ['Расширение pdo_sqlite', extension_loaded('pdo_sqlite'), 'Альтернатива MySQL — файловая база'],
-        ['Расширение mbstring', extension_loaded('mbstring'), 'Работа с кириллицей'],
-        ['Расширение curl', extension_loaded('curl'), 'Запросы к эквайрингу Сбербанка'],
-        ['Расширение gd', extension_loaded('gd'), 'Уменьшение загружаемых фотографий'],
-        ['Папка config доступна для записи', is_writable(APP_ROOT . '/config'), APP_ROOT . '/config'],
-        ['Папка storage доступна для записи', is_writable(APP_ROOT . '/storage'), APP_ROOT . '/storage'],
-        ['Папка public/uploads доступна для записи', is_writable(APP_ROOT . '/public/uploads'), APP_ROOT . '/public/uploads'],
-    ];
 }
 
 $token = Csrf::token();
@@ -229,7 +209,6 @@ $token = Csrf::token();
         .req__text { flex: 1; }
         .req__text small { display: block; color: var(--ink-400); font-size: 12px; }
         .code { background: #10301f; color: #cfe3d6; padding: 14px; border-radius: 8px; font-size: 12px; overflow-x: auto; white-space: pre; }
-        .driver-switch { display: grid; gap: 10px; margin-bottom: 16px; }
         .done-box { text-align: center; }
         .done-box span { font-size: 46px; }
     </style>
@@ -266,18 +245,16 @@ $token = Csrf::token();
         </div>
 
     <?php elseif ($step === 1): ?>
-        <?php $ready = true; ?>
         <div class="panel">
             <h2 class="panel__title">Проверка сервера</h2>
             <?php foreach (requirements() as [$label, $ok, $hint]): ?>
-                <?php $ready = $ready && ($ok || str_contains($label, 'pdo_')); ?>
                 <div class="req">
                     <span class="req__mark"><?= $ok ? '✅' : '⚠️' ?></span>
                     <span class="req__text"><?= e($label) ?><small><?= e($hint) ?></small></span>
                 </div>
             <?php endforeach; ?>
             <p class="muted small" style="margin-top:14px">
-                Красные пункты про папки решаются правами 775 на <code>storage</code>, <code>config</code>
+                Пункты про папки решаются правами 775 на <code>storage</code>, <code>config</code>
                 и <code>public/uploads</code> — их можно выставить в файловом менеджере хостинга.
             </p>
             <a class="btn btn--primary btn--block btn--lg" href="install.php?step=2">Продолжить</a>
@@ -287,36 +264,25 @@ $token = Csrf::token();
         <div class="panel">
             <h2 class="panel__title">Подключение к базе данных</h2>
             <p class="muted small">
-                Базу нужно заранее создать в phpMyAdmin (вкладка «Базы данных» → имя базы →
-                сравнение <code>utf8mb4_unicode_ci</code>). Таблицы установщик создаст сам.
+                Базу нужно заранее создать в phpMyAdmin: вкладка «Базы данных» → имя базы →
+                сравнение <code>utf8mb4_unicode_ci</code>. Таблицы установщик создаст сам.
             </p>
             <form method="post" action="install.php?step=2">
                 <input type="hidden" name="_token" value="<?= e($token) ?>">
                 <input type="hidden" name="action" value="database">
 
-                <div class="driver-switch">
-                    <label class="checkbox">
-                        <input type="radio" name="driver" value="mysql" checked>
-                        <span><strong>MySQL / MariaDB</strong> — обычный вариант для хостинга с phpMyAdmin</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="radio" name="driver" value="sqlite">
-                        <span><strong>SQLite</strong> — без сервера БД, данные в файле <code>storage/shop.sqlite</code></span>
-                    </label>
-                </div>
-
                 <div class="form-grid">
-                    <label class="field"><span>Сервер</span><input type="text" name="host" value="localhost"></label>
-                    <label class="field"><span>Порт</span><input type="text" name="port" value="3306"></label>
-                    <label class="field"><span>Имя базы данных</span><input type="text" name="database" placeholder="u12345_fermer"></label>
-                    <label class="field"><span>Пользователь</span><input type="text" name="username" placeholder="u12345_fermer"></label>
+                    <label class="field"><span>Сервер MySQL</span><input type="text" name="host" value="<?= e((string) ($_POST['host'] ?? 'localhost')) ?>"></label>
+                    <label class="field"><span>Порт</span><input type="text" name="port" value="<?= e((string) ($_POST['port'] ?? '3306')) ?>"></label>
+                    <label class="field"><span>Имя базы данных</span><input type="text" name="database" value="<?= e((string) ($_POST['database'] ?? '')) ?>" placeholder="u12345_fermer" required></label>
+                    <label class="field"><span>Пользователь</span><input type="text" name="username" value="<?= e((string) ($_POST['username'] ?? '')) ?>" placeholder="u12345_fermer" required></label>
                     <label class="field field--full"><span>Пароль пользователя БД</span><input type="password" name="password"></label>
                 </div>
 
                 <button class="btn btn--primary btn--block btn--lg" type="submit">Проверить и сохранить</button>
             </form>
 
-            <?php if (!empty($manualCode)): ?>
+            <?php if ($manualCode !== null): ?>
                 <div class="divider"></div>
                 <p class="small"><strong>Нет прав на запись?</strong> Создайте файл <code>config/config.local.php</code>
                     вручную через файловый менеджер и вставьте в него:</p>
@@ -329,11 +295,9 @@ $token = Csrf::token();
         <div class="panel">
             <h2 class="panel__title">Администратор магазина</h2>
             <p class="muted small">
-                База: <strong><?= e(Config::get('db.driver')) ?></strong><?php
-                    if (Config::get('db.driver') === 'mysql') {
-                        echo ', ' . e((string) Config::get('db.mysql.database'));
-                    }
-                ?>. Сейчас будут созданы таблицы и учётная запись для входа в админку.
+                База: <strong><?= e((string) Config::get('db.database')) ?></strong> на
+                <?= e((string) Config::get('db.host')) ?>. Сейчас будут созданы таблицы
+                и учётная запись для входа в админку.
             </p>
             <form method="post" action="install.php?step=3">
                 <input type="hidden" name="_token" value="<?= e($token) ?>">

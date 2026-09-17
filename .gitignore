@@ -1,10 +1,7 @@
 # Локальные настройки с реквизитами эквайринга
 /config/config.local.php
 
-# База данных и логи
-/storage/*.sqlite
-/storage/*.sqlite-wal
-/storage/*.sqlite-shm
+# Логи и кэш
 /storage/logs/*
 !/storage/logs/.gitkeep
 /storage/cache/*

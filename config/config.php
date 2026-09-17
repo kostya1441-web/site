@@ -1,7 +1,7 @@
 <?php
 /**
  * Базовая конфигурация «Ваш фермер».
- * Локальные значения переопределяются в config/config.local.php (не хранится в git).
+ * Доступы к базе и эквайрингу задаются в config/config.local.php (не хранится в git).
  */
 
 $config = [
@@ -14,18 +14,14 @@ $config = [
         'locale'   => 'ru_RU',
     ],
 
-    // driver: sqlite | mysql
+    // MySQL / MariaDB
     'db' => [
-        'driver'   => getenv('DB_DRIVER') ?: 'sqlite',
-        'sqlite'   => ['path' => dirname(__DIR__) . '/storage/shop.sqlite'],
-        'mysql'    => [
-            'host'     => getenv('DB_HOST') ?: '127.0.0.1',
-            'port'     => getenv('DB_PORT') ?: '3306',
-            'database' => getenv('DB_NAME') ?: 'vash_fermer',
-            'username' => getenv('DB_USER') ?: 'root',
-            'password' => getenv('DB_PASS') ?: '',
-            'charset'  => 'utf8mb4',
-        ],
+        'host'     => getenv('DB_HOST') ?: '127.0.0.1',
+        'port'     => getenv('DB_PORT') ?: '3306',
+        'database' => getenv('DB_NAME') ?: 'vash_fermer',
+        'username' => getenv('DB_USER') ?: 'root',
+        'password' => getenv('DB_PASS') ?: '',
+        'charset'  => 'utf8mb4',
     ],
 
     // Эквайринг Сбербанка (REST API)
@@ -54,9 +50,9 @@ $config = [
     ],
 
     'upload' => [
-        'dir'        => dirname(__DIR__) . '/public/uploads',
-        'max_size'   => 6 * 1024 * 1024,
-        'mime'       => ['image/jpeg', 'image/png', 'image/webp'],
+        'dir'      => dirname(__DIR__) . '/public/uploads',
+        'max_size' => 6 * 1024 * 1024,
+        'mime'     => ['image/jpeg', 'image/png', 'image/webp'],
     ],
 
     'security' => [

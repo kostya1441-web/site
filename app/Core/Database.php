@@ -6,39 +6,32 @@ use PDO;
 use PDOStatement;
 
 /**
- * Тонкая обёртка над PDO: одно соединение на процесс + короткие хелперы.
- * Поддерживает sqlite (разработка / небольшие магазины) и mysql (прод).
+ * Тонкая обёртка над PDO для MySQL / MariaDB:
+ * одно соединение на процесс плюс короткие хелперы.
  */
 class Database
 {
     private static ?Database $instance = null;
     private PDO $pdo;
-    private string $driver;
 
     private function __construct(array $config)
     {
-        $this->driver = $config['driver'];
+        $dsn = sprintf(
+            'mysql:host=%s;port=%s;dbname=%s;charset=%s',
+            $config['host'],
+            $config['port'],
+            $config['database'],
+            $config['charset'] ?? 'utf8mb4'
+        );
 
-        if ($this->driver === 'sqlite') {
-            $path = $config['sqlite']['path'];
-            $dir  = dirname($path);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0775, true);
-            }
-            $this->pdo = new PDO('sqlite:' . $path, null, null, [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
-            $this->pdo->exec('PRAGMA foreign_keys = ON');
-            $this->pdo->exec('PRAGMA journal_mode = WAL');
-        } else {
-            $c   = $config['mysql'];
-            $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=%s', $c['host'], $c['port'], $c['database'], $c['charset']);
-            $this->pdo = new PDO($dsn, $c['username'], $c['password'], [
+        try {
+            $this->pdo = new PDO($dsn, $config['username'], $config['password'], [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
+        } catch (\PDOException $e) {
+            throw new DatabaseUnavailable($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 
@@ -53,11 +46,6 @@ class Database
     public function pdo(): PDO
     {
         return $this->pdo;
-    }
-
-    public function driver(): string
-    {
-        return $this->driver;
     }
 
     public function run(string $sql, array $params = []): PDOStatement
@@ -124,5 +112,17 @@ class Database
             $this->pdo->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * Есть ли такая таблица — нужно установщику.
+     * Через information_schema, потому что SHOW TABLES LIKE не принимает плейсхолдеры.
+     */
+    public function tableExists(string $table): bool
+    {
+        return (int) $this->value(
+            'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?',
+            [$table]
+        ) > 0;
     }
 }

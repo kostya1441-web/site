@@ -1,17 +1,19 @@
 <?php
 
 /**
- * Установка магазина: создаёт таблицы, администратора и (по желанию) демо-каталог.
+ * Установка магазина из консоли: создаёт таблицы, администратора и (по желанию) демо-каталог.
+ * Доступы к MySQL берутся из config/config.local.php.
  *
  *   php bin/install.php --admin-password=СЕКРЕТ [--admin-login=admin] [--demo] [--fresh]
+ *
+ * На хостинге без консоли используйте веб-установщик: /install.php
  */
 
 require dirname(__DIR__) . '/app/bootstrap.php';
 
 use App\Core\Config;
 use App\Core\Database;
-use App\Models\Category;
-use App\Models\Product;
+use App\Core\DatabaseUnavailable;
 use App\Models\Setting;
 use App\Models\User;
 
@@ -32,29 +34,29 @@ if ($password === null || strlen($password) < 8) {
     exit(1);
 }
 
-$db     = Database::instance();
-$driver = $db->driver();
+try {
+    $db = Database::instance();
+} catch (DatabaseUnavailable $e) {
+    fwrite(STDERR, "Нет подключения к MySQL: " . $e->getMessage() . "\n");
+    fwrite(STDERR, "Проверьте доступы в config/config.local.php (за образец — config.local.example.php).\n");
+    exit(1);
+}
 
-echo "База данных: {$driver}\n";
+printf("База данных: %s@%s\n", Config::get('db.database'), Config::get('db.host'));
 
 if (isset($options['fresh'])) {
     echo "Удаляю существующие таблицы…\n";
-    if ($driver === 'mysql') {
-        $db->run('SET FOREIGN_KEY_CHECKS = 0');
-    }
+    $db->run('SET FOREIGN_KEY_CHECKS = 0');
     foreach (['payment_log', 'order_history', 'order_items', 'orders', 'products', 'categories', 'settings', 'users'] as $table) {
         $db->run('DROP TABLE IF EXISTS ' . $table);
     }
-    if ($driver === 'mysql') {
-        $db->run('SET FOREIGN_KEY_CHECKS = 1');
-    }
+    $db->run('SET FOREIGN_KEY_CHECKS = 1');
 }
 
 // ── Схема ──────────────────────────────────────────────────────────────────
-$schemaFile = APP_ROOT . '/database/schema.' . $driver . '.sql';
-$sql        = file_get_contents($schemaFile);
+$sql = (string) file_get_contents(APP_ROOT . '/database/schema.sql');
 
-foreach (array_filter(array_map('trim', explode(';', (string) $sql))) as $statement) {
+foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
     if (str_starts_with($statement, '--') && !str_contains($statement, 'CREATE')) {
         continue;
     }
@@ -63,8 +65,9 @@ foreach (array_filter(array_map('trim', explode(';', (string) $sql))) as $statem
 echo "Таблицы созданы.\n";
 
 // ── Администратор ──────────────────────────────────────────────────────────
-if (User::findByLogin($login)) {
-    User::updatePassword((int) User::findByLogin($login)['id'], $password);
+$existing = User::findByLogin($login);
+if ($existing) {
+    User::updatePassword((int) $existing['id'], $password);
     echo "Пароль администратора «{$login}» обновлён.\n";
 } else {
     User::create($login, $password, 'Администратор');
@@ -73,7 +76,7 @@ if (User::findByLogin($login)) {
 
 // ── Настройки по умолчанию ────────────────────────────────────────────────
 foreach (Setting::DEFAULTS as $key => $value) {
-    if ($db->value('SELECT COUNT(*) FROM settings WHERE `key` = ?', [$key]) == 0) {
+    if ((int) $db->value('SELECT COUNT(*) FROM settings WHERE `key` = ?', [$key]) === 0) {
         Setting::set($key, (string) $value);
     }
 }

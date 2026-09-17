@@ -8,6 +8,7 @@
 require dirname(__DIR__) . '/app/bootstrap.php';
 
 use App\Core\Config;
+use App\Core\DatabaseUnavailable;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
@@ -22,9 +23,17 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 
 $request = new Request();
 
-// Общие данные для всех шаблонов
-View::share('settings', Setting::all());
-View::share('cartCount', Cart::count());
+// Общие данные для всех шаблонов. Если базы ещё нет — показываем понятную
+// страницу со ссылкой на установщик, а не трассировку PDO.
+try {
+    View::share('settings', Setting::all());
+    View::share('cartCount', Cart::count());
+} catch (DatabaseUnavailable $e) {
+    error_log('Нет подключения к базе: ' . $e->getMessage());
+    Response::status(503);
+    require APP_ROOT . '/app/Views/pages/no-database.php';
+    exit;
+}
 View::share('flashes', Session::takeFlash());
 View::share('shopConfig', Config::get('shop'));
 

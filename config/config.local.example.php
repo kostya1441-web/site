@@ -1,6 +1,7 @@
 <?php
 /**
  * Скопируйте в config/config.local.php и заполните боевыми значениями.
+ * Этот файл создаётся автоматически при установке через /install.php.
  */
 return [
     'app' => [
@@ -8,13 +9,11 @@ return [
         'debug' => false,
     ],
     'db' => [
-        'driver' => 'mysql',
-        'mysql'  => [
-            'host'     => 'localhost',
-            'database' => 'vash_fermer',
-            'username' => 'vash_fermer',
-            'password' => 'ЗАМЕНИТЕ',
-        ],
+        'host'     => 'localhost',
+        'port'     => '3306',
+        'database' => 'vash_fermer',
+        'username' => 'vash_fermer',
+        'password' => 'ЗАМЕНИТЕ',
     ],
     'sber' => [
         'test_mode'      => false,
