@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap');
-:root{--bg:#0b0d0f;--surface:#111519;--surface2:#171c21;--line:#273038;--muted:#8e99a3;--text:#f4f6f7;--accent:#ff6a21;--accent2:#ff9a52;--max:1180px}
+:root{--bg:#0b0d0f;--surface:#111519;--surface2:#171c21;--line:#273038;--muted:#8e99a3;--text:#f4f6f7;--accent:#ff6a21;--accent2:#ff9a52;--brand:#7ac143;--max:1180px}
 html,body{margin:0!important;padding:0!important;width:100%!important;min-width:100%!important;background:var(--bg)!important;color:var(--text);overflow-x:hidden}
 body{font-family:Manrope,Arial,sans-serif}
 #site-root{width:100%!important;max-width:none!important;min-height:100vh;margin:0!important;padding:0!important;background:var(--bg);color:var(--text);font-family:Manrope,Arial,sans-serif;line-height:1.55}
@@ -23,7 +23,7 @@ body{font-family:Manrope,Arial,sans-serif}
 #site-root .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 #sr-header{position:sticky;top:0;z-index:50;background:rgba(11,13,15,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.07)}
 #sr-header .bar{width:min(var(--max),calc(100% - 48px));margin:auto;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-#sr-header .brand{display:flex;align-items:center;gap:12px;min-width:0}.mark{flex:none!important;width:40px!important;height:40px!important;border-radius:12px!important;background:var(--accent)!important;color:#190b04!important;border:0!important;font-family:Oswald!important;font-size:18px!important;display:flex;align-items:center;justify-content:center;font-weight:700}
+#sr-header .brand{display:flex;align-items:center;gap:12px;min-width:0}.mark{flex:none!important;display:flex;align-items:center;justify-content:center;background:none!important;border:0!important;padding:0!important}.mark svg{width:44px;height:44px;display:block}.mark img.logo-img{height:44px;width:auto;max-width:210px;object-fit:contain;display:block}#sr-header .brand-name.wordmark{font-family:Manrope,Arial,sans-serif;letter-spacing:.01em}
 #sr-header .brand-name{font-size:17px;font-weight:800;white-space:nowrap}.brand-tag{font-size:11px!important;color:var(--muted)!important;margin-top:1px}
 #sr-header .contacts{display:flex;align-items:center;gap:22px;font-size:12px;color:var(--muted)}#sr-header .contacts b{color:var(--text)}
 #sr-nav{border:0;background:var(--surface)}#sr-nav .wrap{display:flex;overflow:auto;scrollbar-width:none}#sr-nav .wrap::-webkit-scrollbar{display:none}
@@ -50,7 +50,7 @@ body{font-family:Manrope,Arial,sans-serif}
 #sr-catalog .chip.active{background:var(--accent);border-color:transparent;color:#180b04}#sr-catalog .chip.active .cnt{background:rgba(0,0,0,.18);color:#180b04}
 #sr-catalog .cat-desc{margin:0 0 26px;color:var(--muted);font-size:13.5px;max-width:760px;min-height:20px}
 #sr-catalog .item{position:relative;overflow:hidden;background:linear-gradient(180deg,#151a1f,#101417);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;transition:.22s;min-width:0}#sr-catalog .item:hover{transform:translateY(-4px);border-color:#48535c;box-shadow:0 18px 40px rgba(0,0,0,.22)}
-#sr-catalog .photo{aspect-ratio:16/10;background:#0b0e10;overflow:hidden;position:relative}#sr-catalog .photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.45))}#sr-catalog .photo img{width:100%;height:100%;object-fit:cover;display:block}#sr-catalog .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#66717a;font-size:11px;gap:8px}
+#sr-catalog .photo{aspect-ratio:16/10;background:#0b0e10;overflow:hidden;position:relative}#sr-catalog .photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.45))}#sr-catalog .photo img{width:100%;height:100%;object-fit:cover;display:block}#sr-catalog .ph-count{position:absolute;right:10px;top:10px;z-index:2;padding:5px 9px;border-radius:999px;background:rgba(11,13,15,.72);border:1px solid #39434b;color:#d5dce1;font:700 10px Manrope}#sr-catalog .ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#66717a;font-size:11px;gap:8px}
 #sr-catalog .body{padding:21px;display:flex;flex-direction:column;gap:13px;flex:1}
 .top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.top .code{padding:5px 8px;border-radius:6px;background:#0b0e10;color:#77838d;font:600 10px/1 Manrope}
 .top .cat-tag{color:#6f7a83;font:800 10px Manrope;text-transform:uppercase;letter-spacing:.09em}
@@ -60,10 +60,10 @@ body{font-family:Manrope,Arial,sans-serif}
 #sr-about{padding:0 0 92px}#sr-about .grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:start}#sr-about .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}#sr-about .stat{background:#111519;padding:24px}.stat .v{font-family:Oswald!important;font-size:29px!important;color:#ff9a52!important}.stat .l{margin-top:7px;color:var(--muted);font-size:11.5px}.about-copy h2,#sr-about h2{font-size:40px;margin-bottom:17px}#sr-about p{margin:0;color:#aab3ba;font-size:14px;line-height:1.85;white-space:pre-line}
 #sr-trust{padding:0 0 92px;background:none;border:0}#sr-trust .row{border:1px solid var(--line);border-radius:16px;background:linear-gradient(100deg,#171c21,#101417);padding:27px 30px;display:flex;align-items:center;gap:24px}#sr-trust p{flex:1}
 #sr-contact{padding:0 0 92px}#sr-contact .contact-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#151a1f,#0f1316);padding:42px;display:grid;grid-template-columns:1fr 1fr;gap:55px;position:relative;overflow:hidden}#sr-contact .contact-panel:after{content:"";position:absolute;width:320px;height:320px;border-radius:50%;right:-150px;bottom:-180px;border:1px solid rgba(255,106,33,.16);pointer-events:none}#sr-contact h2{font-size:42px;margin-bottom:13px}#sr-contact .lead{color:var(--muted);font-size:14px;max-width:470px;margin:0 0 25px}.contact-list{display:grid;gap:14px}.contact-row{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}.contact-row:last-child{border-bottom:0}.contact-label{width:80px;color:#6f7a83;font-size:11px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}.contact-value{color:#f2f4f5;font-size:13px;font-weight:600;line-height:1.55}.contact-value a:hover{color:var(--accent)}.contact-side{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:12px}.contact-side .mini{color:var(--accent);font:700 11px Manrope;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}.contact-side strong{font:600 34px/1.05 Oswald;text-transform:uppercase}.contact-side p{color:var(--muted);font-size:13px;line-height:1.7;max-width:370px;margin:13px 0 22px}
-#sr-footer{border-top:1px solid var(--line);background:#0a0c0e;padding:42px 0 20px}#sr-footer .grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px;padding-bottom:30px}#sr-footer h4{font:800 11px Manrope;text-transform:uppercase;letter-spacing:.12em;color:#727d85;margin:0 0 13px}#sr-footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}#sr-footer li,#sr-footer li a{color:#9aa4ab;font-size:12.5px}#sr-footer li a:hover{color:var(--accent)}#sr-footer .req{color:#68737b;font-size:11px;line-height:1.7;margin-top:10px}.bottom{border-top:1px solid var(--line);padding-top:17px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#606b73;font-size:11px}.admin-link{border:1px solid #2a333a!important;background:none!important;color:#737e86!important;border-radius:7px!important;padding:6px 10px!important}.admin-link:hover{border-color:var(--accent)!important;color:var(--accent)!important}
+#sr-footer{border-top:1px solid var(--line);background:#0a0c0e;padding:42px 0 20px}#sr-footer .grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px;padding-bottom:30px}#sr-footer .foot-brandrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}#sr-footer .foot-brandrow svg{width:34px;height:34px;flex:none}#sr-footer .foot-brandrow img{height:34px;width:auto;max-width:180px;object-fit:contain}#sr-footer h4{font:800 11px Manrope;text-transform:uppercase;letter-spacing:.12em;color:#727d85;margin:0 0 13px}#sr-footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}#sr-footer li,#sr-footer li a{color:#9aa4ab;font-size:12.5px}#sr-footer li a:hover{color:var(--accent)}#sr-footer .req{color:#68737b;font-size:11px;line-height:1.7;margin-top:10px}.bottom{border-top:1px solid var(--line);padding-top:17px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#606b73;font-size:11px}.admin-link{border:1px solid #2a333a!important;background:none!important;color:#737e86!important;border-radius:7px!important;padding:6px 10px!important}.admin-link:hover{border-color:var(--accent)!important;color:var(--accent)!important}
 .sr-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:150;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:35px 15px}.sr-modal-bg.show{display:flex}.sr-modal{background:#151a1f;border:1px solid #39434b;border-radius:16px;width:min(460px,100%);padding:26px;margin:auto;position:relative}.sr-modal h3{font:600 21px Oswald;margin:0 0 16px;text-transform:uppercase}.sr-field{margin-bottom:14px}.sr-field label{display:block;color:#9aa5ad;font-size:11px;font-weight:700;margin-bottom:6px}.sr-field input,.sr-field textarea,.sr-field select{width:100%;background:#0d1114;border:1px solid #303a42;color:#fff;border-radius:8px;padding:11px 12px;font:13px Manrope}.sr-field textarea{min-height:80px;resize:vertical}.sr-field input:focus,.sr-field textarea:focus,.sr-field select:focus{outline:none;border-color:var(--accent)}.sr-close{position:absolute;top:14px;right:16px;background:none;border:0;color:#a0a9b0;font-size:22px}.sr-modal-actions{display:flex;gap:10px;margin-top:18px}
 #sr-prod-modal{width:min(620px,100%)}#sr-prod-modal h3{margin:0 0 12px;font-size:25px;text-transform:none}
-.sr-prod-photo{width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#0b0e10;margin:6px 0 16px;display:flex;align-items:center;justify-content:center;color:#66717a;font-size:11px}
+.sr-prod-photo{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#0b0e10;margin:6px 0 12px;display:flex;align-items:center;justify-content:center;color:#66717a;font-size:11px}.sr-prod-nav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(11,13,15,.62);border:1px solid #39434b;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;padding:0;z-index:2}.sr-prod-nav:hover{border-color:var(--accent);color:var(--accent)}.sr-prod-nav.prev{left:10px}.sr-prod-nav.next{right:10px}.sr-prod-counter{position:absolute;right:12px;bottom:12px;z-index:2;padding:4px 9px;border-radius:999px;background:rgba(11,13,15,.72);border:1px solid #39434b;color:#d5dce1;font:700 10px Manrope}.sr-prod-thumbs{display:flex;gap:8px;overflow:auto;scrollbar-width:none;margin:0 0 16px}.sr-prod-thumbs::-webkit-scrollbar{display:none}.sr-prod-thumbs button{flex:none;width:74px;height:54px;padding:0;border:1px solid #303a42;border-radius:8px;overflow:hidden;background:#0d1114}.sr-prod-thumbs button.active{border-color:var(--accent)}.sr-prod-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .sr-prod-photo img{width:100%;height:100%;object-fit:cover}
 #sr-prod-specs{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
 #sr-prod-specs li{position:relative;padding-left:16px;color:#9ca6ad;font-size:13px}#sr-prod-specs li:before{content:"";position:absolute;left:0;top:9px;width:7px;height:2px;border-radius:2px;background:var(--accent)}
@@ -86,7 +86,7 @@ body{font-family:Manrope,Arial,sans-serif}
 .sr-photo-tools label:hover,.sr-photo-tools button:hover{border-color:var(--accent);color:var(--accent)}
 .sr-photo-tools label input{display:none}
 .sr-photo-tools button{padding:9px 11px;border:1px solid #39434b;background:none;color:#9aa5ad;border-radius:8px!important;font-size:11px;font-weight:700}
-.sr-photo-name{font-size:10px!important;color:#66717a;margin:7px 0 10px}
+.sr-gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.sr-galitem{position:relative;aspect-ratio:4/3;border:1px solid #29333a;border-radius:8px;overflow:hidden;background:#0d1114}.sr-galitem.main{border-color:var(--accent)}.sr-galitem img{width:100%;height:100%;object-fit:cover;display:block}.sr-galitem button{position:absolute;top:5px;width:23px;height:23px;padding:0;border-radius:6px;background:rgba(11,13,15,.8);border:1px solid #39434b;color:#cfd6db;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center}.sr-galitem .del{right:5px}.sr-galitem .del:hover{border-color:#e0554d;color:#e0554d}.sr-galitem .star{left:5px}.sr-galitem .star:hover{border-color:var(--accent);color:var(--accent)}.sr-galitem .mainbadge{position:absolute;left:5px;bottom:5px;background:var(--accent);color:#180b04;font:800 9px Manrope;padding:2px 6px;border-radius:5px}.sr-gal-empty{grid-column:1/-1;border:1px dashed #333d45;border-radius:8px;padding:18px;text-align:center;color:#66717a;font-size:11px}.sr-urlrow{display:flex;gap:8px}.sr-urlrow input{flex:1}.sr-urlrow button{flex:none;width:auto;padding:0 16px}.sr-logoprev{border:1px solid #29333a;border-radius:10px;background:#0d1114;padding:14px;display:flex;align-items:center;justify-content:center;min-height:86px;margin-bottom:10px}.sr-logoprev svg{width:56px;height:56px}.sr-logoprev img{max-height:58px;max-width:100%;object-fit:contain}.sr-photo-name{font-size:10px!important;color:#66717a;margin:7px 0 10px}
 #sr-admin-foot{padding:14px 20px;border-top:1px solid #29333a;display:flex;gap:10px}
 #sr-toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120%);background:#171d21;border:1px solid var(--accent);color:#fff;padding:12px 18px;border-radius:10px;font-size:12px;z-index:200;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.35)}#sr-toast.show{transform:translate(-50%,0)}
 #sr-loading{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#8d98a0;font-size:13px}#sr-loading svg{width:54px;height:54px;color:var(--accent)}
@@ -107,10 +107,10 @@ body{font-family:Manrope,Arial,sans-serif}
     <header id="sr-header">
       <div class="bar">
         <div class="brand">
-          <div class="mark" id="sr-mark">А</div>
-          <div>
-            <div class="brand-name" id="sr-brandname">ООО «Адамко Сибирь»</div>
-            <div class="brand-tag" id="sr-tagline">Горное и строительное оборудование</div>
+          <div class="mark" id="sr-mark"></div>
+          <div id="sr-brandtext">
+            <div class="brand-name wordmark" id="sr-brandname">АДАМКО Сибирь</div>
+            <div class="brand-tag" id="sr-tagline">новый вектор в горнодобывающем оборудовании</div>
           </div>
         </div>
         <div class="contacts">
@@ -184,7 +184,7 @@ body{font-family:Manrope,Arial,sans-serif}
     <footer id="sr-footer"><div class="wrap">
       <div class="grid">
         <div>
-          <div class="brand-name" style="font-size:17px; margin-bottom:8px;" id="sr-foot-brand">ООО «Адамко Сибирь»</div>
+          <div class="foot-brandrow"><span id="sr-foot-mark"></span><span class="brand-name" style="font-size:17px;" id="sr-foot-brand">ООО «Адамко Сибирь»</span></div>
           <p style="font-size:13px; color:var(--muted); max-width:250px;">Оптовая торговля горным и строительным оборудованием в Новокузнецке.</p>
           <p class="req" id="sr-foot-requisites">ИНН 4217199759 · ОГРН 1204200012389</p>
         </div>
@@ -222,6 +222,7 @@ body{font-family:Manrope,Arial,sans-serif}
     <div class="sr-modal" id="sr-prod-modal">
       <button class="sr-close" id="sr-prod-close">×</button>
       <div class="sr-prod-photo" id="sr-prod-photo"></div>
+      <div class="sr-prod-thumbs" id="sr-prod-thumbs"></div>
       <div class="top" style="margin-bottom:10px;"><span class="code" id="sr-prod-code"></span><span class="cat-tag" id="sr-prod-cat"></span></div>
       <h3 id="sr-prod-title"></h3>
       <ul id="sr-prod-specs"></ul>
@@ -248,7 +249,8 @@ body{font-family:Manrope,Arial,sans-serif}
   var CKEY = "site-content";
 
   var DEFAULT = {
-    brandName:"ООО «Адамко Сибирь»", tagline:"Горное и строительное оборудование",
+    brandName:"АДАМКО Сибирь", tagline:"новый вектор в горнодобывающем оборудовании",
+    logo:"", logoShowText:false,
     phone:"+7 (000) 000-00-00", email:"mail@adamko-sib.ru", city:"г. Новокузнецк, ул. Орджоникидзе, д. 35, офис 1209",
     badge:"Официальный партнёр JA Engineering Works (ЮАР)",
     h1a:"Горное и строительное", h1b:"оборудование",
@@ -271,24 +273,24 @@ body{font-family:Manrope,Arial,sans-serif}
       {id:"cat-6", code:"К-06", name:"Запасные части и комплектующие", desc:"Узлы, агрегаты и расходные материалы для поставленной техники.", image:""}
     ],
     products:[
-      {id:"p-101", catId:"cat-1", code:"П-101", name:"Проходческий комбайн избирательного действия", specs:"Сечение выработки: до 30 м²\nМощность привода: 132 кВт\nПрочность породы: до 100 МПа", text:"Комбайн для проведения горизонтальных и наклонных выработок по породам средней крепости. Поставляется с системой орошения и пылеподавления.", image:""},
-      {id:"p-102", catId:"cat-1", code:"П-102", name:"Тоннелепроходческий комплекс", specs:"Диаметр проходки: 3–6 м\nГидравлическая система подачи\nСистема пылеподавления", text:"Комплекс для проходки тоннелей и наклонных стволов. Конфигурация подбирается под проект заказчика.", image:""},
-      {id:"p-103", catId:"cat-1", code:"П-103", name:"Оборудование для крепления выработок", specs:"Анкероустановщики\nКрепеустановочные манипуляторы\nАнкерная и металлическая крепь", text:"Оборудование и материалы для возведения анкерной и рамной крепи.", image:""},
-      {id:"p-201", catId:"cat-2", code:"ПДМ-6", name:"Погрузочно-доставочная машина дизельная 6 т", specs:"Грузоподъёмность: 6 т\nОбъём ковша: 3 м³\nДвигатель: дизельный, с нейтрализатором", text:"ПДМ для подземных работ: погрузка и доставка горной массы в выработках среднего сечения.", image:""},
-      {id:"p-202", catId:"cat-2", code:"АС-20", name:"Подземный автосамосвал 20 т", specs:"Грузоподъёмность: 20 т\nПривод: полный, 4х4\nСистема пожаротушения", text:"Шарнирно-сочленённый самосвал для транспортировки руды и породы по подземным выработкам.", image:""},
-      {id:"p-203", catId:"cat-2", code:"ПНЛ-1", name:"Погрузочная машина с нагребающими лапами", specs:"Производительность: до 2 м³/мин\nПривод: пневматический\nДля выработок малого сечения", text:"Надёжная машина для погрузки горной массы в стеснённых условиях.", image:""},
-      {id:"p-301", catId:"cat-3", code:"БУ-32", name:"Буровая установка самоходная", specs:"Глубина бурения: до 32 м\nДиаметр шпура: 43–102 мм\nГидравлический перфоратор", text:"Самоходная установка для бурения шпуров и скважин при проходке и очистной выемке.", image:""},
-      {id:"p-302", catId:"cat-3", code:"ПП-60", name:"Перфоратор пневматический", specs:"Энергия удара: 60 Дж\nЧастота ударов: 2100 уд/мин\nДавление воздуха: 0,5 МПа", text:"Ручной перфоратор для бурения шпуров по крепким породам.", image:""},
-      {id:"p-303", catId:"cat-3", code:"БИ-01", name:"Буровой инструмент", specs:"Буровые штанги и коронки\nМуфты и переходники\nПод все распространённые типы перфораторов", text:"Расходный буровой инструмент со склада и под заказ.", image:""},
-      {id:"p-401", catId:"cat-4", code:"ЭК-21", name:"Экскаватор гусеничный", specs:"Эксплуатационная масса: 21 т\nОбъём ковша: 1,2 м³\nГлубина копания: 6,5 м", text:"Универсальный гусеничный экскаватор для вскрышных и строительных работ.", image:""},
-      {id:"p-402", catId:"cat-4", code:"БУЛ-18", name:"Бульдозер", specs:"Мощность: 180 л.с.\nОтвал: 3,4 м\nГидромеханическая трансмиссия", text:"Бульдозер для планировочных работ и формирования отвалов.", image:""},
-      {id:"p-403", catId:"cat-4", code:"КС-32", name:"Карьерный самосвал", specs:"Грузоподъёмность: 32 т\nОбъём кузова: 18 м³\nУсиленная рама и подвеска", text:"Самосвал для перевозки вскрыши и полезного ископаемого на карьерах.", image:""},
-      {id:"p-501", catId:"cat-5", code:"КВ-10", name:"Компрессор винтовой", specs:"Производительность: 5–12 м³/мин\nДавление: до 1,0 МПа\nДизельный или электрический привод", text:"Источник сжатого воздуха для пневмоинструмента и буровой техники.", image:""},
-      {id:"p-502", catId:"cat-5", code:"ГМ-30", name:"Гидравлический молот", specs:"Энергия удара: 3000 Дж\nДля носителей 18–26 т\nКомплект рабочего инструмента", text:"Навесной гидромолот для разрушения негабаритов и скальных пород.", image:""},
-      {id:"p-503", catId:"cat-5", code:"ВО-01", name:"Вентиляционные и осветительные системы", specs:"Вентиляторы местного проветривания\nШахтные светильники\nВоздуховоды и рукава", text:"Оборудование для проветривания и освещения подземных выработок.", image:""},
-      {id:"p-601", catId:"cat-6", code:"ЗЧ-01", name:"Узлы и агрегаты", specs:"Гидронасосы и гидромоторы\nРедукторы и мосты\nЭлементы ходовой части", text:"Оригинальные и аналоговые узлы для горной и строительной техники.", image:""},
-      {id:"p-602", catId:"cat-6", code:"ЗЧ-02", name:"Расходные материалы", specs:"Фильтры и РТИ\nМасла и смазки\nЗубья и коронки ковшей", text:"Расходники для регулярного обслуживания парка техники.", image:""},
-      {id:"p-603", catId:"cat-6", code:"ЗЧ-03", name:"Сервисные комплекты", specs:"Комплекты ТО\nРемкомплекты гидроцилиндров\nПоставка под заказ", text:"Готовые комплекты для планового и аварийного ремонта.", image:""}
+      {id:"p-101", catId:"cat-1", code:"П-101", name:"Проходческий комбайн избирательного действия", specs:"Сечение выработки: до 30 м²\nМощность привода: 132 кВт\nПрочность породы: до 100 МПа", text:"Комбайн для проведения горизонтальных и наклонных выработок по породам средней крепости. Поставляется с системой орошения и пылеподавления.", images:[]},
+      {id:"p-102", catId:"cat-1", code:"П-102", name:"Тоннелепроходческий комплекс", specs:"Диаметр проходки: 3–6 м\nГидравлическая система подачи\nСистема пылеподавления", text:"Комплекс для проходки тоннелей и наклонных стволов. Конфигурация подбирается под проект заказчика.", images:[]},
+      {id:"p-103", catId:"cat-1", code:"П-103", name:"Оборудование для крепления выработок", specs:"Анкероустановщики\nКрепеустановочные манипуляторы\nАнкерная и металлическая крепь", text:"Оборудование и материалы для возведения анкерной и рамной крепи.", images:[]},
+      {id:"p-201", catId:"cat-2", code:"ПДМ-6", name:"Погрузочно-доставочная машина дизельная 6 т", specs:"Грузоподъёмность: 6 т\nОбъём ковша: 3 м³\nДвигатель: дизельный, с нейтрализатором", text:"ПДМ для подземных работ: погрузка и доставка горной массы в выработках среднего сечения.", images:[]},
+      {id:"p-202", catId:"cat-2", code:"АС-20", name:"Подземный автосамосвал 20 т", specs:"Грузоподъёмность: 20 т\nПривод: полный, 4х4\nСистема пожаротушения", text:"Шарнирно-сочленённый самосвал для транспортировки руды и породы по подземным выработкам.", images:[]},
+      {id:"p-203", catId:"cat-2", code:"ПНЛ-1", name:"Погрузочная машина с нагребающими лапами", specs:"Производительность: до 2 м³/мин\nПривод: пневматический\nДля выработок малого сечения", text:"Надёжная машина для погрузки горной массы в стеснённых условиях.", images:[]},
+      {id:"p-301", catId:"cat-3", code:"БУ-32", name:"Буровая установка самоходная", specs:"Глубина бурения: до 32 м\nДиаметр шпура: 43–102 мм\nГидравлический перфоратор", text:"Самоходная установка для бурения шпуров и скважин при проходке и очистной выемке.", images:[]},
+      {id:"p-302", catId:"cat-3", code:"ПП-60", name:"Перфоратор пневматический", specs:"Энергия удара: 60 Дж\nЧастота ударов: 2100 уд/мин\nДавление воздуха: 0,5 МПа", text:"Ручной перфоратор для бурения шпуров по крепким породам.", images:[]},
+      {id:"p-303", catId:"cat-3", code:"БИ-01", name:"Буровой инструмент", specs:"Буровые штанги и коронки\nМуфты и переходники\nПод все распространённые типы перфораторов", text:"Расходный буровой инструмент со склада и под заказ.", images:[]},
+      {id:"p-401", catId:"cat-4", code:"ЭК-21", name:"Экскаватор гусеничный", specs:"Эксплуатационная масса: 21 т\nОбъём ковша: 1,2 м³\nГлубина копания: 6,5 м", text:"Универсальный гусеничный экскаватор для вскрышных и строительных работ.", images:[]},
+      {id:"p-402", catId:"cat-4", code:"БУЛ-18", name:"Бульдозер", specs:"Мощность: 180 л.с.\nОтвал: 3,4 м\nГидромеханическая трансмиссия", text:"Бульдозер для планировочных работ и формирования отвалов.", images:[]},
+      {id:"p-403", catId:"cat-4", code:"КС-32", name:"Карьерный самосвал", specs:"Грузоподъёмность: 32 т\nОбъём кузова: 18 м³\nУсиленная рама и подвеска", text:"Самосвал для перевозки вскрыши и полезного ископаемого на карьерах.", images:[]},
+      {id:"p-501", catId:"cat-5", code:"КВ-10", name:"Компрессор винтовой", specs:"Производительность: 5–12 м³/мин\nДавление: до 1,0 МПа\nДизельный или электрический привод", text:"Источник сжатого воздуха для пневмоинструмента и буровой техники.", images:[]},
+      {id:"p-502", catId:"cat-5", code:"ГМ-30", name:"Гидравлический молот", specs:"Энергия удара: 3000 Дж\nДля носителей 18–26 т\nКомплект рабочего инструмента", text:"Навесной гидромолот для разрушения негабаритов и скальных пород.", images:[]},
+      {id:"p-503", catId:"cat-5", code:"ВО-01", name:"Вентиляционные и осветительные системы", specs:"Вентиляторы местного проветривания\nШахтные светильники\nВоздуховоды и рукава", text:"Оборудование для проветривания и освещения подземных выработок.", images:[]},
+      {id:"p-601", catId:"cat-6", code:"ЗЧ-01", name:"Узлы и агрегаты", specs:"Гидронасосы и гидромоторы\nРедукторы и мосты\nЭлементы ходовой части", text:"Оригинальные и аналоговые узлы для горной и строительной техники.", images:[]},
+      {id:"p-602", catId:"cat-6", code:"ЗЧ-02", name:"Расходные материалы", specs:"Фильтры и РТИ\nМасла и смазки\nЗубья и коронки ковшей", text:"Расходники для регулярного обслуживания парка техники.", images:[]},
+      {id:"p-603", catId:"cat-6", code:"ЗЧ-03", name:"Сервисные комплекты", specs:"Комплекты ТО\nРемкомплекты гидроцилиндров\nПоставка под заказ", text:"Готовые комплекты для планового и аварийного ремонта.", images:[]}
     ],
     features:[
       {title:"Оптовые поставки", text:"Работаем напрямую с производителями и поставляем горное и строительное оборудование оптовыми партиями."},
@@ -314,6 +316,7 @@ body{font-family:Manrope,Arial,sans-serif}
   var content = null;
   var adminUnlocked = false;
   var activeCat = "all";
+  var MAX_PHOTOS = 12;
   var LSKEY = "adamko-sibir-site-content";
   var hasCloud = false;
   try{ hasCloud = !!(window.storage && typeof window.storage.get === "function"); }catch(e){ hasCloud = false; }
@@ -321,22 +324,51 @@ body{font-family:Manrope,Arial,sans-serif}
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function lines(s){ return String(s==null?"":s).split("\n").map(function(x){return x.trim();}).filter(Boolean); }
   function uid(prefix){ return prefix + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-  function markLetter(name){
-    var words = String(name||"").replace(/[«»"'\u2019]/g," ").split(/\s+/).filter(Boolean);
-    var skip = {"ООО":1,"ОАО":1,"ЗАО":1,"ПАО":1,"АО":1,"ИП":1,"ТД":1,"НПО":1};
-    for(var i=0;i<words.length;i++){
-      var w = words[i];
-      if(skip[w.toUpperCase()]) continue;
-      var ch = w.replace(/[^А-Яа-яA-Za-z]/g,"")[0];
-      if(ch) return ch.toUpperCase();
-    }
-    return "?";
-  }
   function toast(msg){
     var t = document.getElementById("sr-toast");
     t.textContent = msg; t.classList.add("show");
     clearTimeout(t._h);
     t._h = setTimeout(function(){ t.classList.remove("show"); }, 2600);
+  }
+
+  /* ---------- фирменный знак ---------- */
+  function emblemSvg(uid_){
+    var clip = "sr-globe-" + (uid_ || "1");
+    return '<svg viewBox="0 0 100 100" role="img" aria-label="Знак «Адамко Сибирь»">' +
+      /* зелёный вектор-стрелка */
+      '<path d="M5 60 C12 84 40 92 64 80 C70 77 74 72 76.5 67" fill="none" stroke="var(--brand)" stroke-width="9" stroke-linecap="round"/>' +
+      '<path d="M85.4 49.1 L85.4 71.5 L67.6 62.5 Z" fill="var(--brand)"/>' +
+      /* капля-указатель */
+      '<path d="M64.8 54.2 L22 72 L33.8 27.1 A23 23 0 1 1 64.8 54.2 Z" fill="var(--brand)"/>' +
+      /* глобус */
+      '<defs><clipPath id="'+clip+'"><circle cx="32" cy="35" r="18.5"/></clipPath></defs>' +
+      '<circle cx="32" cy="35" r="18.5" fill="#f2f5f7"/>' +
+      '<g clip-path="url(#'+clip+')" fill="#7f8b95">' +
+        '<path d="M32 29 q7 2 5 8 q-3 8 -8 11 q-3 -7 -1 -11 q1 -6 4 -8 z"/>' +
+        '<path d="M21 21 q10 -3 15 3 q-5 4 -11 4 q-6 0 -4 -7 z"/>' +
+        '<path d="M17 39 q5 2 4 7 q-6 -1 -6 -5 z"/>' +
+        '<path d="M41 40 q4 1 4 5 q-4 1 -5 -3 z"/>' +
+      '</g>' +
+      '<g fill="none" stroke="#c6ced4" stroke-width="1.1">' +
+        '<circle cx="32" cy="35" r="18.5"/>' +
+        '<ellipse cx="32" cy="35" rx="8" ry="18.5"/>' +
+        '<path d="M13 29h38M12 42h40" clip-path="url(#'+clip+')"/>' +
+      '</g>' +
+    '</svg>';
+  }
+  function renderBrand(){
+    var mark = document.getElementById("sr-mark");
+    var foot = document.getElementById("sr-foot-mark");
+    var text = document.getElementById("sr-brandtext");
+    if(content.logo){
+      mark.innerHTML = '<img class="logo-img" src="'+esc(content.logo)+'" alt="'+esc(content.brandName)+'">';
+      foot.innerHTML = '<img src="'+esc(content.logo)+'" alt="">';
+      text.style.display = content.logoShowText ? "" : "none";
+    } else {
+      mark.innerHTML = emblemSvg("h");
+      foot.innerHTML = emblemSvg("f");
+      text.style.display = "";
+    }
   }
 
   /* ---------- анимированные шестерёнки ---------- */
@@ -407,7 +439,7 @@ body{font-family:Manrope,Arial,sans-serif}
         var id = "cat-old-" + (i+1);
         cats.push({id:id, code:old.code||"", name:old.title||"Категория", desc:"", image:old.image||""});
         lines(old.items).forEach(function(line, j){
-          prods.push({id:"p-old-"+(i+1)+"-"+(j+1), catId:id, code:"", name:line, specs:"", text:"", image:j===0 ? (old.image||"") : ""});
+          prods.push({id:"p-old-"+(i+1)+"-"+(j+1), catId:id, code:"", name:line, specs:"", text:"", images:(j===0 && old.image) ? [old.image] : []});
         });
       });
       if(cats.length){ c.categories = cats; c.products = prods; }
@@ -430,7 +462,9 @@ body{font-family:Manrope,Arial,sans-serif}
       if(p.code == null) p.code = "";
       if(p.specs == null) p.specs = "";
       if(p.text == null) p.text = "";
-      if(p.image == null) p.image = "";
+      if(!Array.isArray(p.images)) p.images = p.image ? [p.image] : [];
+      p.images = p.images.filter(function(src){ return typeof src === "string" && src; });
+      delete p.image;
     });
     return c;
   }
@@ -449,7 +483,7 @@ body{font-family:Manrope,Arial,sans-serif}
   /* ---------- рендер сайта ---------- */
   function render(){
     document.getElementById("sr-brandname").textContent = content.brandName;
-    document.getElementById("sr-mark").textContent = markLetter(content.brandName);
+    renderBrand();
     document.getElementById("sr-tagline").textContent = content.tagline;
     document.getElementById("sr-phone").textContent = content.phone;
     document.getElementById("sr-email").textContent = content.email;
@@ -547,8 +581,10 @@ body{font-family:Manrope,Arial,sans-serif}
       var cat = catById(p.catId);
       var el = document.createElement("article"); el.className = "item";
       var specs = lines(p.specs).slice(0,3).map(function(x){ return "<li>"+esc(x)+"</li>"; }).join("");
-      var photo = p.image ?
-        '<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy">' :
+      var imgs = p.images || [];
+      var photo = imgs.length ?
+        '<img src="'+esc(imgs[0])+'" alt="'+esc(p.name)+'" loading="lazy">' +
+          (imgs.length > 1 ? '<span class="ph-count">'+imgs.length+' фото</span>' : '') :
         '<div class="ph-empty">'+gaugeSvg(i+1)+'<span>Фото не добавлено</span></div>';
       el.innerHTML = '<div class="photo">'+photo+'</div>' +
         '<div class="body"><div class="top">' +
@@ -563,13 +599,39 @@ body{font-family:Manrope,Arial,sans-serif}
     });
   }
 
+  var galProd = null, galIndex = 0;
+  function paintGallery(){
+    var photo = document.getElementById("sr-prod-photo");
+    var thumbs = document.getElementById("sr-prod-thumbs");
+    var imgs = galProd ? galProd.images : [];
+    if(!imgs.length){
+      photo.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;color:#66717a;"><svg viewBox="0 0 64 64" style="width:54px;height:54px;color:#e35f1e"><g class="gear">'+gearMarkup({cx:32,cy:32,rOut:28,rIn:21,teeth:10,spokes:4,sw:3,fill:"none",stroke:"currentColor",accent:"currentColor"})+'</g></svg><span>Фото не добавлено</span></div>';
+      thumbs.innerHTML = "";
+      return;
+    }
+    if(galIndex >= imgs.length) galIndex = 0;
+    if(galIndex < 0) galIndex = imgs.length - 1;
+    photo.innerHTML = '<img src="'+esc(imgs[galIndex])+'" alt="'+esc(galProd.name)+'">' +
+      (imgs.length > 1 ?
+        '<button class="sr-prod-nav prev" data-gnav="-1" aria-label="Предыдущее фото">‹</button>' +
+        '<button class="sr-prod-nav next" data-gnav="1" aria-label="Следующее фото">›</button>' +
+        '<span class="sr-prod-counter">'+(galIndex+1)+' / '+imgs.length+'</span>' : '');
+    Array.prototype.slice.call(photo.querySelectorAll("[data-gnav]")).forEach(function(b){
+      b.onclick = function(){ galIndex += +b.getAttribute("data-gnav"); paintGallery(); };
+    });
+    thumbs.innerHTML = imgs.length > 1 ? imgs.map(function(src, i){
+      return '<button class="'+(i === galIndex ? "active" : "")+'" data-gthumb="'+i+'"><img src="'+esc(src)+'" alt=""></button>';
+    }).join("") : "";
+    Array.prototype.slice.call(thumbs.querySelectorAll("[data-gthumb]")).forEach(function(b){
+      b.onclick = function(){ galIndex = +b.getAttribute("data-gthumb"); paintGallery(); };
+    });
+  }
   function openProduct(id){
     var p = prodById(id);
     if(!p) return;
     var cat = catById(p.catId);
-    document.getElementById("sr-prod-photo").innerHTML = p.image ?
-      '<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'">' :
-      '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;color:#66717a;"><svg viewBox="0 0 64 64" style="width:54px;height:54px;color:#e35f1e"><g class="gear">'+gearMarkup({cx:32,cy:32,rOut:28,rIn:21,teeth:10,spokes:4,sw:3,fill:"none",stroke:"currentColor",accent:"currentColor"})+'</g></svg><span>Фото не добавлено</span></div>';
+    galProd = p; galIndex = 0;
+    paintGallery();
     document.getElementById("sr-prod-code").textContent = p.code || "—";
     document.getElementById("sr-prod-cat").textContent = cat ? cat.name : "";
     document.getElementById("sr-prod-title").textContent = p.name;
@@ -582,6 +644,10 @@ body{font-family:Manrope,Arial,sans-serif}
   document.getElementById("sr-prod-bg").addEventListener("click", function(e){ if(e.target === this) this.classList.remove("show"); });
   document.getElementById("sr-prod-cta").onclick = function(){ document.getElementById("sr-prod-bg").classList.remove("show"); };
   document.addEventListener("keydown", function(e){
+    if(document.getElementById("sr-prod-bg").classList.contains("show") && galProd && galProd.images.length > 1){
+      if(e.key === "ArrowLeft"){ galIndex--; paintGallery(); }
+      if(e.key === "ArrowRight"){ galIndex++; paintGallery(); }
+    }
     if(e.key === "Escape"){
       document.getElementById("sr-prod-bg").classList.remove("show");
       document.getElementById("sr-login-bg").classList.remove("show");
@@ -665,16 +731,52 @@ body{font-family:Manrope,Arial,sans-serif}
     }).join("");
     return '<div class="sr-field"><label>'+esc(label)+'</label><select data-key="'+key+'">'+opts+'</select></div>';
   }
-  function photoTools(kind, id, image){
-    var prev = image ? '<img src="'+esc(image)+'" alt="">' : '<span>Фото не добавлено</span>';
-    var name = image ? (image.indexOf("data:image/") === 0 ? "Фото загружено с ПК" : "Фото задано по URL") : "Фото не выбрано";
-    return '<div class="sr-imgprev" data-prev="'+esc(id)+'">'+prev+'</div>' +
+  function checkField(label, checked, key){
+    return '<div class="sr-field" style="display:flex;align-items:center;gap:9px;">' +
+      '<input type="checkbox" data-check="'+key+'"'+(checked ? ' checked' : '')+' style="width:auto;">' +
+      '<label style="margin:0;">'+esc(label)+'</label></div>';
+  }
+  function logoBlock(){
+    var isFile = content.logo && content.logo.indexOf("data:") === 0;
+    return '<div class="sr-logoprev" id="sr-logo-prev">' +
+        (content.logo ? '<img src="'+esc(content.logo)+'" alt="">' : emblemSvg("a")) + '</div>' +
       '<div class="sr-photo-tools">' +
-        '<label>📷 Фото с ПК<input type="file" accept="image/*" data-file="'+esc(kind)+'" data-id="'+esc(id)+'"></label>' +
-        '<button type="button" data-clearimg="'+esc(kind)+'" data-id="'+esc(id)+'">Убрать фото</button>' +
+        '<label>📷 Загрузить логотип<input type="file" accept="image/*" id="sr-logo-file"></label>' +
+        '<button type="button" id="sr-logo-clear">Вернуть стандартный знак</button>' +
       '</div>' +
-      '<div class="sr-photo-name" data-pname="'+esc(id)+'">'+esc(name)+'</div>' +
-      field("Ссылка на фото (URL, необязательно)", image && image.indexOf("data:image/") === 0 ? "" : image, kind+"__"+id+"__image");
+      '<div class="sr-photo-name" id="sr-logo-name">' +
+        (content.logo ? (isFile ? "Логотип загружен с ПК" : "Логотип задан по URL") : "Используется стандартный знак компании") + '</div>' +
+      field("Ссылка на логотип (URL, необязательно)", isFile ? "" : content.logo, "logo") +
+      checkField("Показывать название рядом с логотипом", content.logoShowText, "logoShowText");
+  }
+  function galleryItems(p){
+    if(!p.images.length) return '<div class="sr-gal-empty">Фото не добавлены</div>';
+    return p.images.map(function(src, i){
+      return '<div class="sr-galitem'+(i === 0 ? ' main' : '')+'">' +
+        '<img src="'+esc(src)+'" alt="">' +
+        (i === 0 ? '<span class="mainbadge">Главное</span>' :
+          '<button type="button" class="star" data-gmain="'+esc(p.id)+'|'+i+'" title="Сделать главным">★</button>') +
+        '<button type="button" class="del" data-gdel="'+esc(p.id)+'|'+i+'" title="Удалить фото">✕</button>' +
+        '</div>';
+    }).join("");
+  }
+  function galleryBlock(p){
+    return '<div class="sr-gal" data-gal="'+esc(p.id)+'">'+galleryItems(p)+'</div>' +
+      '<div class="sr-photo-tools">' +
+        '<label>📷 Добавить фото с ПК<input type="file" accept="image/*" multiple data-gfile="'+esc(p.id)+'"></label>' +
+        '<button type="button" data-gclear="'+esc(p.id)+'">Удалить все фото</button>' +
+      '</div>' +
+      '<div class="sr-photo-name">Можно выбрать несколько файлов сразу. Первое фото — главное, оно показывается в каталоге.</div>' +
+      '<div class="sr-field"><label>Добавить фото по ссылке</label><div class="sr-urlrow">' +
+        '<input data-gurl="'+esc(p.id)+'" placeholder="https://...">' +
+        '<button type="button" class="sr-addbtn" data-gadd="'+esc(p.id)+'">Добавить</button>' +
+      '</div></div>';
+  }
+  function repaintGallery(id){
+    var p = prodById(id);
+    var box = document.querySelector('[data-gal="'+id+'"]');
+    if(p && box) box.innerHTML = galleryItems(p);
+    renderCatalog();
   }
 
   function renderAdminBody(){
@@ -688,6 +790,9 @@ body{font-family:Manrope,Arial,sans-serif}
     h += '<h5>Шапка сайта</h5>';
     h += field("Название компании", content.brandName, "brandName");
     h += field("Слоган", content.tagline, "tagline");
+    h += '<h5>Логотип</h5>';
+    h += logoBlock();
+    h += '<h5>Контакты в шапке</h5>';
     h += field("Телефон", content.phone, "phone");
     h += field("Email", content.email, "email");
     h += field("Город / адрес", content.city, "city");
@@ -740,8 +845,23 @@ body{font-family:Manrope,Arial,sans-serif}
     body.innerHTML = h;
 
     Array.prototype.slice.call(body.querySelectorAll("#sr-admin-body > .sr-field [data-key]")).forEach(function(el){
-      el.addEventListener("input", function(){ content[el.getAttribute("data-key")] = el.value; });
+      el.addEventListener("input", function(){
+        var k = el.getAttribute("data-key");
+        content[k] = el.value;
+        if(k === "logo"){
+          var pv = document.getElementById("sr-logo-prev");
+          if(pv) pv.innerHTML = el.value ? '<img src="'+esc(el.value)+'" alt="">' : emblemSvg("a");
+          var nm = document.getElementById("sr-logo-name");
+          if(nm) nm.textContent = el.value ? "Логотип задан по URL" : "Используется стандартный знак компании";
+          renderBrand();
+        }
+        if(k === "brandName" || k === "tagline") render();
+      });
     });
+    Array.prototype.slice.call(body.querySelectorAll("[data-check]")).forEach(function(el){
+      el.addEventListener("change", function(){ content[el.getAttribute("data-check")] = el.checked; renderBrand(); });
+    });
+    bindLogoTools();
 
     renderCatsAdmin();
     renderProdsAdmin();
@@ -755,7 +875,15 @@ body{font-family:Manrope,Arial,sans-serif}
   }
 
   function resizeImageForSite(file, maxSide, quality){
+    var keepAlpha = /png|svg|webp/i.test(file.type);
     return new Promise(function(resolve,reject){
+      if(/svg/i.test(file.type)){
+        var r = new FileReader();
+        r.onerror = reject;
+        r.onload = function(){ resolve(r.result); };
+        r.readAsDataURL(file);
+        return;
+      }
       var reader = new FileReader();
       reader.onerror = reject;
       reader.onload = function(){
@@ -770,7 +898,7 @@ body{font-family:Manrope,Arial,sans-serif}
           var ctx = canvas.getContext("2d");
           if(!ctx) return reject(new Error("canvas"));
           ctx.drawImage(img,0,0,w,h);
-          resolve(canvas.toDataURL("image/jpeg", quality));
+          resolve(keepAlpha ? canvas.toDataURL("image/png") : canvas.toDataURL("image/jpeg", quality));
         };
         img.src = reader.result;
       };
@@ -778,40 +906,96 @@ body{font-family:Manrope,Arial,sans-serif}
     });
   }
 
-  function bindPhotoTools(wrap, getTarget){
-    Array.prototype.slice.call(wrap.querySelectorAll("[data-file]")).forEach(function(input){
+  function bindLogoTools(){
+    var input = document.getElementById("sr-logo-file");
+    if(input){
       input.addEventListener("change", function(){
-        var id = input.getAttribute("data-id"), target = getTarget(id), file = input.files && input.files[0];
-        if(!target || !file) return;
+        var file = input.files && input.files[0];
+        if(!file) return;
         if(file.type.indexOf("image/") !== 0){ toast("Выберите файл изображения"); input.value = ""; return; }
         if(file.size > 15*1024*1024){ toast("Файл слишком большой. Максимум 15 МБ"); input.value = ""; return; }
-        resizeImageForSite(file, 1400, 0.78).then(function(dataUrl){
-          target.image = dataUrl;
-          var pv = wrap.querySelector('[data-prev="'+id+'"]');
+        resizeImageForSite(file, 700, 0.92).then(function(dataUrl){
+          content.logo = dataUrl;
+          var pv = document.getElementById("sr-logo-prev");
           if(pv) pv.innerHTML = '<img src="'+esc(dataUrl)+'" alt="">';
-          var url = wrap.querySelector('[data-key$="__'+id+'__image"]');
-          if(url) url.value = "";
-          var pn = wrap.querySelector('[data-pname="'+id+'"]');
-          if(pn) pn.textContent = "Загружено: " + file.name;
-          renderCatalog();
-        }).catch(function(){ toast("Не удалось обработать фото"); });
+          var urlInput = document.querySelector('#sr-admin-body [data-key="logo"]');
+          if(urlInput) urlInput.value = "";
+          var nm = document.getElementById("sr-logo-name");
+          if(nm) nm.textContent = "Загружено: " + file.name;
+          renderBrand();
+        }).catch(function(){ toast("Не удалось обработать логотип"); });
       });
-    });
-    Array.prototype.slice.call(wrap.querySelectorAll("[data-clearimg]")).forEach(function(btn){
-      btn.onclick = function(){
-        var id = btn.getAttribute("data-id"), target = getTarget(id);
-        if(!target) return;
-        target.image = "";
-        var pv = wrap.querySelector('[data-prev="'+id+'"]');
-        if(pv) pv.innerHTML = '<span>Фото не добавлено</span>';
-        var url = wrap.querySelector('[data-key$="__'+id+'__image"]');
-        if(url) url.value = "";
-        var pn = wrap.querySelector('[data-pname="'+id+'"]');
-        if(pn) pn.textContent = "Фото не выбрано";
-        var fi = wrap.querySelector('[data-file][data-id="'+id+'"]');
-        if(fi) fi.value = "";
-        renderCatalog();
+    }
+    var clear = document.getElementById("sr-logo-clear");
+    if(clear){
+      clear.onclick = function(){
+        content.logo = "";
+        var pv = document.getElementById("sr-logo-prev");
+        if(pv) pv.innerHTML = emblemSvg("a");
+        var urlInput = document.querySelector('#sr-admin-body [data-key="logo"]');
+        if(urlInput) urlInput.value = "";
+        var nm = document.getElementById("sr-logo-name");
+        if(nm) nm.textContent = "Используется стандартный знак компании";
+        if(input) input.value = "";
+        renderBrand();
       };
+    }
+  }
+
+  function bindGalleryTools(wrap){
+    if(wrap._galBound) return;
+    wrap._galBound = true;
+    wrap.addEventListener("click", function(e){
+      var star = e.target.closest ? e.target.closest("[data-gmain]") : null;
+      var del = e.target.closest ? e.target.closest("[data-gdel]") : null;
+      var add = e.target.closest ? e.target.closest("[data-gadd]") : null;
+      var clr = e.target.closest ? e.target.closest("[data-gclear]") : null;
+      if(star){
+        var sp = star.getAttribute("data-gmain").split("|"), prod = prodById(sp[0]);
+        if(prod){ prod.images.unshift(prod.images.splice(+sp[1], 1)[0]); repaintGallery(sp[0]); }
+      } else if(del){
+        var dp = del.getAttribute("data-gdel").split("|"), prod2 = prodById(dp[0]);
+        if(prod2){ prod2.images.splice(+dp[1], 1); repaintGallery(dp[0]); }
+      } else if(add){
+        var id = add.getAttribute("data-gadd"), prod3 = prodById(id);
+        var input = wrap.querySelector('[data-gurl="'+id+'"]');
+        var url = input ? input.value.trim() : "";
+        if(!prod3 || !url) return;
+        if(prod3.images.length >= MAX_PHOTOS){ toast("Максимум " + MAX_PHOTOS + " фото на позицию"); return; }
+        prod3.images.push(url);
+        input.value = "";
+        repaintGallery(id);
+      } else if(clr){
+        var cid = clr.getAttribute("data-gclear"), prod4 = prodById(cid);
+        if(!prod4 || !prod4.images.length) return;
+        if(!confirm("Удалить все фото этой позиции?")) return;
+        prod4.images = [];
+        repaintGallery(cid);
+      }
+    });
+    wrap.addEventListener("change", function(e){
+      var input = e.target;
+      if(!input.getAttribute || !input.getAttribute("data-gfile")) return;
+      var id = input.getAttribute("data-gfile"), prod = prodById(id);
+      var files = Array.prototype.slice.call(input.files || []);
+      if(!prod || !files.length) return;
+      var free = MAX_PHOTOS - prod.images.length;
+      if(free <= 0){ toast("Максимум " + MAX_PHOTOS + " фото на позицию"); input.value = ""; return; }
+      if(files.length > free){ toast("Добавим только " + free + " фото: лимит " + MAX_PHOTOS); files = files.slice(0, free); }
+      var queue = Promise.resolve(), added = 0, skipped = 0;
+      files.forEach(function(file){
+        queue = queue.then(function(){
+          if(file.type.indexOf("image/") !== 0 || file.size > 15*1024*1024){ skipped++; return; }
+          return resizeImageForSite(file, 1400, 0.78).then(function(dataUrl){
+            prod.images.push(dataUrl); added++;
+          }).catch(function(){ skipped++; });
+        });
+      });
+      queue.then(function(){
+        input.value = "";
+        repaintGallery(id);
+        toast(added ? ("Добавлено фото: " + added + (skipped ? (", пропущено: " + skipped) : "")) : "Не удалось добавить фото");
+      });
     });
   }
 
@@ -865,7 +1049,7 @@ body{font-family:Manrope,Arial,sans-serif}
         items.map(function(p){
           return '<div class="sr-arritem">' +
             '<button class="rm" data-rm-prod="'+esc(p.id)+'" title="Удалить позицию">✕</button>' +
-            photoTools("prod", p.id, p.image) +
+            galleryBlock(p) +
             field("Название позиции", p.name, "prod__"+p.id+"__name") +
             field("Артикул / код", p.code, "prod__"+p.id+"__code") +
             field("Характеристики (по одной в строке)", p.specs, "prod__"+p.id+"__specs", true) +
@@ -895,19 +1079,13 @@ body{font-family:Manrope,Arial,sans-serif}
         var p = prodById(parts[1]);
         if(!p) return;
         p[parts[2]] = el.value;
-        if(parts[2] === "image"){
-          var pv = wrap.querySelector('[data-prev="'+p.id+'"]');
-          if(pv) pv.innerHTML = el.value ? '<img src="'+esc(el.value)+'" alt="">' : '<span>Фото не добавлено</span>';
-          var pn = wrap.querySelector('[data-pname="'+p.id+'"]');
-          if(pn) pn.textContent = el.value ? "Фото задано по URL" : "Фото не выбрано";
-        }
         if(parts[2] === "catId"){ renderProdsAdmin(); renderCatsAdmin(); }
         renderCatalog();
       };
       el.addEventListener("input", handler);
       if(el.tagName === "SELECT") el.addEventListener("change", handler);
     });
-    bindPhotoTools(wrap, function(id){ return prodById(id); });
+    bindGalleryTools(wrap);
     Array.prototype.slice.call(wrap.querySelectorAll("[data-rm-prod]")).forEach(function(b){
       b.onclick = function(){
         if(!confirm("Удалить позицию из каталога?")) return;
@@ -919,7 +1097,7 @@ body{font-family:Manrope,Arial,sans-serif}
     Array.prototype.slice.call(wrap.querySelectorAll("[data-add-prod]")).forEach(function(b){
       b.onclick = function(){
         var catId = b.getAttribute("data-add-prod");
-        content.products.push({id:uid("p"), catId:catId, code:"", name:"Новая позиция", specs:"Характеристика 1\nХарактеристика 2", text:"", image:""});
+        content.products.push({id:uid("p"), catId:catId, code:"", name:"Новая позиция", specs:"Характеристика 1\nХарактеристика 2", text:"", images:[]});
         renderProdsAdmin(); renderCatsAdmin(); renderCatalog();
       };
     });
@@ -961,9 +1139,10 @@ body{font-family:Manrope,Arial,sans-serif}
       render();
       toast(hasCloud ? "Изменения сохранены и видны всем посетителям" : "Изменения сохранены в этом браузере");
       setTimeout(function(){ save.textContent = "Сохранить изменения"; }, 1600);
-    }).catch(function(){
+    }).catch(function(err){
       save.textContent = "Сохранить изменения";
-      toast("Не удалось сохранить. Попробуйте ещё раз");
+      var quota = err && (err.name === "QuotaExceededError" || /quota/i.test(String(err && err.message)));
+      toast(quota ? "Не хватает места в браузере: удалите часть фото или уменьшите их размер" : "Не удалось сохранить. Попробуйте ещё раз");
     });
   };
   document.getElementById("sr-admin-reset").onclick = function(){
