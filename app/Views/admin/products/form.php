@@ -3,15 +3,15 @@ use App\Models\Product;
 /** @var array|null $product */
 /** @var array $categories */
 $isEdit = $product !== null;
-$action = $isEdit ? '/admin/products/' . (int) $product['id'] : '/admin/products';
+$action = u($isEdit ? '/admin/products/' . (int) $product['id'] : '/admin/products');
 $value  = static fn (string $key, string $default = '') => $isEdit ? e((string) ($product[$key] ?? '')) : old($key, $default);
 ?>
 <div class="admin-head">
     <div>
-        <a class="back-link" href="/admin/products">← К списку товаров</a>
+        <a class="back-link" href="<?= u('/admin/products') ?>">← К списку товаров</a>
         <h1><?= $isEdit ? 'Редактирование товара' : 'Новый товар' ?></h1>
         <?php if ($isEdit): ?>
-            <p><a href="/product/<?= e($product['slug']) ?>" target="_blank" rel="noopener">Открыть на сайте ↗</a></p>
+            <p><a href="<?= u('/') ?>product/<?= e($product['slug']) ?>" target="_blank" rel="noopener">Открыть на сайте ↗</a></p>
         <?php endif; ?>
     </div>
 </div>
@@ -132,7 +132,7 @@ $value  = static fn (string $key, string $default = '') => $isEdit ? e((string) 
 </form>
 
 <?php if ($isEdit): ?>
-    <form method="post" action="/admin/products/<?= (int) $product['id'] ?>/delete" class="delete-form"
+    <form method="post" action="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/delete" class="delete-form"
           onsubmit="return confirm('Удалить товар «<?= e($product['name']) ?>»?')">
         <?= csrf_field() ?>
         <button class="btn btn--danger" type="submit">Удалить товар</button>

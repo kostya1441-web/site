@@ -4,7 +4,7 @@
 ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span><a href="/cart">Корзина</a><span>/</span><span>Оформление</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span><a href="<?= u('/cart') ?>">Корзина</a><span>/</span><span>Оформление</span>
     </nav>
 
     <header class="page-head">
@@ -12,7 +12,7 @@
         <p class="page-head__text">Заполните контакты — менеджер подтвердит заказ звонком в течение 15 минут.</p>
     </header>
 
-    <form class="checkout" method="post" action="/checkout" id="checkout-form">
+    <form class="checkout" method="post" action="<?= u('/checkout') ?>" id="checkout-form">
         <?= csrf_field() ?>
 
         <div class="checkout__main">
@@ -87,7 +87,7 @@
 
                 <label class="checkbox checkbox--agree">
                     <input type="checkbox" name="agree" value="1" required>
-                    <span>Согласен на обработку персональных данных и принимаю условия <a href="/delivery">оферты</a></span>
+                    <span>Согласен на обработку персональных данных и принимаю условия <a href="<?= u('/delivery') ?>">оферты</a></span>
                 </label>
             </section>
         </div>

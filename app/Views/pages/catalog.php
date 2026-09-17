@@ -7,10 +7,10 @@
 ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a>
+        <a href="<?= u('/') ?>">Главная</a>
         <span>/</span>
         <?php if ($category): ?>
-            <a href="/catalog">Каталог</a><span>/</span><span><?= e($category['name']) ?></span>
+            <a href="<?= u('/catalog') ?>">Каталог</a><span>/</span><span><?= e($category['name']) ?></span>
         <?php else: ?>
             <span>Каталог</span>
         <?php endif; ?>
@@ -31,11 +31,11 @@
                 <div class="filter">
                     <h2 class="filter__title">Категории</h2>
                     <ul class="filter__list">
-                        <li><a class="<?= $category ? '' : 'is-active' ?>" href="/catalog">Все товары</a></li>
+                        <li><a class="<?= $category ? '' : 'is-active' ?>" href="<?= u('/catalog') ?>">Все товары</a></li>
                         <?php foreach ($categories as $item): ?>
                             <li>
                                 <a class="<?= ($category && $category['id'] === $item['id']) ? 'is-active' : '' ?>"
-                                   href="/catalog/<?= e($item['slug']) ?>">
+                                   href="<?= u('/') ?>catalog/<?= e($item['slug']) ?>">
                                     <?= e($item['icon'] ?: '•') ?> <?= e($item['name']) ?>
                                     <em><?= (int) $item['products_count'] ?></em>
                                 </a>
@@ -44,7 +44,7 @@
                     </ul>
                 </div>
 
-                <form class="filter filter--form" method="get" action="<?= $category ? '/catalog/' . e($category['slug']) : '/catalog' ?>">
+                <form class="filter filter--form" method="get" action="<?= e(u($category ? '/catalog/' . $category['slug'] : '/catalog')) ?>">
                     <?php if ($filters['search'] !== ''): ?>
                         <input type="hidden" name="q" value="<?= e($filters['search']) ?>">
                     <?php endif; ?>
@@ -60,7 +60,7 @@
                     </label>
                     <input type="hidden" name="sort" value="<?= e($filters['sort']) ?>">
                     <button class="btn btn--primary btn--block" type="submit">Применить</button>
-                    <a class="filter__reset" href="<?= $category ? '/catalog/' . e($category['slug']) : '/catalog' ?>">Сбросить фильтры</a>
+                    <a class="filter__reset" href="<?= e(u($category ? '/catalog/' . $category['slug'] : '/catalog')) ?>">Сбросить фильтры</a>
                 </form>
             </div>
         </aside>
@@ -99,7 +99,7 @@
                     <span aria-hidden="true">🧺</span>
                     <h2>Ничего не нашлось</h2>
                     <p>Попробуйте изменить фильтры или посмотрите весь каталог — мы обновляем ассортимент каждую неделю.</p>
-                    <a class="btn btn--primary" href="/catalog">Весь каталог</a>
+                    <a class="btn btn--primary" href="<?= u('/catalog') ?>">Весь каталог</a>
                 </div>
             <?php endif; ?>
         </div>

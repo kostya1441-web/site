@@ -8,10 +8,10 @@ $inStock = (int) $product['stock'] > 0;
 ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span>
-        <a href="/catalog">Каталог</a><span>/</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span>
+        <a href="<?= u('/catalog') ?>">Каталог</a><span>/</span>
         <?php if (!empty($product['category_slug'])): ?>
-            <a href="/catalog/<?= e($product['category_slug']) ?>"><?= e($product['category_name']) ?></a><span>/</span>
+            <a href="<?= u('/') ?>catalog/<?= e($product['category_slug']) ?>"><?= e($product['category_name']) ?></a><span>/</span>
         <?php endif; ?>
         <span><?= e($product['name']) ?></span>
     </nav>
@@ -42,7 +42,7 @@ $inStock = (int) $product['stock'] > 0;
                 <?php if ($discount): ?><s><?= price($product['old_price']) ?></s><?php endif; ?>
             </div>
 
-            <form class="product__buy" method="post" action="/cart/add" data-cart-form>
+            <form class="product__buy" method="post" action="<?= u('/cart/add') ?>" data-cart-form>
                 <?= csrf_field() ?>
                 <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
                 <div class="qty" data-qty>

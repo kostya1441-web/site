@@ -12,7 +12,7 @@ $gisLink    = 'https://2gis.ru/novokuznetsk/search/' . rawurlencode($settings['a
 ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span><span>Контакты</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span><span>Контакты</span>
     </nav>
 
     <header class="page-head">
@@ -71,7 +71,7 @@ $gisLink    = 'https://2gis.ru/novokuznetsk/search/' . rawurlencode($settings['a
         <div class="panel panel--wide">
             <h2 class="panel__title">Задать вопрос</h2>
             <p class="panel__text">Оставьте телефон — перезвоним в рабочее время и ответим на любой вопрос о продуктах и доставке.</p>
-            <form class="form-grid" method="post" action="/feedback">
+            <form class="form-grid" method="post" action="<?= u('/feedback') ?>">
                 <?= csrf_field() ?>
                 <label class="field">
                     <span>Как к вам обращаться *</span>

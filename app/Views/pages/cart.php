@@ -1,7 +1,7 @@
 <?php /** @var array $cart */ ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span><span>Корзина</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span><span>Корзина</span>
     </nav>
 
     <header class="page-head">
@@ -13,25 +13,25 @@
             <span aria-hidden="true">🛒</span>
             <h2>В корзине пока пусто</h2>
             <p>Загляните в каталог — свежая партия приезжает с фермы каждое утро.</p>
-            <a class="btn btn--primary btn--lg" href="/catalog">Перейти в каталог</a>
+            <a class="btn btn--primary btn--lg" href="<?= u('/catalog') ?>">Перейти в каталог</a>
         </div>
     <?php else: ?>
         <div class="cart">
             <div class="cart__list">
                 <?php foreach ($cart['lines'] as $line): ?>
                     <div class="cart-line" data-line="<?= (int) $line['product_id'] ?>">
-                        <a class="cart-line__media" href="/product/<?= e($line['slug']) ?>">
+                        <a class="cart-line__media" href="<?= u('/') ?>product/<?= e($line['slug']) ?>">
                             <img src="<?= e(product_image($line['image'])) ?>" alt="<?= e($line['name']) ?>" loading="lazy" width="96" height="96">
                         </a>
                         <div class="cart-line__info">
-                            <a class="cart-line__name" href="/product/<?= e($line['slug']) ?>"><?= e($line['name']) ?></a>
+                            <a class="cart-line__name" href="<?= u('/') ?>product/<?= e($line['slug']) ?>"><?= e($line['name']) ?></a>
                             <span class="cart-line__price"><?= price($line['price']) ?> / <?= e($line['unit']) ?></span>
                             <?php if ($line['stock'] <= 0): ?>
                                 <span class="cart-line__warn">Под заказ — уточним срок по телефону</span>
                             <?php endif; ?>
                         </div>
 
-                        <form class="cart-line__qty" method="post" action="/cart/update" data-cart-update>
+                        <form class="cart-line__qty" method="post" action="<?= u('/cart/update') ?>" data-cart-update>
                             <?= csrf_field() ?>
                             <input type="hidden" name="product_id" value="<?= (int) $line['product_id'] ?>">
                             <div class="qty" data-qty>
@@ -43,7 +43,7 @@
 
                         <div class="cart-line__sum"><?= price($line['sum']) ?></div>
 
-                        <form method="post" action="/cart/remove" class="cart-line__remove" data-cart-remove>
+                        <form method="post" action="<?= u('/cart/remove') ?>" class="cart-line__remove" data-cart-remove>
                             <?= csrf_field() ?>
                             <input type="hidden" name="product_id" value="<?= (int) $line['product_id'] ?>">
                             <button type="submit" aria-label="Удалить товар">✕</button>
@@ -51,7 +51,7 @@
                     </div>
                 <?php endforeach; ?>
 
-                <form method="post" action="/cart/clear" class="cart__clear">
+                <form method="post" action="<?= u('/cart/clear') ?>" class="cart__clear">
                     <?= csrf_field() ?>
                     <button type="submit" class="link-button">Очистить корзину</button>
                 </form>
@@ -73,10 +73,10 @@
                     <p class="cart__hint cart__hint--warn">Минимальная сумма заказа — <?= price($cart['min_order']) ?>.</p>
                 <?php endif; ?>
 
-                <a class="btn btn--primary btn--lg btn--block <?= $cart['below_min_order'] ? 'is-disabled' : '' ?>" href="/checkout">
+                <a class="btn btn--primary btn--lg btn--block <?= $cart['below_min_order'] ? 'is-disabled' : '' ?>" href="<?= u('/checkout') ?>">
                     Оформить заказ
                 </a>
-                <a class="btn btn--ghost btn--block" href="/catalog">Продолжить покупки</a>
+                <a class="btn btn--ghost btn--block" href="<?= u('/catalog') ?>">Продолжить покупки</a>
             </aside>
         </div>
     <?php endif; ?>

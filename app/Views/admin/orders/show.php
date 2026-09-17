@@ -6,7 +6,7 @@ use App\Models\Order;
 ?>
 <div class="admin-head">
     <div>
-        <a class="back-link" href="/admin/orders">← К списку заказов</a>
+        <a class="back-link" href="<?= u('/admin/orders') ?>">← К списку заказов</a>
         <h1>Заказ <?= e($order['number']) ?></h1>
         <p><?= date_ru($order['created_at']) ?> · <?= e(Order::PAYMENT_METHODS[$order['payment_method']] ?? '') ?></p>
     </div>
@@ -28,7 +28,7 @@ use App\Models\Order;
                         <tr>
                             <td>
                                 <?php if ($item['product_id']): ?>
-                                    <a href="/admin/products/<?= (int) $item['product_id'] ?>/edit"><?= e($item['name']) ?></a>
+                                    <a href="<?= u('/') ?>admin/products/<?= (int) $item['product_id'] ?>/edit"><?= e($item['name']) ?></a>
                                 <?php else: ?>
                                     <?= e($item['name']) ?>
                                 <?php endif; ?>
@@ -81,7 +81,7 @@ use App\Models\Order;
     <div class="admin-col">
         <section class="panel">
             <h2 class="panel__title">Статус заказа</h2>
-            <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/status" class="stack">
+            <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/status" class="stack">
                 <?= csrf_field() ?>
                 <label class="field">
                     <span>Новый статус</span>
@@ -101,7 +101,7 @@ use App\Models\Order;
 
         <section class="panel">
             <h2 class="panel__title">Оплата</h2>
-            <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/payment" class="stack">
+            <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/payment" class="stack">
                 <?= csrf_field() ?>
                 <label class="field">
                     <span>Статус оплаты</span>
@@ -120,12 +120,12 @@ use App\Models\Order;
                     ID платежа: <?= e($order['sber_order_id'] ?: '—') ?>
                     <?php if ($order['paid_at']): ?><br>Оплачен: <?= date_ru($order['paid_at']) ?><?php endif; ?>
                 </p>
-                <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/check-payment">
+                <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/check-payment">
                     <?= csrf_field() ?>
                     <button class="btn btn--ghost btn--block" type="submit">Проверить статус в Сбербанке</button>
                 </form>
                 <?php if ($order['payment_status'] === 'paid'): ?>
-                    <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/refund" onsubmit="return confirm('Оформить полный возврат на сумму <?= price($order['total']) ?>?')">
+                    <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/refund" onsubmit="return confirm('Оформить полный возврат на сумму <?= price($order['total']) ?>?')">
                         <?= csrf_field() ?>
                         <button class="btn btn--danger btn--block" type="submit">Вернуть деньги</button>
                     </form>
@@ -135,7 +135,7 @@ use App\Models\Order;
 
         <section class="panel">
             <h2 class="panel__title">Заметка менеджера</h2>
-            <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/note" class="stack">
+            <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/note" class="stack">
                 <?= csrf_field() ?>
                 <textarea name="admin_note" rows="4" placeholder="Внутренние пометки по заказу"><?= e($order['admin_note']) ?></textarea>
                 <button class="btn btn--ghost btn--block" type="submit">Сохранить заметку</button>
@@ -145,7 +145,7 @@ use App\Models\Order;
         <section class="panel panel--danger">
             <h2 class="panel__title">Удаление</h2>
             <p class="muted small">Заказ будет удалён вместе с историей и позициями. Действие необратимо.</p>
-            <form method="post" action="/admin/orders/<?= (int) $order['id'] ?>/delete" onsubmit="return confirm('Удалить заказ <?= e($order['number']) ?>?')">
+            <form method="post" action="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>/delete" onsubmit="return confirm('Удалить заказ <?= e($order['number']) ?>?')">
                 <?= csrf_field() ?>
                 <button class="btn btn--danger btn--block" type="submit">Удалить заказ</button>
             </form>

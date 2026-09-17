@@ -14,7 +14,7 @@ $settings = $settings ?? [];
     <meta property="og:title" content="<?= e($title ?? 'Ваш фермер') ?>">
     <meta property="og:description" content="<?= e($description ?? ($settings['site_description'] ?? '')) ?>">
     <meta property="og:site_name" content="Ваш фермер">
-    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="<?= u('/assets/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 </head>
 <body>

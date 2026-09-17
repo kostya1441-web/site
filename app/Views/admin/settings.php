@@ -26,7 +26,7 @@ $s = static fn (string $key) => e((string) ($settings[$key] ?? ''));
     </p>
 </div>
 
-<form method="post" action="/admin/settings" class="admin-cols admin-cols--2-1">
+<form method="post" action="<?= u('/admin/settings') ?>" class="admin-cols admin-cols--2-1">
     <?= csrf_field() ?>
 
     <div class="admin-col">
@@ -85,7 +85,7 @@ $s = static fn (string $key) => e((string) ($settings[$key] ?? ''));
 
 <section class="panel panel--wide">
     <h2 class="panel__title">Смена пароля администратора</h2>
-    <form method="post" action="/admin/settings/password" class="form-grid form-grid--3">
+    <form method="post" action="<?= u('/admin/settings/password') ?>" class="form-grid form-grid--3">
         <?= csrf_field() ?>
         <label class="field"><span>Текущий пароль</span><input type="password" name="current_password" required autocomplete="current-password"></label>
         <label class="field"><span>Новый пароль</span><input type="password" name="new_password" required minlength="8" autocomplete="new-password"></label>

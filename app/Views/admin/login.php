@@ -4,7 +4,7 @@
         <h1>Ваш фермер</h1>
         <p>Панель управления магазином</p>
     </div>
-    <form method="post" action="/admin/login" class="auth-form">
+    <form method="post" action="<?= u('/admin/login') ?>" class="auth-form">
         <?= csrf_field() ?>
         <label class="field">
             <span>Логин</span>
@@ -16,5 +16,5 @@
         </label>
         <button class="btn btn--primary btn--block btn--lg" type="submit">Войти</button>
     </form>
-    <a class="auth-card__back" href="/">← Вернуться на сайт</a>
+    <a class="auth-card__back" href="<?= u('/') ?>">← Вернуться на сайт</a>
 </div>

@@ -9,10 +9,10 @@ $queryString = http_build_query(array_filter($filters));
         <h1>Заказы</h1>
         <p>Всего <?= (int) $pagination['total'] ?> <?= plural((int) $pagination['total'], 'заказ', 'заказа', 'заказов') ?></p>
     </div>
-    <a class="btn btn--ghost" href="/admin/orders/export<?= $queryString ? '?' . e($queryString) : '' ?>">Выгрузить CSV</a>
+    <a class="btn btn--ghost" href="<?= u('/') ?>admin/orders/export<?= $queryString ? '?' . e($queryString) : '' ?>">Выгрузить CSV</a>
 </div>
 
-<form class="filters" method="get" action="/admin/orders">
+<form class="filters" method="get" action="<?= u('/admin/orders') ?>">
     <input type="search" name="q" value="<?= e($filters['search']) ?>" placeholder="Номер, имя или телефон">
     <select name="status">
         <option value="">Все статусы</option>
@@ -29,7 +29,7 @@ $queryString = http_build_query(array_filter($filters));
     <input type="date" name="date_from" value="<?= e($filters['date_from']) ?>" aria-label="Дата с">
     <input type="date" name="date_to" value="<?= e($filters['date_to']) ?>" aria-label="Дата по">
     <button class="btn btn--primary" type="submit">Фильтр</button>
-    <a class="btn btn--ghost" href="/admin/orders">Сброс</a>
+    <a class="btn btn--ghost" href="<?= u('/admin/orders') ?>">Сброс</a>
 </form>
 
 <?php if ($orders): ?>
@@ -47,9 +47,9 @@ $queryString = http_build_query(array_filter($filters));
             </thead>
             <tbody>
             <?php foreach ($orders as $order): ?>
-                <tr class="row-link" data-href="/admin/orders/<?= (int) $order['id'] ?>">
+                <tr class="row-link" data-href="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>">
                     <td>
-                        <a class="strong" href="/admin/orders/<?= (int) $order['id'] ?>"><?= e($order['number']) ?></a>
+                        <a class="strong" href="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>"><?= e($order['number']) ?></a>
                         <small class="muted"><?= date_ru($order['created_at']) ?></small>
                         <small class="muted"><?= (int) $order['items_count'] ?> <?= plural((int) $order['items_count'], 'позиция', 'позиции', 'позиций') ?></small>
                     </td>
@@ -76,6 +76,6 @@ $queryString = http_build_query(array_filter($filters));
 <?php else: ?>
     <div class="panel empty-box">
         <p>Заказов по заданным условиям нет.</p>
-        <a class="btn btn--ghost" href="/admin/orders">Сбросить фильтры</a>
+        <a class="btn btn--ghost" href="<?= u('/admin/orders') ?>">Сбросить фильтры</a>
     </div>
 <?php endif; ?>

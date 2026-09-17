@@ -19,7 +19,8 @@ class Response
     public static function redirect(string $url, int $status = 302): void
     {
         self::status($status);
-        header('Location: ' . $url);
+        // Внутренние адреса дополняем папкой сайта, внешние (платёжный шлюз) — нет
+        header('Location: ' . (str_starts_with($url, '/') ? u($url) : $url));
     }
 
     public static function back(string $fallback = '/'): void

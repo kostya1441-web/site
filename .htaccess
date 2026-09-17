@@ -1,0 +1,21 @@
+# Домен указывает на папку проекта вместо public/ — перенаправляем запросы туда.
+# Если корень сайта настроен правильно (на public/), этот файл просто не используется.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Служебные папки наружу не отдаём
+    RewriteRule ^(app|config|database|storage|bin)/ - [F,L]
+
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Даже если mod_rewrite выключен, исходники закрыты
+<FilesMatch "\.(sqlite|log|md|sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>

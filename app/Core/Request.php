@@ -17,6 +17,13 @@ class Request
     {
         $uri  = $_SERVER['REQUEST_URI'] ?? '/';
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+
+        // Отбрасываем папку, в которой лежит сайт, — маршруты описаны от корня
+        $base = base_path();
+        if ($base !== '' && str_starts_with($path, $base)) {
+            $path = substr($path, strlen($base));
+        }
+
         $path = '/' . trim($path, '/');
         return $path === '//' ? '/' : $path;
     }

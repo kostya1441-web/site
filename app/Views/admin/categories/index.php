@@ -4,7 +4,7 @@
         <h1>Категории</h1>
         <p>Разделы каталога, которые видят покупатели</p>
     </div>
-    <a class="btn btn--primary" href="/admin/categories/create">+ Добавить категорию</a>
+    <a class="btn btn--primary" href="<?= u('/admin/categories/create') ?>">+ Добавить категорию</a>
 </div>
 
 <?php if ($categories): ?>
@@ -24,7 +24,7 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                        <a class="strong" href="/admin/categories/<?= (int) $category['id'] ?>/edit"><?= e($category['name']) ?></a>
+                        <a class="strong" href="<?= u('/') ?>admin/categories/<?= (int) $category['id'] ?>/edit"><?= e($category['name']) ?></a>
                         <?php if ($category['description']): ?><small class="muted"><?= e(excerpt($category['description'], 60)) ?></small><?php endif; ?>
                     </td>
                     <td class="muted">/catalog/<?= e($category['slug']) ?></td>
@@ -36,8 +36,8 @@
                         </span>
                     </td>
                     <td class="cell-actions">
-                        <a class="btn btn--ghost btn--sm" href="/admin/categories/<?= (int) $category['id'] ?>/edit">Изменить</a>
-                        <form method="post" action="/admin/categories/<?= (int) $category['id'] ?>/delete"
+                        <a class="btn btn--ghost btn--sm" href="<?= u('/') ?>admin/categories/<?= (int) $category['id'] ?>/edit">Изменить</a>
+                        <form method="post" action="<?= u('/') ?>admin/categories/<?= (int) $category['id'] ?>/delete"
                               onsubmit="return confirm('Удалить категорию «<?= e($category['name']) ?>»? Товары останутся без категории.')">
                             <?= csrf_field() ?>
                             <button class="btn btn--danger btn--sm" type="submit">Удалить</button>
@@ -51,6 +51,6 @@
 <?php else: ?>
     <div class="panel empty-box">
         <p>Категорий пока нет.</p>
-        <a class="btn btn--primary" href="/admin/categories/create">Создать категорию</a>
+        <a class="btn btn--primary" href="<?= u('/admin/categories/create') ?>">Создать категорию</a>
     </div>
 <?php endif; ?>

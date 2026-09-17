@@ -1,7 +1,7 @@
 <?php $settings = $settings ?? []; ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span><span>О нас</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span><span>О нас</span>
     </nav>
 
     <header class="page-head">
@@ -43,7 +43,7 @@
             </div>
             <div class="cta__actions">
                 <a class="btn btn--primary btn--lg" href="<?= e(phone_link($settings['phone'] ?? '')) ?>"><?= e($settings['phone'] ?? '') ?></a>
-                <a class="btn btn--ghost btn--lg" href="/contacts">Контакты и карта</a>
+                <a class="btn btn--ghost btn--lg" href="<?= u('/contacts') ?>">Контакты и карта</a>
             </div>
         </div>
     </section>

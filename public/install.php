@@ -188,8 +188,8 @@ $token = Csrf::token();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title>Установка «Ваш фермер»</title>
-    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="icon" href="<?= u('/assets/img/favicon.svg') ?>" type="image/svg+xml">
+    <link rel="stylesheet" href="<?= u('/assets/css/admin.css') ?>">
     <style>
         .install { max-width: 680px; margin: 0 auto; padding: 28px 16px 60px; }
         .install__head { text-align: center; margin-bottom: 24px; color: #fff; }
@@ -241,7 +241,7 @@ $token = Csrf::token();
                 <strong>Удалите файл <code>public/install.php</code> с сервера</strong> — иначе им сможет
                 воспользоваться посторонний, если вы очистите базу.
             </p>
-            <a class="btn btn--primary btn--block btn--lg" href="/admin/login">Перейти в админку</a>
+            <a class="btn btn--primary btn--block btn--lg" href="<?= u('/admin/login') ?>">Перейти в админку</a>
         </div>
 
     <?php elseif ($step === 1): ?>
@@ -324,8 +324,8 @@ $token = Csrf::token();
                 <strong>Обязательно удалите файл <code>public/install.php</code></strong> с сервера —
                 это единственный шаг, который нужно сделать вручную.
             </div>
-            <a class="btn btn--primary btn--block btn--lg" href="/admin/login">Войти в админку</a>
-            <a class="btn btn--ghost btn--block" href="/">Открыть сайт</a>
+            <a class="btn btn--primary btn--block btn--lg" href="<?= u('/admin/login') ?>">Войти в админку</a>
+            <a class="btn btn--ghost btn--block" href="<?= u('/') ?>">Открыть сайт</a>
         </div>
     <?php endif; ?>
 </div>

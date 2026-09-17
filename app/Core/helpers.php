@@ -19,13 +19,55 @@ function url(string $path = '/'): string
     return rtrim(Config::get('app.url', ''), '/') . '/' . ltrim($path, '/');
 }
 
+/**
+ * Папка, в которой сайт реально доступен браузеру.
+ *
+ * Пусто, когда корень домена указывает на public/ (как и задумано). Если файлы
+ * залили целиком и сайт открывается как /public/ либо магазин стоит в подпапке
+ * (/shop/), здесь окажется этот префикс — и все ссылки останутся рабочими.
+ */
+function base_path(): string
+{
+    static $base = null;
+
+    if ($base === null) {
+        if (PHP_SAPI === 'cli') {
+            return $base = '';
+        }
+        $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+        $dir    = rtrim(dirname($script), '/');
+        $base   = ($dir === '' || $dir === '.' || $dir === '/') ? '' : $dir;
+
+        // Если сервер сам перенаправляет запросы в public/ (правило в корневом
+        // .htaccess), адрес в браузере этой папки не содержит — префикс не нужен.
+        if ($base !== '') {
+            $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+            if (!str_starts_with($uri, $base . '/') && $uri !== $base) {
+                $base = '';
+            }
+        }
+    }
+
+    return $base;
+}
+
+/** Внутренняя ссылка с учётом базовой папки: u('/catalog') -> /public/catalog */
+function u(string $path = '/'): string
+{
+    // Внешние адреса, tel:, mailto:, якоря и протокол-относительные ссылки не трогаем
+    if ($path !== '' && preg_match('#^([a-z][a-z0-9+.\-]*:|//|\#|\?)#i', $path)) {
+        return $path;
+    }
+    return base_path() . '/' . ltrim($path, '/');
+}
+
 /** Ссылка на статику с версией файла — чтобы браузер не держал старый кэш. */
 function asset(string $path): string
 {
-    $path = '/assets/' . ltrim($path, '/');
-    $file = dirname(__DIR__, 2) . '/public' . $path;
-    $version = is_file($file) ? substr((string) filemtime($file), -6) : '1';
-    return $path . '?v=' . $version;
+    $relative = '/assets/' . ltrim($path, '/');
+    $file     = dirname(__DIR__, 2) . '/public' . $relative;
+    $version  = is_file($file) ? substr((string) filemtime($file), -6) : '1';
+    return u($relative) . '?v=' . $version;
 }
 
 /** 1290 -> «1 290 ₽» */
@@ -52,9 +94,9 @@ function plural(int $number, string $one, string $few, string $many): string
 function product_image(?string $image, string $fallback = 'placeholder.svg'): string
 {
     if ($image && is_file(dirname(__DIR__, 2) . '/public/uploads/' . $image)) {
-        return '/uploads/' . $image;
+        return u('/uploads/' . $image);
     }
-    return '/assets/img/' . $fallback;
+    return u('/assets/img/' . $fallback);
 }
 
 /** Транслитерация в slug: «Колбаса домашняя» -> «kolbasa-domashnyaya» */
@@ -106,6 +148,10 @@ function date_ru(?string $datetime, bool $withTime = true): string
 function is_active(string $path): bool
 {
     $current = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $base    = base_path();
+    if ($base !== '' && str_starts_with($current, $base)) {
+        $current = substr($current, strlen($base));
+    }
     $current = '/' . trim($current, '/');
     $path    = '/' . trim($path, '/');
     if ($path === '/') {

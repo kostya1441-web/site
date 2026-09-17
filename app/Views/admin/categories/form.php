@@ -1,12 +1,12 @@
 <?php
 /** @var array|null $category */
 $isEdit = $category !== null;
-$action = $isEdit ? '/admin/categories/' . (int) $category['id'] : '/admin/categories';
+$action = u($isEdit ? '/admin/categories/' . (int) $category['id'] : '/admin/categories');
 $value  = static fn (string $key, string $default = '') => $isEdit ? e((string) ($category[$key] ?? '')) : old($key, $default);
 ?>
 <div class="admin-head">
     <div>
-        <a class="back-link" href="/admin/categories">← К списку категорий</a>
+        <a class="back-link" href="<?= u('/admin/categories') ?>">← К списку категорий</a>
         <h1><?= $isEdit ? 'Редактирование категории' : 'Новая категория' ?></h1>
     </div>
 </div>

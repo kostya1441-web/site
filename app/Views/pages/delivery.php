@@ -1,7 +1,7 @@
 <?php $settings = $settings ?? []; ?>
 <div class="container">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <a href="/">Главная</a><span>/</span><span>Доставка и оплата</span>
+        <a href="<?= u('/') ?>">Главная</a><span>/</span><span>Доставка и оплата</span>
     </nav>
 
     <header class="page-head">
@@ -63,8 +63,8 @@
                 <p>Напишите или позвоните — подскажем, успеваем ли привезти сегодня и как лучше упаковать заказ.</p>
             </div>
             <div class="cta__actions">
-                <a class="btn btn--primary btn--lg" href="/contacts#feedback">Задать вопрос</a>
-                <a class="btn btn--ghost btn--lg" href="/catalog">В каталог</a>
+                <a class="btn btn--primary btn--lg" href="<?= u('/contacts#feedback') ?>">Задать вопрос</a>
+                <a class="btn btn--ghost btn--lg" href="<?= u('/catalog') ?>">В каталог</a>
             </div>
         </div>
     </section>

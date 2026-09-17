@@ -8,7 +8,7 @@
             Попробуйте оплатить ещё раз или выберите оплату при получении — позвоните нам, и мы переоформим.
         </p>
         <div class="result__actions">
-            <a class="btn btn--primary btn--lg" href="/checkout/retry?order=<?= urlencode($order['number']) ?>">Повторить оплату</a>
+            <a class="btn btn--primary btn--lg" href="<?= u('/') ?>checkout/retry?order=<?= urlencode($order['number']) ?>">Повторить оплату</a>
             <a class="btn btn--ghost btn--lg" href="<?= e(phone_link($settings['phone'] ?? '')) ?>"><?= e($settings['phone'] ?? '') ?></a>
         </div>
     </div>

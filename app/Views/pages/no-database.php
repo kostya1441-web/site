@@ -10,7 +10,7 @@ $configExists    = is_file(APP_ROOT . '/config/config.local.php');
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title>Магазин не настроен — Ваш фермер</title>
-    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="stylesheet" href="<?= u('/assets/css/admin.css') ?>">
     <style>
         .nodb { max-width: 620px; margin: 0 auto; padding: 40px 16px; }
         .nodb__head { text-align: center; color: #fff; margin-bottom: 22px; }
@@ -48,7 +48,7 @@ $configExists    = is_file(APP_ROOT . '/config/config.local.php');
         <?php endif; ?>
 
         <?php if ($installerExists): ?>
-            <a class="btn btn--primary btn--block btn--lg" href="/install.php">Открыть установщик</a>
+            <a class="btn btn--primary btn--block btn--lg" href="<?= u('/install.php') ?>">Открыть установщик</a>
         <?php endif; ?>
     </div>
 </div>

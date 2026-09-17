@@ -14,7 +14,7 @@ $settings = $settings ?? [];
                 и «магазинного» хранения по три недели.
             </p>
             <div class="hero__actions">
-                <a class="btn btn--primary btn--lg" href="/catalog">Смотреть каталог</a>
+                <a class="btn btn--primary btn--lg" href="<?= u('/catalog') ?>">Смотреть каталог</a>
                 <a class="btn btn--ghost btn--lg" href="<?= e(phone_link($settings['phone'] ?? '')) ?>">Заказать по телефону</a>
             </div>
             <ul class="hero__facts">
@@ -45,11 +45,11 @@ $settings = $settings ?? [];
     <div class="container">
         <div class="section__head">
             <h2 class="section__title">Категории</h2>
-            <a class="section__link" href="/catalog">Весь каталог →</a>
+            <a class="section__link" href="<?= u('/catalog') ?>">Весь каталог →</a>
         </div>
         <div class="categories">
             <?php foreach ($categories as $category): ?>
-                <a class="category" href="/catalog/<?= e($category['slug']) ?>">
+                <a class="category" href="<?= u('/') ?>catalog/<?= e($category['slug']) ?>">
                     <?php if (!empty($category['image'])): ?>
                         <img src="<?= e(product_image($category['image'], 'category.svg')) ?>" alt="" loading="lazy" width="200" height="140">
                     <?php else: ?>
@@ -69,7 +69,7 @@ $settings = $settings ?? [];
     <div class="container">
         <div class="section__head">
             <h2 class="section__title">Хиты продаж</h2>
-            <a class="section__link" href="/catalog?sort=popular">Все хиты →</a>
+            <a class="section__link" href="<?= u('/catalog?sort=popular') ?>">Все хиты →</a>
         </div>
         <div class="grid grid--products">
             <?php foreach ($featured as $product): ?>
@@ -97,7 +97,7 @@ $settings = $settings ?? [];
     <div class="container">
         <div class="section__head">
             <h2 class="section__title">Новинки фермы</h2>
-            <a class="section__link" href="/catalog?sort=new">Смотреть все →</a>
+            <a class="section__link" href="<?= u('/catalog?sort=new') ?>">Смотреть все →</a>
         </div>
         <div class="grid grid--products">
             <?php foreach ($latest as $product): ?>
@@ -116,7 +116,7 @@ $settings = $settings ?? [];
         </div>
         <div class="cta__actions">
             <a class="btn btn--primary btn--lg" href="<?= e(phone_link($settings['phone'] ?? '')) ?>"><?= e($settings['phone'] ?? '') ?></a>
-            <a class="btn btn--ghost btn--lg" href="/contacts">Написать нам</a>
+            <a class="btn btn--ghost btn--lg" href="<?= u('/contacts') ?>">Написать нам</a>
         </div>
     </div>
 </section>

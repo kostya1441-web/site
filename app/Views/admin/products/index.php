@@ -4,10 +4,10 @@
         <h1>Товары</h1>
         <p>Всего <?= (int) $pagination['total'] ?> <?= plural((int) $pagination['total'], 'позиция', 'позиции', 'позиций') ?> в каталоге</p>
     </div>
-    <a class="btn btn--primary" href="/admin/products/create">+ Добавить товар</a>
+    <a class="btn btn--primary" href="<?= u('/admin/products/create') ?>">+ Добавить товар</a>
 </div>
 
-<form class="filters" method="get" action="/admin/products">
+<form class="filters" method="get" action="<?= u('/admin/products') ?>">
     <input type="search" name="q" value="<?= e($filters['search']) ?>" placeholder="Название или артикул">
     <select name="category">
         <option value="">Все категории</option>
@@ -18,7 +18,7 @@
         <?php endforeach; ?>
     </select>
     <button class="btn btn--primary" type="submit">Найти</button>
-    <a class="btn btn--ghost" href="/admin/products">Сброс</a>
+    <a class="btn btn--ghost" href="<?= u('/admin/products') ?>">Сброс</a>
 </form>
 
 <?php if ($products): ?>
@@ -43,7 +43,7 @@
                         <img src="<?= e(product_image($product['image'])) ?>" alt="" width="52" height="52" loading="lazy">
                     </td>
                     <td>
-                        <a class="strong" href="/admin/products/<?= (int) $product['id'] ?>/edit"><?= e($product['name']) ?></a>
+                        <a class="strong" href="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/edit"><?= e($product['name']) ?></a>
                         <small class="muted"><?= e($product['sku'] ?: 'без артикула') ?> · /<?= e($product['slug']) ?></small>
                     </td>
                     <td><?= e($product['category_name'] ?? '— без категории —') ?></td>
@@ -57,20 +57,20 @@
                         </span>
                     </td>
                     <td>
-                        <form method="post" action="/admin/products/<?= (int) $product['id'] ?>/toggle/is_active" data-toggle-form>
+                        <form method="post" action="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/toggle/is_active" data-toggle-form>
                             <?= csrf_field() ?>
                             <button type="submit" class="switch <?= $product['is_active'] ? 'is-on' : '' ?>" aria-label="Переключить видимость"><span></span></button>
                         </form>
                     </td>
                     <td>
-                        <form method="post" action="/admin/products/<?= (int) $product['id'] ?>/toggle/is_featured" data-toggle-form>
+                        <form method="post" action="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/toggle/is_featured" data-toggle-form>
                             <?= csrf_field() ?>
                             <button type="submit" class="star <?= $product['is_featured'] ? 'is-on' : '' ?>" aria-label="Отметить как хит">★</button>
                         </form>
                     </td>
                     <td class="cell-actions">
-                        <a class="btn btn--ghost btn--sm" href="/admin/products/<?= (int) $product['id'] ?>/edit">Изменить</a>
-                        <form method="post" action="/admin/products/<?= (int) $product['id'] ?>/delete" onsubmit="return confirm('Удалить товар «<?= e($product['name']) ?>»?')">
+                        <a class="btn btn--ghost btn--sm" href="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/edit">Изменить</a>
+                        <form method="post" action="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/delete" onsubmit="return confirm('Удалить товар «<?= e($product['name']) ?>»?')">
                             <?= csrf_field() ?>
                             <button class="btn btn--danger btn--sm" type="submit">Удалить</button>
                         </form>
@@ -84,6 +84,6 @@
 <?php else: ?>
     <div class="panel empty-box">
         <p>Товаров не найдено.</p>
-        <a class="btn btn--primary" href="/admin/products/create">Добавить первый товар</a>
+        <a class="btn btn--primary" href="<?= u('/admin/products/create') ?>">Добавить первый товар</a>
     </div>
 <?php endif; ?>

@@ -2,7 +2,7 @@
 <footer class="footer">
     <div class="container footer__grid">
         <div class="footer__col">
-            <a class="logo logo--footer" href="/">
+            <a class="logo logo--footer" href="<?= u('/') ?>">
                 <span class="logo__mark" aria-hidden="true">🌾</span>
                 <span class="logo__text"><strong>Ваш фермер</strong><small>Новокузнецк</small></span>
             </a>
@@ -18,7 +18,7 @@
             <h3>Каталог</h3>
             <ul>
                 <?php foreach (\App\Models\Category::active() as $category): ?>
-                    <li><a href="/catalog/<?= e($category['slug']) ?>"><?= e($category['name']) ?></a></li>
+                    <li><a href="<?= u('/') ?>catalog/<?= e($category['slug']) ?>"><?= e($category['name']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -26,10 +26,10 @@
         <div class="footer__col">
             <h3>Покупателям</h3>
             <ul>
-                <li><a href="/delivery">Доставка и оплата</a></li>
-                <li><a href="/about">О хозяйстве</a></li>
-                <li><a href="/contacts">Контакты</a></li>
-                <li><a href="/cart">Корзина</a></li>
+                <li><a href="<?= u('/delivery') ?>">Доставка и оплата</a></li>
+                <li><a href="<?= u('/about') ?>">О хозяйстве</a></li>
+                <li><a href="<?= u('/contacts') ?>">Контакты</a></li>
+                <li><a href="<?= u('/cart') ?>">Корзина</a></li>
             </ul>
         </div>
 

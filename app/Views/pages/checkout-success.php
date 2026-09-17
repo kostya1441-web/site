@@ -22,7 +22,7 @@ use App\Models\Order;
         </p>
 
         <?php if (!$paid && $order['payment_method'] === 'sber' && $order['payment_status'] !== 'refunded'): ?>
-            <a class="btn btn--primary btn--lg" href="/checkout/retry?order=<?= urlencode($order['number']) ?>">Оплатить картой</a>
+            <a class="btn btn--primary btn--lg" href="<?= u('/') ?>checkout/retry?order=<?= urlencode($order['number']) ?>">Оплатить картой</a>
         <?php endif; ?>
 
         <div class="result__card">
@@ -50,7 +50,7 @@ use App\Models\Order;
         </div>
 
         <div class="result__actions">
-            <a class="btn btn--ghost" href="/catalog">Продолжить покупки</a>
+            <a class="btn btn--ghost" href="<?= u('/catalog') ?>">Продолжить покупки</a>
             <a class="btn btn--ghost" href="<?= e(phone_link($settings['phone'] ?? '')) ?>">Позвонить нам</a>
         </div>
     </div>

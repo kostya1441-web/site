@@ -9,14 +9,14 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
         <h1>Дашборд</h1>
         <p>Сводка по магазину на <?= date_ru(date('Y-m-d H:i:s')) ?></p>
     </div>
-    <a class="btn btn--primary" href="/admin/products/create">+ Добавить товар</a>
+    <a class="btn btn--primary" href="<?= u('/admin/products/create') ?>">+ Добавить товар</a>
 </div>
 
 <div class="stat-grid">
     <div class="stat">
         <span class="stat__label">Новых заказов</span>
         <strong class="stat__value"><?= (int) $stats['new'] ?></strong>
-        <a class="stat__link" href="/admin/orders?status=new">Обработать →</a>
+        <a class="stat__link" href="<?= u('/admin/orders?status=new') ?>">Обработать →</a>
     </div>
     <div class="stat">
         <span class="stat__label">Заказов сегодня</span>
@@ -31,7 +31,7 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
     <div class="stat">
         <span class="stat__label">Ждут оплаты</span>
         <strong class="stat__value"><?= (int) $stats['unpaid'] ?></strong>
-        <a class="stat__link" href="/admin/orders?payment_status=pending">Посмотреть →</a>
+        <a class="stat__link" href="<?= u('/admin/orders?payment_status=pending') ?>">Посмотреть →</a>
     </div>
     <div class="stat">
         <span class="stat__label">Средний чек</span>
@@ -82,7 +82,7 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
     <section class="panel">
         <div class="panel__head">
             <h2 class="panel__title">Последние заказы</h2>
-            <a class="panel__link" href="/admin/orders">Все заказы →</a>
+            <a class="panel__link" href="<?= u('/admin/orders') ?>">Все заказы →</a>
         </div>
         <?php if ($recentOrders): ?>
             <div class="table-wrap">
@@ -90,8 +90,8 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
                     <thead><tr><th>Номер</th><th>Клиент</th><th>Сумма</th><th>Статус</th></tr></thead>
                     <tbody>
                     <?php foreach ($recentOrders as $order): ?>
-                        <tr onclick="location.href='/admin/orders/<?= (int) $order['id'] ?>'">
-                            <td><a href="/admin/orders/<?= (int) $order['id'] ?>"><?= e($order['number']) ?></a><br><small class="muted"><?= date_ru($order['created_at']) ?></small></td>
+                        <tr onclick="location.href='<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>'">
+                            <td><a href="<?= u('/') ?>admin/orders/<?= (int) $order['id'] ?>"><?= e($order['number']) ?></a><br><small class="muted"><?= date_ru($order['created_at']) ?></small></td>
                             <td><?= e($order['customer_name']) ?><br><small class="muted"><?= e($order['phone']) ?></small></td>
                             <td><strong><?= price($order['total']) ?></strong></td>
                             <td>
@@ -111,14 +111,14 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
     <section class="panel">
         <div class="panel__head">
             <h2 class="panel__title">Заканчивается на складе</h2>
-            <a class="panel__link" href="/admin/products">Все товары →</a>
+            <a class="panel__link" href="<?= u('/admin/products') ?>">Все товары →</a>
         </div>
         <?php if ($lowStock): ?>
             <ul class="rank">
                 <?php foreach ($lowStock as $product): ?>
                     <li>
                         <span class="rank__num rank__num--warn"><?= (int) $product['stock'] ?></span>
-                        <span class="rank__name"><a href="/admin/products/<?= (int) $product['id'] ?>/edit"><?= e($product['name']) ?></a></span>
+                        <span class="rank__name"><a href="<?= u('/') ?>admin/products/<?= (int) $product['id'] ?>/edit"><?= e($product['name']) ?></a></span>
                         <span class="rank__value"><?= price($product['price']) ?> / <?= e($product['unit']) ?></span>
                     </li>
                 <?php endforeach; ?>
