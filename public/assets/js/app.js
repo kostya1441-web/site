@@ -203,6 +203,12 @@
     $$('[data-phone]').forEach((input) => {
         const format = (value) => {
             let digits = value.replace(/\D/g, '');
+
+            // Номер, вставленный из буфера поверх подставленного «+7 (», даёт
+            // лишние цифры в начале — берём последние 10 как сам номер.
+            if (digits.length > 11) {
+                digits = '7' + digits.slice(-10);
+            }
             if (digits.startsWith('8')) digits = '7' + digits.slice(1);
             if (!digits.startsWith('7')) digits = '7' + digits;
             digits = digits.slice(0, 11);

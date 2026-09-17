@@ -39,6 +39,11 @@ $maxRevenue = max(1, max(array_column($chart, 'revenue')));
         <span class="stat__hint">по оплаченным</span>
     </div>
     <div class="stat">
+        <span class="stat__label">Новых обращений</span>
+        <strong class="stat__value"><?= (int) $newMessages ?></strong>
+        <a class="stat__link" href="<?= u('/admin/messages') ?>">Ответить →</a>
+    </div>
+    <div class="stat">
         <span class="stat__label">Каталог</span>
         <strong class="stat__value"><?= (int) $productCount ?></strong>
         <span class="stat__hint"><?= (int) $categoryCount ?> <?= plural((int) $categoryCount, 'категория', 'категории', 'категорий') ?></span>

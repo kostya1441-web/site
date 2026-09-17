@@ -3,6 +3,8 @@
 use App\Controllers\Admin\AuthController;
 use App\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\MaintenanceController;
+use App\Controllers\Admin\MessageController as AdminMessageController;
 use App\Controllers\Admin\OrderController as AdminOrderController;
 use App\Controllers\Admin\ProductController as AdminProductController;
 use App\Controllers\Admin\SettingsController;
@@ -62,6 +64,13 @@ $router->group('/admin', [AdminMiddleware::class], static function (Router $rout
     $router->post('/orders/{id:\d+}/check-payment', [AdminOrderController::class, 'checkPayment']);
     $router->post('/orders/{id:\d+}/refund', [AdminOrderController::class, 'refund']);
     $router->post('/orders/{id:\d+}/delete', [AdminOrderController::class, 'destroy']);
+
+    $router->post('/update-database', [MaintenanceController::class, 'updateDatabase']);
+
+    $router->get('/messages', [AdminMessageController::class, 'index']);
+    $router->post('/messages/{id:\d+}/status', [AdminMessageController::class, 'updateStatus']);
+    $router->post('/messages/{id:\d+}/note', [AdminMessageController::class, 'saveNote']);
+    $router->post('/messages/{id:\d+}/delete', [AdminMessageController::class, 'destroy']);
 
     $router->get('/products', [AdminProductController::class, 'index']);
     $router->get('/products/create', [AdminProductController::class, 'create']);

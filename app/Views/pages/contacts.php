@@ -82,6 +82,10 @@ $gisLink    = 'https://2gis.ru/novokuznetsk/search/' . rawurlencode($settings['a
                     <input type="tel" name="phone" required value="<?= old('phone') ?>" data-phone placeholder="+7 (923) 000-00-00">
                 </label>
                 <label class="field field--full">
+                    <span>E-mail (если удобнее ответить письмом)</span>
+                    <input type="email" name="email" value="<?= old('email') ?>" placeholder="mail@example.ru">
+                </label>
+                <label class="field field--full">
                     <span>Вопрос *</span>
                     <textarea name="message" rows="4" required maxlength="2000"><?= old('message') ?></textarea>
                 </label>

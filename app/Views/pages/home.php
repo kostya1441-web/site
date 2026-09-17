@@ -116,7 +116,7 @@ $settings = $settings ?? [];
         </div>
         <div class="cta__actions">
             <a class="btn btn--primary btn--lg" href="<?= e(phone_link($settings['phone'] ?? '')) ?>"><?= e($settings['phone'] ?? '') ?></a>
-            <a class="btn btn--ghost btn--lg" href="<?= u('/contacts') ?>">Написать нам</a>
+            <a class="btn btn--ghost btn--lg" href="<?= u('/contacts') ?>#feedback">Написать нам</a>
         </div>
     </div>
 </section>

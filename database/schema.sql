@@ -107,3 +107,18 @@ CREATE TABLE IF NOT EXISTS payment_log (
     payload    TEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS messages (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(191) NOT NULL,
+    phone      VARCHAR(32) NOT NULL,
+    email      VARCHAR(191) NOT NULL DEFAULT '',
+    message    TEXT,
+    status     VARCHAR(16) NOT NULL DEFAULT 'new',
+    admin_note TEXT,
+    ip         VARCHAR(64) NOT NULL DEFAULT '',
+    mail_sent  TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_messages_status (status),
+    INDEX idx_messages_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

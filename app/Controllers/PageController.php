@@ -6,7 +6,9 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Core\Validator;
 use App\Models\Category;
+use App\Models\Message;
 use App\Models\Setting;
+use App\Services\Notifier;
 
 class PageController extends Controller
 {
@@ -47,13 +49,16 @@ class PageController extends Controller
         $data = [
             'name'    => $this->request->string('name'),
             'phone'   => $this->request->string('phone'),
+            'email'   => $this->request->string('email'),
             'message' => $this->request->string('message'),
         ];
 
         $validator = (new Validator($data))
             ->required('name', 'Представьтесь, пожалуйста')
+            ->maxLength('name', 120, 'Слишком длинное имя')
             ->required('phone', 'Укажите телефон для связи')
             ->phone('phone', 'Телефон выглядит некорректно')
+            ->email('email', 'Проверьте адрес электронной почты')
             ->required('message', 'Напишите вопрос')
             ->maxLength('message', 2000, 'Слишком длинное сообщение');
 
@@ -64,13 +69,23 @@ class PageController extends Controller
             return;
         }
 
-        $to = Setting::get('notify_email');
-        if ($to !== '' && function_exists('mail')) {
-            $body = "Вопрос с сайта\n\nИмя: {$data['name']}\nТелефон: {$data['phone']}\n\n{$data['message']}";
-            @mail($to, '=?UTF-8?B?' . base64_encode('Вопрос с сайта «Ваш фермер»') . '?=', $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+        // Письмо может не дойти (на хостинге бывает отключён mail), поэтому
+        // обращение прежде всего сохраняем в базу — менеджер увидит его в админке.
+        $sent = Notifier::feedback($data);
+
+        try {
+            Message::create($data + ['ip' => $this->request->ip(), 'mail_sent' => $sent]);
+        } catch (\Throwable $e) {
+            error_log('Не удалось сохранить обращение: ' . $e->getMessage());
+            if (!$sent) {
+                Session::flashInput($data);
+                Session::flash('error', 'Не получилось отправить сообщение. Позвоните нам, пожалуйста: ' . Setting::get('phone'));
+                $this->redirect('/contacts#feedback');
+                return;
+            }
         }
 
-        Session::flash('success', 'Спасибо! Мы позвоним вам в ближайшее время.');
+        Session::flash('success', 'Спасибо! Мы получили ваш вопрос и перезвоним в ближайшее время.');
         $this->redirect('/contacts#feedback');
     }
 

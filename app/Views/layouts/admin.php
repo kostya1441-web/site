@@ -2,7 +2,8 @@
 use App\Core\Auth;
 
 $admin = Auth::user();
-$newOrders = (int) \App\Core\Database::instance()->value("SELECT COUNT(*) FROM orders WHERE status = 'new'");
+$newOrders   = (int) \App\Core\Database::instance()->value("SELECT COUNT(*) FROM orders WHERE status = 'new'");
+$newMessages = \App\Models\Message::countNew();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -40,6 +41,10 @@ $newOrders = (int) \App\Core\Database::instance()->value("SELECT COUNT(*) FROM o
                 <span aria-hidden="true">🧾</span> Заказы
                 <?php if ($newOrders): ?><em class="admin-side__badge"><?= $newOrders ?></em><?php endif; ?>
             </a>
+            <a class="admin-side__link<?= is_active('/admin/messages') ? ' is-active' : '' ?>" href="<?= u('/admin/messages') ?>">
+                <span aria-hidden="true">✉️</span> Обращения
+                <?php if ($newMessages): ?><em class="admin-side__badge"><?= $newMessages ?></em><?php endif; ?>
+            </a>
             <a class="admin-side__link<?= is_active('/admin/products') ? ' is-active' : '' ?>" href="<?= u('/admin/products') ?>">
                 <span aria-hidden="true">🥩</span> Товары
             </a>
@@ -57,6 +62,18 @@ $newOrders = (int) \App\Core\Database::instance()->value("SELECT COUNT(*) FROM o
 
     <main class="admin-main">
         <?php \App\Core\View::partial('partials/flash'); ?>
+
+        <?php $missingTables = \App\Core\Schema::missingTables(); ?>
+        <?php if ($missingTables): ?>
+            <div class="alert alert--error">
+                <strong>База устарела.</strong> Не хватает таблиц: <?= e(implode(', ', $missingTables)) ?>.
+                Часть разделов не будет работать, пока вы не обновите базу.
+                <form method="post" action="<?= u('/admin/update-database') ?>" style="margin-top:10px">
+                    <?= csrf_field() ?>
+                    <button class="btn btn--primary btn--sm" type="submit">Обновить базу</button>
+                </form>
+            </div>
+        <?php endif; ?>
         <?= $content ?>
     </main>
 </div>

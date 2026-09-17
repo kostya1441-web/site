@@ -326,3 +326,27 @@ body.admin--auth { display: grid; place-items: center; min-height: 100vh; backgr
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition-duration: .001ms !important; }
 }
+
+/* ---------- Обращения с сайта ---------- */
+.messages { display: flex; flex-direction: column; gap: 12px; }
+.message {
+    background: #fff; border-radius: var(--radius); padding: 18px 20px;
+    box-shadow: var(--shadow-sm); border-left: 3px solid transparent;
+}
+.message--new { border-left-color: var(--amber); }
+.message__head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: flex-start; }
+.message__name { display: block; font-size: 16px; }
+.message__phone { display: inline-block; margin-right: 14px; font-size: 14px; }
+.message__meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.message__text { margin: 12px 0; color: var(--ink-600); white-space: pre-line; }
+.message__warn {
+    margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius-sm);
+    background: var(--amber-100); color: #8a5a06; font-size: 13px;
+}
+.message__note { margin-bottom: 12px; }
+.message__note summary { cursor: pointer; font-size: 13px; color: var(--ink-400); }
+.message__note summary:hover { color: var(--green-700); }
+.message__note form { margin-top: 10px; }
+.message__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.message__actions form { margin: 0; }
+.message__actions .btn { margin-top: 0; }

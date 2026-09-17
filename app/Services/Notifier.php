@@ -58,10 +58,31 @@ class Notifier
         }
     }
 
-    private static function send(string $to, string $subject, string $body): void
+    /** Вопрос с формы обратной связи. Возвращает, удалось ли отправить письмо. */
+    public static function feedback(array $data): bool
+    {
+        $to = Setting::get('notify_email');
+        if ($to === '') {
+            return false;
+        }
+
+        $body = implode("\n", [
+            'Вопрос с сайта «Ваш фермер»',
+            '',
+            'Имя: ' . $data['name'],
+            'Телефон: ' . $data['phone'],
+            'E-mail: ' . ($data['email'] ?: '—'),
+            '',
+            $data['message'],
+        ]);
+
+        return self::send($to, 'Вопрос с сайта «Ваш фермер»', $body);
+    }
+
+    private static function send(string $to, string $subject, string $body): bool
     {
         if (!function_exists('mail')) {
-            return;
+            return false;
         }
         $from    = Setting::get('email', 'noreply@localhost');
         $headers = [
@@ -72,9 +93,10 @@ class Notifier
         $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 
         try {
-            @mail($to, $encodedSubject, $body, implode("\r\n", $headers));
+            return @mail($to, $encodedSubject, $body, implode("\r\n", $headers));
         } catch (\Throwable $e) {
             error_log('mail: ' . $e->getMessage());
+            return false;
         }
     }
 }
