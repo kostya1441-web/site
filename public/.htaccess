@@ -1,0 +1,25 @@
+# Все запросы — на единую точку входа
+RewriteEngine On
+
+# HTTPS (раскомментируйте на боевом домене)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 30 days"
+    ExpiresByType application/javascript "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 90 days"
+    ExpiresByType image/png "access plus 90 days"
+    ExpiresByType image/webp "access plus 90 days"
+    ExpiresByType image/svg+xml "access plus 90 days"
+</IfModule>

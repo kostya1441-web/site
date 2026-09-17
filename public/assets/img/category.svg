@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Категория">
+  <rect width="200" height="140" rx="16" fill="#fdf1dc"/>
+  <path d="M60 92h80l-10 28H70z" fill="#e29a2d"/>
+  <circle cx="100" cy="62" r="24" fill="#f0c274"/>
+</svg>

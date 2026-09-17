@@ -1,0 +1,10 @@
+# В папке загрузок ничего не исполняем — только отдаём картинки
+php_flag engine off
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>

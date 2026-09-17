@@ -1,0 +1,328 @@
+/* ==========================================================================
+   Админка «Ваш фермер»
+   ========================================================================== */
+
+:root {
+    --green-900: #10301f;
+    --green-700: #1f5c3d;
+    --green-600: #26704a;
+    --green-500: #2f8757;
+    --green-100: #e3f1e8;
+    --amber:     #e29a2d;
+    --amber-100: #fdf1dc;
+    --ink:       #1b2420;
+    --ink-600:   #4c5a53;
+    --ink-400:   #7c8a83;
+    --line:      #e6e6e0;
+    --bg:        #f4f6f3;
+    --danger:    #c0392b;
+    --radius-sm: 8px;
+    --radius:    14px;
+    --shadow-sm: 0 1px 2px rgba(16, 48, 31, .06), 0 2px 8px rgba(16, 48, 31, .04);
+    --shadow:    0 6px 20px rgba(16, 48, 31, .1);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body.admin {
+    margin: 0; font-family: var(--font); font-size: 15px; line-height: 1.5;
+    color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--green-700); text-decoration: none; }
+a:hover { color: var(--green-500); }
+h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -.02em; }
+h2 { margin: 0 0 12px; }
+p { margin: 0 0 10px; }
+ul { margin: 0; padding: 0; list-style: none; }
+code { background: var(--green-100); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+.muted { color: var(--ink-400); }
+.small { font-size: 13px; }
+.strong { font-weight: 600; }
+.divider { height: 1px; background: var(--line); margin: 16px 0; }
+
+/* ---------- Кнопки, общие с витриной ---------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 18px; border: 1px solid transparent; border-radius: 999px;
+    font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; transition: .15s; white-space: nowrap;
+}
+.btn--primary { background: var(--green-700); color: #fff; }
+.btn--primary:hover { background: var(--green-600); color: #fff; }
+.btn--ghost { background: #fff; border-color: var(--line); color: var(--ink); }
+.btn--ghost:hover { border-color: var(--green-500); color: var(--green-700); }
+.btn--danger { background: #fdeceb; color: var(--danger); border-color: #f6cfcb; }
+.btn--danger:hover { background: var(--danger); color: #fff; }
+.btn--block { display: flex; width: 100%; }
+.btn--lg { padding: 13px 24px; font-size: 15px; }
+.btn--sm { padding: 6px 12px; font-size: 13px; }
+.btn + .btn, form + form .btn { margin-top: 8px; }
+
+/* ---------- Верхняя панель ---------- */
+.admin-top {
+    position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; background: var(--green-900); color: #fff;
+}
+.admin-top__logo { color: #fff; font-weight: 700; font-size: 17px; }
+.admin-top__logo small { font-weight: 400; font-size: 12px; opacity: .65; margin-left: 6px; }
+.admin-top__right { display: flex; align-items: center; gap: 14px; margin-left: auto; font-size: 14px; }
+.admin-top__site { display: none; color: #a9c9b6; }
+@media (min-width: 560px) { .admin-top__site { display: inline; } }
+.admin-top__site:hover { color: var(--amber); }
+.admin-top__user { display: none; color: #a9c9b6; }
+.admin-top__logout {
+    background: rgba(255, 255, 255, .12); border: 0; color: #fff; padding: 7px 14px;
+    border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.admin-top__logout:hover { background: rgba(255, 255, 255, .22); }
+
+.burger--admin {
+    display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 38px; height: 38px;
+    padding: 0 8px; background: rgba(255, 255, 255, .12); border: 0; border-radius: var(--radius-sm); cursor: pointer;
+}
+.burger--admin span { display: block; height: 2px; background: #fff; border-radius: 2px; }
+
+/* ---------- Каркас ---------- */
+.admin-layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 58px); }
+
+.admin-side {
+    display: none; flex-direction: column; gap: 4px; padding: 16px 12px;
+    background: #fff; border-right: 1px solid var(--line);
+}
+.admin-side.is-open { display: flex; }
+.admin-side nav { display: flex; flex-direction: column; gap: 4px; }
+.admin-side__link {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: var(--radius-sm);
+    color: var(--ink); font-weight: 500;
+}
+.admin-side__link:hover { background: var(--green-100); color: var(--green-800); }
+.admin-side__link.is-active { background: var(--green-700); color: #fff; }
+.admin-side__badge {
+    margin-left: auto; font-style: normal; background: var(--amber); color: #3a2400;
+    border-radius: 999px; padding: 1px 8px; font-size: 12px; font-weight: 700;
+}
+.admin-side__foot { margin-top: auto; padding: 14px; font-size: 13px; color: var(--ink-400); }
+
+.admin-main { padding: 18px 16px 48px; min-width: 0; }
+
+.admin-head { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.admin-head p { color: var(--ink-400); font-size: 14px; margin: 0; }
+.admin-head__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.back-link { font-size: 13px; color: var(--ink-400); }
+
+/* ---------- Оповещения ---------- */
+.alert {
+    margin-bottom: 16px; padding: 12px 16px; border-radius: var(--radius-sm);
+    border-left: 4px solid var(--green-500); background: var(--green-100); color: #0f3d26; font-weight: 500;
+}
+.alert--error { background: #fdeceb; border-color: var(--danger); color: #7d1f16; }
+
+/* ---------- Панели ---------- */
+.panel { background: #fff; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.panel__title { font-size: 16px; margin-bottom: 14px; }
+.panel__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.panel__link { font-size: 13px; }
+.panel--danger { border: 1px solid #f6cfcb; }
+.panel--warn { border-left: 4px solid var(--amber); }
+.panel--ok { border-left: 4px solid var(--green-500); }
+.panel--wide { margin-bottom: 40px; }
+.empty-box { text-align: center; padding: 40px 20px; }
+
+.admin-cols { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.admin-col { min-width: 0; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- Статистика ---------- */
+.stat-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 18px; }
+.stat { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px; }
+.stat--accent { background: linear-gradient(135deg, var(--green-700), var(--green-500)); color: #fff; }
+.stat--accent .stat__label, .stat--accent .stat__hint { color: rgba(255, 255, 255, .78); }
+.stat__label { font-size: 13px; color: var(--ink-400); }
+.stat__value { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+.stat__hint { font-size: 12px; color: var(--ink-400); }
+.stat__link { font-size: 13px; font-weight: 600; }
+
+/* ---------- График ---------- */
+.chart { display: flex; align-items: flex-end; gap: 6px; height: 210px; padding-top: 10px; }
+.chart__col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 6px; }
+.chart__bar {
+    width: 100%; max-width: 38px; background: linear-gradient(180deg, var(--green-500), var(--green-700));
+    border-radius: 6px 6px 0 0; position: relative; min-height: 4px; transition: opacity .15s;
+}
+.chart__col:hover .chart__bar { opacity: .82; }
+.chart__value {
+    position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; color: var(--ink-400); white-space: nowrap;
+}
+.chart__label { font-size: 11px; color: var(--ink-400); }
+
+/* ---------- Рейтинг / списки ---------- */
+.rank { display: flex; flex-direction: column; gap: 10px; }
+.rank li { display: flex; align-items: center; gap: 12px; }
+.rank__num {
+    display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%;
+    background: var(--green-100); color: var(--green-700); font-weight: 700; font-size: 13px;
+}
+.rank__num--warn { background: var(--amber-100); color: #8a5a06; }
+.rank__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank__value { font-size: 13px; color: var(--ink-400); white-space: nowrap; }
+
+/* ---------- Фильтры ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.filters input, .filters select {
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    font: inherit; font-size: 14px; background: #fff; min-width: 140px; flex: 1 1 160px;
+}
+.filters .btn { flex: 0 0 auto; }
+
+/* ---------- Таблицы ---------- */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+.table th {
+    text-align: left; padding: 10px 12px; font-size: 12px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ink-400); border-bottom: 1px solid var(--line); font-weight: 600;
+}
+.table td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.table tbody tr:hover { background: #fafcfa; }
+.table small { display: block; font-size: 12px; }
+.table tfoot td { border-bottom: 0; color: var(--ink-600); }
+.table tfoot .total-row td { font-weight: 700; font-size: 16px; color: var(--ink); border-top: 2px solid var(--line); }
+.row-link { cursor: pointer; }
+.cell-thumb { width: 68px; }
+.cell-thumb img {
+    width: 52px; min-width: 52px; height: 52px; border-radius: var(--radius-sm);
+    object-fit: cover; background: var(--green-100);
+}
+.thumb-icon {
+    width: 52px; min-width: 52px; height: 52px; border-radius: var(--radius-sm);
+    background: var(--green-100); display: grid; place-items: center; font-size: 22px;
+}
+.cell-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cell-actions form { margin: 0; }
+.cell-actions .btn { margin-top: 0; }
+
+.stock { font-weight: 700; }
+.stock--low { color: var(--amber); }
+.stock--out { color: var(--danger); }
+
+/* ---------- Чипы статусов ---------- */
+.chip {
+    display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--green-100); color: var(--green-700); white-space: nowrap;
+}
+.chip--new { background: var(--amber-100); color: #8a5a06; }
+.chip--confirmed { background: #e2ecfa; color: #1f4b8f; }
+.chip--assembling { background: #f0e9fb; color: #5b3a9c; }
+.chip--delivering { background: #e0f2f7; color: #14657f; }
+.chip--completed { background: var(--green-100); color: var(--green-700); }
+.chip--canceled { background: #f1f1ef; color: var(--ink-400); }
+.chip--pay-paid { background: var(--green-100); color: var(--green-700); }
+.chip--pay-pending { background: var(--amber-100); color: #8a5a06; }
+.chip--pay-failed { background: #fdeceb; color: var(--danger); }
+.chip--pay-refunded { background: #f1f1ef; color: var(--ink-400); }
+
+/* ---------- Формы ---------- */
+.form-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field > span { font-size: 13px; font-weight: 600; color: var(--ink-600); }
+.field input, .field select, .field textarea {
+    padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    font: inherit; font-size: 14px; background: #fbfcfb; width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--green-500); background: #fff; box-shadow: 0 0 0 3px rgba(47, 135, 87, .14);
+}
+.field textarea { resize: vertical; }
+.field--full { grid-column: 1 / -1; }
+
+/* Поля вне .field (например, заметка менеджера) — тот же вид */
+.stack textarea, .stack input, .stack select, .panel > form textarea {
+    padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    font: inherit; font-size: 14px; background: #fbfcfb; width: 100%; resize: vertical;
+}
+.stack textarea:focus, .panel > form textarea:focus {
+    outline: none; border-color: var(--green-500); background: #fff; box-shadow: 0 0 0 3px rgba(47, 135, 87, .14);
+}
+.form-grid .field { margin-bottom: 0; }
+
+.checkbox { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; margin-bottom: 12px; cursor: pointer; }
+.checkbox input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green-700); }
+
+.preview { width: 100%; max-width: 260px; border-radius: var(--radius-sm); margin-bottom: 12px; object-fit: cover; }
+.delete-form { margin: 8px 0 40px; }
+
+.deflist { margin: 0; }
+.deflist > div { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.deflist dt { flex: 0 0 130px; color: var(--ink-400); margin: 0; }
+.deflist dd { margin: 0; flex: 1; min-width: 0; word-break: break-word; }
+
+/* ---------- Переключатели в таблице ---------- */
+.switch {
+    width: 44px; height: 25px; border: 0; border-radius: 999px; background: #d8ddd8;
+    padding: 3px; cursor: pointer; display: block; transition: background .2s;
+}
+.switch span { display: block; width: 19px; height: 19px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.switch.is-on { background: var(--green-500); }
+.switch.is-on span { transform: translateX(19px); }
+.star { border: 0; background: none; font-size: 20px; color: #d8ddd8; cursor: pointer; padding: 0; line-height: 1; }
+.star.is-on { color: var(--amber); }
+
+/* ---------- Таймлайн ---------- */
+.timeline { display: flex; flex-direction: column; gap: 16px; padding-left: 6px; }
+.timeline li { display: flex; gap: 14px; position: relative; }
+.timeline li:not(:last-child)::after {
+    content: ''; position: absolute; left: 5px; top: 18px; bottom: -16px; width: 2px; background: var(--line);
+}
+.timeline__dot {
+    width: 12px; height: 12px; flex: 0 0 12px; border-radius: 50%; background: var(--green-500);
+    margin-top: 5px; position: relative; z-index: 1;
+}
+.timeline p { font-size: 14px; color: var(--ink-600); margin: 2px 0; }
+.timeline small { font-size: 12px; }
+
+/* ---------- Пагинация ---------- */
+.pagination { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 20px 0; }
+.pagination__item {
+    min-width: 38px; height: 38px; padding: 0 10px; display: grid; place-items: center;
+    border-radius: var(--radius-sm); background: #fff; color: var(--ink); font-weight: 600; box-shadow: var(--shadow-sm);
+}
+.pagination__item.is-active { background: var(--green-700); color: #fff; }
+.pagination__dots { display: grid; place-items: center; min-width: 24px; color: var(--ink-400); }
+
+/* ---------- Страница входа ---------- */
+.admin--auth { display: grid; place-items: center; min-height: 100vh; background: linear-gradient(160deg, #10301f, #26704a); padding: 20px; }
+.auth-wrap { width: 100%; max-width: 400px; }
+.auth-card { background: #fff; border-radius: 20px; padding: 32px 28px; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); }
+.auth-card__head { text-align: center; margin-bottom: 22px; }
+.auth-card__head span { font-size: 36px; }
+.auth-card__head h1 { font-size: 22px; margin: 10px 0 4px; }
+.auth-card__head p { color: var(--ink-400); font-size: 14px; margin: 0; }
+.auth-form .field { margin-bottom: 16px; }
+.auth-card__back { display: block; text-align: center; margin-top: 18px; font-size: 13px; color: var(--ink-400); }
+.admin--auth .alert { background: #fff; }
+
+/* ==========================================================================
+   Планшет и десктоп
+   ========================================================================== */
+@media (min-width: 720px) {
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .admin-top__user { display: inline; }
+    .admin-main { padding: 24px; }
+}
+
+@media (min-width: 1024px) {
+    .burger--admin { display: none; }
+    .admin-layout { grid-template-columns: 248px 1fr; }
+    .admin-side { display: flex; position: sticky; top: 58px; height: calc(100vh - 58px); }
+    .admin-cols { grid-template-columns: 1fr 1fr; }
+    .admin-cols--2-1 { grid-template-columns: 2fr 1fr; align-items: start; }
+    .admin-main { padding: 28px 32px 60px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .001ms !important; }
+}

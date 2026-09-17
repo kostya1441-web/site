@@ -1,0 +1,21 @@
+# Локальные настройки с реквизитами эквайринга
+/config/config.local.php
+
+# База данных и логи
+/storage/*.sqlite
+/storage/*.sqlite-wal
+/storage/*.sqlite-shm
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+
+# Загруженные картинки товаров
+/public/uploads/*
+!/public/uploads/.htaccess
+!/public/uploads/.gitkeep
+
+# Служебное
+/node_modules
+.DS_Store
+*.log
