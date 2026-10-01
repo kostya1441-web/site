@@ -1,0 +1,17 @@
+{
+  "name": "hazleton-pumps-cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hazleton Pumps website with an editable admin panel (EN/RU content, images, leads).",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "multer": "^2.4.0"
+  }
+}

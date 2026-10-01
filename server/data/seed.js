@@ -1,0 +1,763 @@
+// One-off migration script: builds data/content.json from the already
+// translated EN/RU copy. Run with `node data/seed.js` from server/.
+// Safe to re-run — it always overwrites content.json from scratch.
+const fs = require("fs");
+const path = require("path");
+
+const img = (name) => `/assets/img/${name}`;
+
+const settings = {
+  companyName: "Hazleton Pumps",
+  phone: "+27 (0) 12 666 8203",
+  email: "info@hazletonpumps.co.za",
+  address_en: "33 Van Tonder Street<br>Sunderland Ridge, Centurion, South Africa",
+  address_ru: "ул. Ван Тондер, 33<br>Сандерленд-Ридж, Сентурион, ЮАР",
+  footerTag_en: "Hazleton Pumps develops and manufactures heavy-duty slurry pumps and pump systems, custom built in South Africa and deployed worldwide.",
+  footerTag_ru: "Hazleton Pumps разрабатывает и производит тяжёлые шламовые насосы и насосные системы, изготавливаемые на заказ в Южной Африке и поставляемые по всему миру.",
+  year: "2026",
+  ctaTitle_en: "Let us help you configure a solution!",
+  ctaTitle_ru: "Поможем подобрать решение!",
+  ctaBody_en: "Our pump solutions can be custom made to your pumping requirements. Don't see a solution to your current pumping problem?",
+  ctaBody_ru: "Наши насосные решения изготавливаются индивидуально под задачи заказчика. Не нашли готовое решение для своей задачи?",
+  metaDescription: "Hazleton Pumps — custom-engineered heavy-duty slurry pumps and pump systems, designed and manufactured in South Africa.",
+};
+
+const nav = [
+  { en: "Home", ru: "Главная", href: "/" },
+  {
+    en: "About Us", ru: "О компании", href: "/history/",
+    children: [
+      { en: "History", ru: "История", href: "/history/" },
+      { en: "Press Releases & Articles", ru: "Пресс-релизы и статьи", href: "/press-releases/" },
+      { en: "Awards", ru: "Награды", href: "/awards/" },
+    ],
+  },
+  {
+    en: "Pump Systems", ru: "Насосные системы", href: "/pump-systems/",
+    children: [
+      { en: "Overview", ru: "Обзор", href: "/pump-systems/" },
+      { en: "Cyclone Solids Separation", ru: "Циклонное отделение твёрдых частиц", href: "/pump-systems/cyclone-solids-separation-submersible-pumping-system/" },
+      { en: "High Head Slurry Series", ru: "Серия высоконапорных шламовых систем", href: "/pump-systems/high-head-slurry-series-pumping-system/" },
+    ],
+  },
+  {
+    en: "Hippo Range", ru: "Линейка Hippo", href: "/hippo-range/",
+    children: [
+      { en: "Overview", ru: "Обзор", href: "/hippo-range/" },
+      { en: "Submersibles", ru: "Погружные насосы", href: "/hippo-range/submersibles/" },
+      { en: "Verticals", ru: "Вертикальные насосы", href: "/hippo-range/verticals/" },
+    ],
+  },
+  {
+    en: "Resources", ru: "Ресурсы", href: "/case-studies/",
+    children: [
+      { en: "Case Studies", ru: "Примеры проектов", href: "/case-studies/" },
+      { en: "Pump Curves", ru: "Напорные характеристики", href: "/pump-curves/" },
+    ],
+  },
+  { en: "Contact", ru: "Контакты", href: "/contact/" },
+];
+
+function crumbs(list) {
+  return list.map(([en, ru, href]) => ({ en, ru, href }));
+}
+
+const IEC_NOTE_EN = "To pump in explosive environments, all Hippo Submersible Pumps comply with IEC (SANS) 60079-0:2005 and IEC (SANS) 60079-1:2004.";
+const IEC_NOTE_RU = "Для работы во взрывоопасных средах все погружные насосы Hippo соответствуют стандартам IEC (SANS) 60079-0:2005 и IEC (SANS) 60079-1:2004.";
+
+const pages = {};
+
+// ------------------------------------------------------------------- HOME --
+pages[""] = {
+  title_en: "Customise Technology | Incomparable Quality",
+  title_ru: "",
+  eyebrow_en: "", eyebrow_ru: "",
+  showHead: false,
+  crumbs: crumbs([["Home", "Главная", null]]),
+  blocks: [
+    {
+      type: "hero",
+      eyebrow_en: "Custom Technology · Incomparable Quality",
+      eyebrow_ru: "Технологии под заказ · Непревзойдённое качество",
+      title_en: "Getting to the bottom, faster!",
+      title_ru: "Быстрее добираемся до дна!",
+      body_en: "Hazleton Pumps develops and manufactures heavy-duty pumps and pump systems, custom built and designed for our clients' specific needs and requirements. Proudly made in South Africa and deployed worldwide.",
+      body_ru: "Hazleton Pumps разрабатывает и производит тяжёлые насосы и насосные системы, создаваемые по индивидуальному проекту под конкретные задачи заказчика. С гордостью производится в Южной Африке и поставляется по всему миру.",
+      image: img("hippo-pump.png"),
+      buttons: [
+        { label_en: "Request a Quote", label_ru: "Запросить КП", href: "/contact/" },
+        { label_en: "Explore the Hippo Range", label_ru: "Линейка Hippo", href: "/hippo-range/" },
+      ],
+    },
+    {
+      type: "text", alt: true, tight: true, center: true,
+      body_en: "<p>Hazleton Pumps can provide spare parts and services to all Hazleton Pumps products and systems. This includes pumps originally manufactured in North America and Canada.</p>",
+      body_ru: "<p>Hazleton Pumps поставляет запасные части и выполняет сервисное обслуживание для всей продукции и систем Hazleton Pumps, включая насосы, изначально изготовленные в Северной Америке и Канаде.</p>",
+    },
+    {
+      type: "cards", variant: "feature", columns: 3,
+      eyebrow_en: "Why Hazleton", eyebrow_ru: "Почему Hazleton",
+      title_en: "Our competitive advantage", title_ru: "Наши конкурентные преимущества",
+      items: [
+        { num: "01", title_en: "Customised Technology", title_ru: "Технологии под заказ",
+          body_en: "Hazleton Pump systems are custom built and designed with pumps from the Hippo Slurry Pump Range, for each of our clients' specific needs.",
+          body_ru: "Насосные системы Hazleton собираются и проектируются с использованием насосов линейки Hippo под конкретные требования каждого клиента." },
+        { num: "02", title_en: "Adaptive Materials", title_ru: "Адаптируемые материалы",
+          body_en: "Materials can be adjusted according to the type of application, from standard alloys to flameproof stainless steel.",
+          body_ru: "Материалы подбираются под тип применения — от стандартных сплавов до взрывозащищённой нержавеющей стали." },
+        { num: "03", title_en: "Variable Capabilities", title_ru: "Гибкие характеристики",
+          body_en: "Motors can be selected depending on the voltage and pole speeds required for the application.",
+          body_ru: "Электродвигатели подбираются в зависимости от требуемого напряжения и частоты вращения." },
+      ],
+    },
+    {
+      type: "cards", variant: "product", columns: 2, alt: true,
+      eyebrow_en: "What we build", eyebrow_ru: "Что мы производим",
+      title_en: "Pump Systems", title_ru: "Насосные системы",
+      items: [
+        { image: img("solids-separation-system.svg"), title_en: "Cyclone Solid Separation Pump System", title_ru: "Циклонная система отделения твёрдых частиц",
+          body_en: "Ideal for applications where fluids with solids need to be separated from the liquid. Different materials are used depending on whether the fluid contains hardened solids or abrasive liquids.",
+          body_ru: "Идеально подходит для задач, где твёрдые частицы необходимо отделить от жидкости. Материалы подбираются в зависимости от того, содержит ли среда затвердевшие частицы или абразивные жидкости.",
+          link_href: "/pump-systems/cyclone-solids-separation-submersible-pumping-system/", link_en: "Find out more", link_ru: "Подробнее" },
+        { image: img("high-head-system.svg"), title_en: "High Head Slurry Series Pumping System", title_ru: "Серия высоконапорных шламовых систем",
+          body_en: "For very deep pumping applications, able to pump heads of 250m per stage, through multiple stages. The system can be configured to the application depth, going as deep as required.",
+          body_ru: "Для задач с большой глубиной откачки: напор до 250 м на ступень, возможно несколько ступеней. Система конфигурируется под глубину объекта — настолько глубоко, насколько требуется.",
+          link_href: "/pump-systems/high-head-slurry-series-pumping-system/", link_en: "Find out more", link_ru: "Подробнее" },
+      ],
+    },
+    {
+      type: "text",
+      eyebrow_en: "Flagship product", eyebrow_ru: "Флагманский продукт",
+      title_en: "Hippo Range", title_ru: "Линейка Hippo",
+      body_en: "<p class='lede'><strong>Your ally in pumping corrosive and acidic slurries.</strong> The award-winning Hippo Slurry Pump Range is the workhorse for the continuous, harsh demands of mining and mineral processing. Custom built, it provides pumping solutions that are robust, rugged, reliable and flexible — from high-volume dewatering to settled-out acidic and corrosive slurries. The range can be built to explosion-proof standard IEC 60079-1:2005 and is available in various formats and applications.</p>",
+      body_ru: "<p class='lede'><strong>Ваш надёжный партнёр в перекачке коррозионных и кислотных шламов.</strong> Удостоенная наград линейка шламовых насосов Hippo — это рабочая лошадка для непрерывных и тяжёлых условий горнодобывающей и перерабатывающей промышленности. Насосы изготавливаются по индивидуальному проекту и обеспечивают надёжные, прочные и гибкие решения — от высокообъёмного водоотлива до осевших кислотных и коррозионных шламов. Линейка может изготавливаться во взрывозащищённом исполнении по стандарту IEC 60079-1:2005 и доступна в различных конфигурациях.</p>",
+    },
+    {
+      type: "cards", variant: "product", columns: 2,
+      items: [
+        { image: img("hippo-pump-top-suction.png"), title_en: "Submersibles", title_ru: "Погружные насосы",
+          body_en: "All-metal heavy-duty submersible slurry pumps, capable of pumping abrasive and corrosive liquids with capacities up to 1500 l/s and heads up to 200 m.",
+          body_ru: "Цельнометаллические погружные шламовые насосы повышенной прочности для перекачки абразивных и коррозионных жидкостей, производительность до 1500 л/с, напор до 200 м.",
+          link_href: "/hippo-range/submersibles/", link_en: "Configurations", link_ru: "Конфигурации" },
+        { image: img("hippo-vb-range.png"), title_en: "Verticals", title_ru: "Вертикальные насосы",
+          body_en: "The world's most versatile vertical spindle pump range — Bottom Suction, Bottom Discharge, Top Suction and Vortex configurations, heads up to 110 m and flow up to 1500 l/s.",
+          body_ru: "Самая универсальная в мире линейка вертикальных шпиндельных насосов — конфигурации с нижним всасыванием, нижним нагнетанием, верхним всасыванием и вихревая — напор до 110 м, расход до 1500 л/с.",
+          link_href: "/hippo-range/verticals/", link_en: "Configurations", link_ru: "Конфигурации" },
+      ],
+    },
+    {
+      type: "textImage", alt: true, imageSide: "right",
+      body_en: "<p class='lede'>The Hippo Slurry Pump Range was designed and developed to meet the harsh, continuous conditions of the mining and mineral-processing industries of Southern Africa. Capable of running dry and operating across a wide range of temperatures, the Hippo Pump Range is the ideal solution from high-volume dewatering to harsh, abrasive applications — with a custom-built solution for every application. Our pumps and pump systems have proven equally effective in Canada, South America, Australia, the Middle East and Russia.</p>",
+      body_ru: "<p class='lede'>Линейка шламовых насосов Hippo была разработана для суровых и непрерывных условий горнодобывающей и перерабатывающей промышленности Южной Африки. Способные работать «на сухом ходу» и в широком диапазоне температур, насосы Hippo — идеальное решение как для высокообъёмного водоотлива, так и для тяжёлых абразивных задач, с индивидуальным решением под каждое применение. Наши насосы и насосные системы доказали свою эффективность и за пределами региона — в Канаде, Южной Америке, Австралии, на Ближнем Востоке и в России.</p>",
+      image: img("world-map.svg"),
+    },
+    {
+      type: "cards", variant: "plain", columns: 3,
+      eyebrow_en: "Industries", eyebrow_ru: "Отрасли",
+      title_en: "Our experience by industry", title_ru: "Наш опыт по отраслям",
+      items: [
+        { title_en: "MINING", title_ru: "Горнодобывающая отрасль", body_en: "All sectors of mining and mineral extraction: coal, platinum, gold, iron and ore.", body_ru: "Все сегменты горной добычи и переработки полезных ископаемых: уголь, платина, золото, железо и руда." },
+        { title_en: "Pulp, Paper & Sugar", title_ru: "Целлюлоза, бумага и сахар", body_en: "Aggressive and abrasive solids.", body_ru: "Агрессивные и абразивные твёрдые частицы." },
+        { title_en: "Chemical & Processing", title_ru: "Химия и переработка", body_en: "Including oil sands, bitumen, petrochemical, fertiliser and explosive industries.", body_ru: "Включая нефтяные пески, битум, нефтехимию, удобрения и взрывоопасные производства." },
+        { title_en: "Nuclear", title_ru: "Атомная промышленность", body_en: "Specifically designed for high temperatures and contamination.", body_ru: "Специальные решения для высоких температур и загрязнённых сред." },
+        { title_en: "Foundries & Steel Production", title_ru: "Литейное и сталелитейное производство", body_en: "Cooling, water returns and concentrated abrasive solids.", body_ru: "Охлаждение, оборотная вода и концентрированные абразивные твёрдые частицы." },
+        { title_en: "Power Generation, Municipal Services & Waste Management", title_ru: "Энергетика, ЖКХ и утилизация отходов", body_en: "Ash, water treatment and waste disposal.", body_ru: "Зола, водоочистка и утилизация отходов." },
+        { title_en: "Sand, Gravel, Ceramic & General Construction", title_ru: "Песок, гравий, керамика и строительство", body_en: "Where high concentrations of abrasive solids are present.", body_ru: "Там, где присутствуют высокие концентрации абразивных частиц." },
+      ],
+    },
+    {
+      type: "logos", title_en: "Proudly associated", title_ru: "Партнёрские ассоциации",
+      items: [
+        { image: img("assoc-sassda.webp"), alt_en: "SASSDA" },
+        { image: img("assoc-flameproof.webp"), alt_en: "South African Flameproof Association" },
+        { image: img("assoc-foundrymen.webp"), alt_en: "South African Institute of Foundrymen" },
+        { image: img("assoc-sapsda.webp"), alt_en: "SAPSDA" },
+        { image: img("assoc-sa-capital-equipment.webp"), alt_en: "SA Capital Equipment" },
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------- HISTORY --
+pages["history"] = {
+  title_en: "History", title_ru: "История",
+  eyebrow_en: "About Us", eyebrow_ru: "О компании",
+  crumbs: crumbs([["Home", "Главная", "/"], ["History", "История", null]]),
+  blocks: [
+    {
+      type: "textImage", imageSide: "left",
+      title_en: "A family-owned and managed pump manufacturer", title_ru: "Семейный производитель насосов",
+      image: img("mining-site.webp"),
+      body_en: `<p>Founded in 1979, Hazleton Pumps is a family-owned business located in Centurion, Gauteng, South Africa. It began by repairing submersible pumps and electric motors for mines and industry. The harsh mining conditions in South Africa caused a high failure rate in these repaired pumps, which led to the design, development and manufacture of specialised pumping solutions capable of pumping acidic liquids containing solids under a wide range of conditions.</p>
+      <p>The main cause of submersible pump failure is the pump running dry and overheating. This was overcome by filling the motor housing with oil, which serves two functions: dissipating heat from the electrical winding, and lubricating the bearings and mechanical seals.</p>
+      <p>The motor housing containing the rotor and stator is separated from the discharge pressure of the pumped liquid using a cantilever shaft design with a double-discharge volute — and by applying the latest design software, the Hippo Submersible Slurry Pump Range was born.</p>
+      <p>Manufactured as standard from specialised materials such as 28% hard-chrome castings for abrasive applications and Duplex Stainless Steel alloys (CD4MCu) castings for acidic environments, and with quality as a core objective, all Hippo Submersible Slurry Pumps are manufactured to comply with ISO 9001:2015 and IEC 60079-1.</p>
+      <p>A customer-centric approach is followed, building long-term, committed, sustainable relationships as specific, specialised pumps are designed, developed and manufactured in collaboration with customers to meet their individual requirements — with products that are reliable, low-maintenance, sustainable, efficient and offer a reasonable cost of ownership.</p>`,
+      body_ru: `<p>Компания Hazleton Pumps основана в 1979 году как семейное предприятие в городе Сентурион, провинция Гаутенг, ЮАР. Изначально компания занималась ремонтом погружных насосов и электродвигателей для горнодобывающих предприятий. Из-за тяжёлых условий эксплуатации в южноафриканских шахтах отремонтированные насосы часто выходили из строя, что привело к разработке, проектированию и производству специализированных насосных решений, способных перекачивать кислотные жидкости с содержанием твёрдых частиц в самых разных условиях.</p>
+      <p>Главная причина отказа погружных насосов — работа «на сухом ходу» и перегрев. Эта проблема была решена заполнением корпуса электродвигателя маслом, которое выполняет две функции: отводит тепло от электрической обмотки и смазывает подшипники и торцевые уплотнения.</p>
+      <p>Корпус двигателя с ротором и статором отделён от давления нагнетания перекачиваемой жидкости за счёт консольной конструкции вала с двухспиральным корпусом (double-discharge volute) — а с применением новейшего программного обеспечения для проектирования появилась на свет линейка погружных шламовых насосов Hippo.</p>
+      <p>Как правило, насосы изготавливаются из специальных материалов — например, из хромистого чугуна (28% хрома) для абразивных сред и дуплексной нержавеющей стали (CD4MCu) для кислотных сред. Качество — ключевой приоритет компании: все погружные шламовые насосы Hippo производятся в соответствии со стандартами ISO 9001:2015 и IEC 60079-1.</p>
+      <p>Компания придерживается клиентоориентированного подхода, выстраивая долгосрочные и устойчивые отношения с заказчиками: специализированные насосы разрабатываются и производятся в сотрудничестве с клиентом, под его индивидуальные требования — надёжные, простые в обслуживании, экономичные и эффективные в эксплуатации.</p>`,
+    },
+  ],
+};
+
+// ----------------------------------------------------------------- AWARDS --
+pages["awards"] = {
+  title_en: "Awards", title_ru: "Награды",
+  eyebrow_en: "About Us", eyebrow_ru: "О компании",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Awards", "Награды", null]]),
+  blocks: [
+    {
+      type: "awards",
+      items: [
+        { image: img("award-sapba.png"), title_en: "SA Premier Business Awards 2014/2015", title_ru: "SA Premier Business Awards 2014/2015",
+          body_en: "Awarded by the Department of Trade and Industry in the SMME category, 9 April 2015.",
+          body_ru: "Награда от Департамента торговли и промышленности ЮАР в категории малого и среднего бизнеса (SMME), 9 апреля 2015 года." },
+        { image: img("award-safa.png"), title_en: "Award of Excellence", title_ru: "Award of Excellence",
+          body_en: "South African Flameproof Association — Most Innovative Product / Engineering Solution, runner-up, 25 May 2017.",
+          body_ru: "Южноафриканская ассоциация взрывозащищённого оборудования — номинация «Самое инновационное изделие / инженерное решение», второе место, 25 мая 2017 года." },
+      ],
+    },
+  ],
+};
+
+// --------------------------------------------------------- PRESS RELEASES --
+pages["press-releases"] = {
+  title_en: "Press Releases & Articles", title_ru: "Пресс-релизы и статьи",
+  eyebrow_en: "About Us", eyebrow_ru: "О компании",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Press Releases", "Пресс-релизы", null]]),
+  blocks: [
+    { type: "articleGrid" },
+    {
+      type: "pressClippings",
+      title_en: "Press clippings", title_ru: "Упоминания в прессе",
+      items: [
+        { title_en: "Russia buys SA pump", title_ru: "Россия покупает насос из ЮАР", source: "Engineering News" },
+        { title_en: "Russian phosphate mine uses South African-made pumps", title_ru: "Российское фосфатное предприятие использует насосы южноафриканского производства", source: "Engineering News" },
+        { title_en: "Pump factory goes the extra mile — to Russia", title_ru: "Насосный завод идёт дальше — до самой России", source: "Business Day" },
+      ],
+    },
+  ],
+};
+
+// ------------------------------------------------------------ PUMP SYSTEMS --
+pages["pump-systems"] = {
+  title_en: "Pump Systems", title_ru: "Насосные системы",
+  eyebrow_en: "Products", eyebrow_ru: "Продукция",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Pump Systems", "Насосные системы", null]]),
+  blocks: [
+    {
+      type: "cards", variant: "product", columns: 2,
+      items: [
+        { image: img("solids-separation-system.svg"), title_en: "Cyclone Solid Separation Pump System", title_ru: "Циклонная система отделения твёрдых частиц",
+          body_en: "Ideal for applications where fluids with solids need to be separated from the liquid. Different materials are used depending on whether the fluid contains hardened solids or abrasive liquids.",
+          body_ru: "Идеально подходит для задач, где твёрдые частицы необходимо отделить от жидкости. Материалы подбираются в зависимости от того, содержит ли среда затвердевшие частицы или абразивные жидкости.",
+          link_href: "/pump-systems/cyclone-solids-separation-submersible-pumping-system/", link_en: "Find out more", link_ru: "Подробнее" },
+        { image: img("high-head-system.svg"), title_en: "High Head Slurry Series Pumping System", title_ru: "Серия высоконапорных шламовых систем",
+          body_en: "For very deep pumping applications, able to pump heads of 250 m per stage through multiple stages. The system is configured to the application depth, going as deep as required.",
+          body_ru: "Для задач с большой глубиной откачки: напор до 250 м на ступень, возможно несколько ступеней. Система конфигурируется под глубину объекта — настолько глубоко, насколько требуется.",
+          link_href: "/pump-systems/high-head-slurry-series-pumping-system/", link_en: "Find out more", link_ru: "Подробнее" },
+      ],
+    },
+  ],
+};
+
+function systemDetailBlocks(objective, operation, application, duty, materials) {
+  return [{
+    type: "panelGrid",
+    items: [
+      { title_en: "Objective", title_ru: "Задача", body_en: objective[0], body_ru: objective[1] },
+      { title_en: "Operation", title_ru: "Принцип работы", body_en: operation[0], body_ru: operation[1] },
+      { title_en: "Application", title_ru: "Применение", body_en: application[0], body_ru: application[1] },
+      { title_en: "Duty", title_ru: "Рабочие параметры", body_en: duty[0], body_ru: duty[1] },
+      { title_en: "Materials of construction", title_ru: "Материалы изготовления", body_en: materials[0], body_ru: materials[1], wide: true },
+    ],
+  }];
+}
+
+pages["pump-systems/cyclone-solids-separation-submersible-pumping-system"] = {
+  title_en: "Cyclone Solid Separation Pump System", title_ru: "Циклонная система отделения твёрдых частиц",
+  eyebrow_en: "Pump Systems", eyebrow_ru: "Насосные системы",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Pump Systems", "Насосные системы", "/pump-systems/"], ["Cyclone Solids Separation", "Циклонное отделение", null]]),
+  blocks: [
+    { type: "text", maxWidth: "980px",
+      body_en: "<p class='lede'>The Cyclone Solid Separation Pump System is ideal for applications where solids need to be separated from a fluid. Different materials are used depending on whether the pumped fluid contains hardened solids or abrasive liquids.</p>",
+      body_ru: "<p class='lede'>Циклонная система отделения твёрдых частиц идеально подходит для задач, в которых твёрдые частицы необходимо отделить от жидкости. Материалы подбираются в зависимости от того, содержит ли перекачиваемая среда затвердевшие частицы или абразивные жидкости.</p>" },
+    ...systemDetailBlocks(
+      ["To separate the solids contained in the fluid from the liquid.", "Отделить твёрдые частицы, содержащиеся в жидкости, от самой жидкости."],
+      ["The fluid containing solids is pumped using a Hippo Submersible Pump through a cyclone, where the solids are separated from the liquid.", "Жидкость с твёрдыми частицами перекачивается погружным насосом Hippo через циклон, в котором происходит отделение твёрдых частиц от жидкости."],
+      ["Suitable for any application where solids must be removed from a liquid.", "Подходит для любых задач, где твёрдые частицы необходимо удалить из жидкости."],
+      ["The head and volume to be pumped determine the submersible pump size, as well as the flow rate through the cyclone.", "Напор и объём перекачки определяют типоразмер погружного насоса, а также пропускную способность циклона."],
+      ["High-chrome castings are used so the system can pump liquids containing hardened solids; for corrosive liquids, duplex stainless steel is the standard casting material.", "Для перекачки жидкостей с затвердевшими частицами применяется хромистый чугун; для коррозионных жидкостей стандартным материалом является дуплексная нержавеющая сталь."],
+    ),
+    { type: "image", image: img("solids-separation-diagram.png") },
+  ],
+};
+
+pages["pump-systems/high-head-slurry-series-pumping-system"] = {
+  title_en: "High Head Slurry Series Pumping System", title_ru: "Серия высоконапорных шламовых систем",
+  eyebrow_en: "Pump Systems", eyebrow_ru: "Насосные системы",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Pump Systems", "Насосные системы", "/pump-systems/"], ["High Head Slurry Series", "Высоконапорная серия", null]]),
+  blocks: [
+    { type: "text", maxWidth: "980px",
+      body_en: "<p class='lede'>For very deep pumping applications, the High Head Slurry Series Pumping System is a viable solution able to pump heads of 250 m per stage, through multiple stages. The system is configured to the application depth, going as deep as required.</p>",
+      body_ru: "<p class='lede'>Для задач с большой глубиной откачки серия высоконапорных шламовых систем обеспечивает напор до 250 м на ступень, с возможностью установки нескольких ступеней. Система конфигурируется под глубину объекта — настолько глубоко, насколько требуется.</p>" },
+    ...systemDetailBlocks(
+      ["To create an effectively unlimited pumping head, enabling heads of up to 250 m per stage.", "Обеспечить практически неограниченный напор — до 250 м на ступень."],
+      ["An unlimited head is achieved by using the Hippo High Head Slurry Submersible Pump and feeding the discharge of the first pump into the inlet of the second, and so on. With continuous “run-dry” capability, the risk of overheating when running dry is eliminated.", "Неограниченный напор достигается за счёт использования высоконапорного погружного насоса Hippo: выход первого насоса подаётся на вход второго, и так далее. Благодаря способности непрерывной работы «на сухом ходу» риск перегрева при работе без жидкости исключён."],
+      ["Built to explosion-proof standard.", "Исполнение по взрывозащищённому стандарту."],
+      ["Heads of up to 250 m per stage can be achieved.", "Достижимый напор — до 250 м на ступень."],
+      ["Duplex Stainless Steel such as CD4MCu is used, giving the capability to pump acidic liquids containing solids.", "Применяется дуплексная нержавеющая сталь, например CD4MCu, что позволяет перекачивать кислотные жидкости с содержанием твёрдых частиц."],
+    ),
+  ],
+};
+
+// ------------------------------------------------------------- HIPPO RANGE --
+pages["hippo-range"] = {
+  title_en: "Hippo Range", title_ru: "Линейка Hippo",
+  eyebrow_en: "Flagship product", eyebrow_ru: "Флагманский продукт",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Hippo Range", "Линейка Hippo", null]]),
+  blocks: [
+    { type: "text", maxWidth: "980px",
+      body_en: "<p class='lede'><strong>Your ally in pumping corrosive and acidic slurries.</strong> The award-winning Hippo Slurry Pump Range is the perfect workhorse for the continuous, harsh demands of mining and mineral processing. Custom built, it delivers pumping solutions that are robust, rugged, reliable and flexible. Capacities are extremely diverse, assisting applications from high-volume dewatering to settled-out acidic and corrosive slurries. The range can be built to explosion-proof standard IEC 60079-1:2005 and is available in various formats and applications.</p>",
+      body_ru: "<p class='lede'><strong>Ваш надёжный партнёр в перекачке коррозионных и кислотных шламов.</strong> Удостоенная наград линейка шламовых насосов Hippo — рабочая лошадка для непрерывных и тяжёлых условий горнодобывающей и перерабатывающей промышленности. Насосы изготавливаются по индивидуальному проекту и обеспечивают надёжные, прочные и гибкие решения. Диапазон производительности чрезвычайно широк — от высокообъёмного водоотлива до осевших кислотных и коррозионных шламов. Линейка может изготавливаться во взрывозащищённом исполнении по стандарту IEC 60079-1:2005 и доступна в различных конфигурациях.</p>" },
+    {
+      type: "cards", variant: "product", columns: 2, alt: true,
+      items: [
+        { image: img("hippo-pump-top-suction.png"), title_en: "Hippo Heavy Duty Slurry Submersible Pumps", title_ru: "Погружные шламовые насосы Hippo повышенной прочности",
+          body_en: "Designed and developed to pump corrosive and abrasive slurries — named after the hippopotamus, a robust and strong inhabitant of Africa's waterways. The range includes both an all-metal heavy-duty submersible and a vertical-spindle cantilever pump range.",
+          body_ru: "Разработаны для перекачки коррозионных и абразивных шламов — название линейки отсылает к бегемоту, крепкому и сильному обитателю африканских водоёмов. Линейка включает как цельнометаллические погружные насосы повышенной прочности, так и вертикальные шпиндельные консольные насосы.",
+          link_href: "/hippo-range/submersibles/", link_en: "Configurations", link_ru: "Конфигурации" },
+        { image: img("hippo-vb-range.png"), title_en: "Hippo Cantilever Vertical Spindle Heavy Duty Slurry & De-watering Pumps", title_ru: "Консольные вертикальные шпиндельные насосы Hippo для шлама и водоотлива",
+          body_en: "The world's most versatile vertical-spindle pump range: an all-metal design with Bottom Suction, Bottom Discharge, Top Suction and Vortex configurations. Proven reliability lets it handle high-density abrasive and corrosive slurries, running dry at heads up to 110 m and flows up to 1500 l/s.",
+          body_ru: "Самая универсальная в мире линейка вертикальных шпиндельных насосов: цельнометаллическая конструкция в конфигурациях с нижним всасыванием, нижним нагнетанием, верхним всасыванием и вихревая. Проверенная надёжность позволяет работать с плотными абразивными и коррозионными шламами, выдерживая работу «на сухом ходу» при напоре до 110 м и расходе до 1500 л/с.",
+          link_href: "/hippo-range/verticals/", link_en: "Configurations", link_ru: "Конфигурации" },
+      ],
+    },
+  ],
+};
+
+pages["hippo-range/submersibles"] = {
+  title_en: "Submersibles", title_ru: "Погружные насосы",
+  eyebrow_en: "Hippo Range", eyebrow_ru: "Линейка Hippo",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Hippo Range", "Линейка Hippo", "/hippo-range/"], ["Submersibles", "Погружные насосы", null]]),
+  blocks: [
+    { type: "text", maxWidth: "980px",
+      body_en: "<p class='lede'><strong>Hippo Heavy Duty Slurry Submersible Pumps.</strong> Designed and developed to pump corrosive and abrasive slurries. The range consists of both an all-metal heavy-duty submersible and a vertical-spindle cantilever pump range.</p>",
+      body_ru: "<p class='lede'><strong>Погружные шламовые насосы Hippo повышенной прочности.</strong> Разработаны для перекачки коррозионных и абразивных шламов. Линейка включает как цельнометаллические погружные насосы повышенной прочности, так и вертикальные шпиндельные консольные насосы.</p>" },
+    {
+      type: "cards", variant: "product", columns: 2, alt: true,
+      items: [
+        { image: img("sb-design-features.jpg"), title_en: "Submersible Bottom Suction (SB)", title_ru: "Погружной насос с нижним всасыванием (SB)",
+          body_en: "Used where solid particles have already settled out and need to be agitated before being pumped. All-metal construction with high-chrome hydraulics as standard; available in duplex stainless steel for acidic environments.",
+          body_ru: "Применяется там, где твёрдые частицы уже осели и требуют взмучивания перед откачкой. Цельнометаллическая конструкция со стандартной гидравликой из хромистого чугуна; доступно исполнение из дуплексной нержавеющей стали для кислотных сред.",
+          link_href: "/hippo-range/submersibles/submersible-bottom-suction/", link_en: "SB Series", link_ru: "Серия SB" },
+        { image: img("st-design-features.jpg"), title_en: "Submersible Top Suction (ST)", title_ru: "Погружной насос с верхним всасыванием (ST)",
+          body_en: "Used where high discharge pressures exist and for pumping liquids with entrapped air (froth pumping) — pumping excess liquid away while solids remain in the sump for mechanical removal.",
+          body_ru: "Применяется при высоком давлении нагнетания и при перекачке жидкостей с вовлечённым воздухом (пенные среды) — откачивает избыток жидкости, оставляя твёрдые частицы в приямке для механического удаления.",
+          link_href: "/hippo-range/submersibles/submersible-top-suction/", link_en: "ST Series", link_ru: "Серия ST" },
+      ],
+    },
+  ],
+};
+
+function hippoVariantPage({ code, title_en, title_ru, backHref, backLabelEn, backLabelRu, crumbLabelEn, crumbLabelRu, crumbHref, intro, specs, advantages, iecExtra, appsIntro, apps, image }) {
+  return {
+    title_en, title_ru,
+    eyebrow_en: "Hippo Range", eyebrow_ru: "Линейка Hippo",
+    crumbs: crumbs([["Home", "Главная", "/"], ["Hippo Range", "Линейка Hippo", "/hippo-range/"], [crumbLabelEn, crumbLabelRu, crumbHref], [title_en, title_ru, null]]),
+    blocks: [
+      { type: "backLink", href: backHref, label_en: backLabelEn, label_ru: backLabelRu },
+      { type: "textImage", image,
+        body_en: `<p class='lede'>${intro[0]}</p>`, body_ru: `<p class='lede'>${intro[1]}</p>` },
+      { type: "list", items: specs.map(([en, ru]) => ({ en, ru })) },
+      { type: "advantages", title_en: `Advantages of the ${code} configuration`, title_ru: `Преимущества конфигурации ${code}`, items: advantages },
+      ...(iecExtra ? [{ type: "text", title_en: "IEC (SANS) standards", title_ru: "Стандарты IEC (SANS)",
+          body_en: `<p>${IEC_NOTE_EN}</p><p>${iecExtra[0]}</p>`, body_ru: `<p>${IEC_NOTE_RU}</p><p>${iecExtra[1]}</p>` }]
+        : [{ type: "text", title_en: "IEC (SANS) standards", title_ru: "Стандарты IEC (SANS)", body_en: `<p>${IEC_NOTE_EN}</p>`, body_ru: `<p>${IEC_NOTE_RU}</p>` }]),
+      { type: "text", title_en: "Applications", title_ru: "Применение",
+        body_en: `<p>${appsIntro[0]}</p>`, body_ru: `<p>${appsIntro[1]}</p>` },
+      { type: "list", style: "tag", items: apps.map(([en, ru]) => ({ en, ru })) },
+    ],
+  };
+}
+
+const VERTICAL_SPECS = [
+  ["Capable of pumping abrasive and corrosive liquids", "Перекачка абразивных и коррозионных жидкостей"],
+  ["Capacities up to 1500 l/s and heads up to 110 m", "Производительность до 1500 л/с, напор до 110 м"],
+  ["Flame/explosion-proof certification to IEC 60079-1", "Взрывозащищённое исполнение по IEC 60079-1"],
+  ["Power installed from 3 kW up to 575 kW", "Мощность от 3 кВт до 575 кВт"],
+  ["Voltage supply up to 6.6 kV at both 50 & 60 Hz", "Напряжение питания до 6,6 кВ при 50 и 60 Гц"],
+  ["Liquids up to 300 °C", "Жидкости с температурой до 300 °C"],
+  ["Can run dry continuously", "Непрерывная работа «на сухом ходу»"],
+  ["Shaft lengths designed to customer requirements", "Длина вала — по требованиям заказчика"],
+  ["Accommodates standard flange-mounted motors", "Совместим со стандартными фланцевыми электродвигателями"],
+  ["Direct-coupled (preferred) or V-belt driven", "Прямая муфта (предпочтительно) или клиноремённый привод"],
+  ["No submerged seals or bearings on the standard pump", "Отсутствие погружных уплотнений и подшипников в стандартном исполнении"],
+];
+const VERTICAL_ADVANTAGES = [
+  { label_en: "Twin Volute Discharge Design", label_ru: "Двухспиральная конструкция нагнетания",
+    body_en: "radial forces are balanced out in the volute, minimising bearing load and increasing bearing life while enabling more efficient pumping.",
+    body_ru: "радиальные силы уравновешиваются в корпусе, что снижает нагрузку на подшипники, увеличивает их ресурс и повышает эффективность перекачки." },
+  { label_en: "Agitator", label_ru: "Мешалка (агитатор)", body_en: "the Hippo heavy-duty slurry pump range can be fitted with an agitator.", body_ru: "насосы Hippo повышенной прочности могут комплектоваться мешалкой." },
+  { label_en: "“Run Dry”", label_ru: "«Сухой ход»",
+    body_en: "the stator housing is filled with oil, which dissipates heat away from the winding, enabling continuous dry running under full, partial or non-submerged conditions.",
+    body_ru: "корпус статора заполнен маслом, которое отводит тепло от обмотки, обеспечивая непрерывную работу на сухом ходу при полном, частичном или отсутствующем погружении." },
+  { label_en: "Cantilever Shaft", label_ru: "Консольный вал",
+    body_en: "the Twin Volute design uses a cantilever shaft, separating the wet end from the motor end without support bearings.",
+    body_ru: "двухспиральная конструкция использует консольный вал, отделяющий проточную часть от двигателя без опорных подшипников." },
+  { label_en: "Mechanical Seals", label_ru: "Торцевые уплотнения",
+    body_en: "dissociated from the wet end as a result of the cantilever shaft, subject only to submergence pressure — extending seal life.",
+    body_ru: "благодаря консольному валу отделены от проточной части и работают только под давлением погружения, что увеличивает их срок службы." },
+  { label_en: "Moisture Detection", label_ru: "Контроль влажности",
+    body_en: "a built-in moisture detector cuts power to the pump if the mechanical seals fail, preventing winding damage.",
+    body_ru: "встроенный датчик влажности отключает питание насоса при отказе торцевых уплотнений, предотвращая повреждение обмотки." },
+  { label_en: "Hydraulic-End Designs", label_ru: "Исполнения гидравлической части",
+    body_en: "a specific hydraulic end is available for every application — high head or high volume, large or irregular solids, abrasive or corrosive liquids.",
+    body_ru: "под каждую задачу доступна своя гидравлическая часть — для высокого напора или большого объёма, крупных или неправильной формы частиц, абразивных или коррозионных сред." },
+];
+const VERTICAL_APPS = [
+  ["Mineral process plants", "Перерабатывающие предприятия"], ["Mineral excavations", "Горные выработки"],
+  ["Coal mine tunnels", "Угольные тоннели"], ["Slurry pumping", "Перекачка шлама"],
+  ["Flotation cell transfer", "Передача на флотационные камеры"], ["Magnetite recovery", "Извлечение магнетита"],
+  ["Slurry storage sumps", "Приямки хранения шлама"], ["Slurry transport", "Транспортировка шлама"],
+  ["Tailings sumps", "Хвостовые приямки"], ["Thickener feed pumps", "Подача на сгустители"],
+];
+
+pages["hippo-range/submersibles/submersible-bottom-suction"] = hippoVariantPage({
+  code: "SB", title_en: "Submersible Bottom Suction Pump", title_ru: "Погружной насос с нижним всасыванием",
+  backHref: "/hippo-range/submersibles/", backLabelEn: "Submersibles", backLabelRu: "Погружные насосы",
+  crumbLabelEn: "Submersibles", crumbLabelRu: "Погружные насосы", crumbHref: "/hippo-range/submersibles/",
+  intro: ["The Hippo Submersible Bottom Suction Pump Range is used where solid particles have already settled out and need to be agitated before being pumped. The all-metal pump, with high-chrome hydraulics as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments. A wide range of accessories is available to suit client requirements.",
+    "Погружной насос Hippo с нижним всасыванием применяется там, где твёрдые частицы в жидкости уже осели и требуют взмучивания перед откачкой. Цельнометаллическая конструкция со стандартной гидравликой из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред. Насос может комплектоваться широким набором опций под требования заказчика."],
+  specs: [["Capable of pumping abrasive and corrosive liquids", "Перекачка абразивных и коррозионных жидкостей"], ["Capacities up to 1500 l/s and heads up to 150 m", "Производительность до 1500 л/с, напор до 150 м"], ["Flameproof certification to IEC 60079-1", "Взрывозащищённое исполнение по IEC 60079-1"], ["Power installed from 3 kW up to 1000 kW", "Мощность от 3 кВт до 1000 кВт"], ["Voltage supply up to 6.6 kV at both 50 & 60 Hz", "Напряжение питания до 6,6 кВ при 50 и 60 Гц"], ["Liquids up to 120 °C", "Жидкости с температурой до 120 °C"], ["Can run dry", "Работа «на сухом ходу»"]],
+  advantages: [
+    { label_en: "Twin Volute Discharge Design", label_ru: "Двухспиральная конструкция нагнетания", body_en: "radial forces are balanced out in the volute, minimising bearing load and increasing bearing life while enabling more efficient pumping.", body_ru: "радиальные силы уравновешиваются в корпусе, что снижает нагрузку на подшипники, увеличивает их ресурс и повышает эффективность перекачки." },
+    { label_en: "Agitator", label_ru: "Мешалка (агитатор)", body_en: "the Hippo heavy-duty slurry pump range can be fitted with an agitator.", body_ru: "насосы Hippo повышенной прочности могут комплектоваться мешалкой." },
+    { label_en: "“Run Dry”", label_ru: "«Сухой ход»", body_en: "the stator housing is filled with oil, which dissipates heat away from the winding, enabling continuous dry running under full, partial or non-submerged conditions.", body_ru: "корпус статора заполнен маслом, которое отводит тепло от обмотки, обеспечивая непрерывную работу на сухом ходу при полном, частичном или отсутствующем погружении." },
+    { label_en: "Cantilever Shaft", label_ru: "Консольный вал", body_en: "the Twin Volute design uses a cantilever shaft, separating the wet end from the motor end without support bearings.", body_ru: "двухспиральная конструкция использует консольный вал, отделяющий проточную часть от двигателя без опорных подшипников." },
+    { label_en: "Mechanical Seals", label_ru: "Торцевые уплотнения", body_en: "dissociated from the wet end as a result of the cantilever shaft, subject only to submergence pressure — extending seal life.", body_ru: "благодаря консольному валу отделены от проточной части и работают только под давлением погружения, что увеличивает их срок службы." },
+    { label_en: "Moisture Detection", label_ru: "Контроль влажности", body_en: "a built-in moisture detector cuts power to the pump if the mechanical seals fail, preventing winding damage.", body_ru: "встроенный датчик влажности отключает питание насоса при отказе торцевых уплотнений, предотвращая повреждение обмотки." },
+    { label_en: "Hydraulic-End Designs", label_ru: "Исполнения гидравлической части", body_en: "a specific hydraulic end is available for every application — high head or high volume, large or irregular solids, abrasive or corrosive liquids.", body_ru: "под каждую задачу доступна своя гидравлическая часть — для высокого напора или большого объёма, крупных или неправильной формы частиц, абразивных или коррозионных сред." },
+  ],
+  iecExtra: ["Type SBO — Open Vane Type Impeller with Agitator. Type SBC — Closed Vane Type Impeller with Agitator Extension & Spray-Bar.", "Тип SBO — открытое рабочее колесо с мешалкой. Тип SBC — закрытое рабочее колесо с удлинённой мешалкой и распылительной штангой."],
+  appsIntro: ["The Hippo SB range excels in complex slurry and de-watering applications. Its compact design and high-pressure capability suit pits, pontoons, or temporary and fixed installations.", "Насосы серии Hippo SB отлично подходят для сложных задач перекачки шлама и водоотлива. Компактная конструкция и способность работать при высоком давлении позволяют использовать их в карьерах, на понтонах, а также во временных и стационарных установках."],
+  apps: [["Mineral process plants", "Перерабатывающие предприятия"], ["Mineral excavations", "Горные выработки"], ["Coal slurries", "Угольные шламы"], ["Oil sands", "Нефтяные пески"], ["Fly-ash sumps and ponds", "Золоотвалы и пруды-накопители"], ["Slurry transfer pumping", "Перекачка шлама"], ["Dredging", "Дноуглубительные работы"], ["Lime slurry removal", "Удаление известкового шлама"], ["Emergency dump pond", "Аварийные пруды-накопители"], ["Phosphoric acid plants", "Производство фосфорной кислоты"], ["Clay slurries", "Глинистые шламы"]],
+  image: img("sb-design-features.jpg"),
+});
+
+pages["hippo-range/submersibles/submersible-top-suction"] = hippoVariantPage({
+  code: "ST", title_en: "Submersible Top Suction Pump", title_ru: "Погружной насос с верхним всасыванием",
+  backHref: "/hippo-range/submersibles/", backLabelEn: "Submersibles", backLabelRu: "Погружные насосы",
+  crumbLabelEn: "Submersibles", crumbLabelRu: "Погружные насосы", crumbHref: "/hippo-range/submersibles/",
+  intro: ["The Hippo Submersible Top Suction Slurry Pump Range is used where high discharge pressures exist and for pumping liquids with entrapped air (froth pumping). The all-metal pump, with high-chrome hydraulics as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments. The Top Suction design pumps excess liquid away while the maximum amount of solids remains in the sump to be removed mechanically.",
+    "Погружной насос Hippo с верхним всасыванием применяется при высоком давлении нагнетания и для перекачки жидкостей с вовлечённым воздухом (пенные среды). Цельнометаллическая конструкция со стандартной гидравликой из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред. Конструкция с верхним всасыванием откачивает избыток жидкости, оставляя максимум твёрдых частиц в приямке для последующего механического удаления."],
+  specs: [["Capable of pumping abrasive and corrosive liquids", "Перекачка абразивных и коррозионных жидкостей"], ["Capacities up to 1500 l/s and heads up to 200 m", "Производительность до 1500 л/с, напор до 200 м"], ["Flameproof to IEC 60079-1", "Взрывозащищённое исполнение по IEC 60079-1"], ["Power installed from 3 kW up to 1000 kW", "Мощность от 3 кВт до 1000 кВт"], ["Voltage supply up to 6.6 kV at both 50 & 60 Hz", "Напряжение питания до 6,6 кВ при 50 и 60 Гц"], ["Liquids up to 120 °C", "Жидкости с температурой до 120 °C"], ["Suitable for froth pumping", "Подходит для пенных сред"], ["Can run dry", "Работа «на сухом ходу»"]],
+  advantages: [
+    { label_en: "Twin Volute Discharge Design", label_ru: "Двухспиральная конструкция нагнетания", body_en: "radial forces are balanced out in the volute, minimising bearing load and increasing bearing life while enabling more efficient pumping.", body_ru: "радиальные силы уравновешиваются в корпусе, что снижает нагрузку на подшипники, увеличивает их ресурс и повышает эффективность перекачки." },
+    { label_en: "Lifting Bracket", label_ru: "Подъёмная скоба", body_en: "allows the pump to be lowered while in operation.", body_ru: "позволяет опускать насос во время работы." },
+    { label_en: "“Run Dry”", label_ru: "«Сухой ход»", body_en: "the stator housing is filled with oil, which dissipates heat away from the winding, enabling continuous dry running under full, partial or non-submerged conditions.", body_ru: "корпус статора заполнен маслом, которое отводит тепло от обмотки, обеспечивая непрерывную работу на сухом ходу при полном, частичном или отсутствующем погружении." },
+    { label_en: "Angular Contact Bearings", label_ru: "Радиально-упорные подшипники", body_en: "mounted back-to-back to restrict axial movement during surging.", body_ru: "установлены по схеме «спина к спине», что ограничивает осевое смещение при гидроударах." },
+    { label_en: "Oil-Filled Motor Housing", label_ru: "Маслонаполненный корпус двигателя", body_en: "lubricates bearings and seals and dissipates heat away from the winding.", body_ru: "смазывает подшипники и уплотнения и отводит тепло от обмотки." },
+    { label_en: "Double Mechanical Seals", label_ru: "Двойные торцевые уплотнения", body_en: "with moisture detector, operating at submergence pressure.", body_ru: "с датчиком влажности, работают под давлением погружения." },
+    { label_en: "Moisture Detection", label_ru: "Контроль влажности", body_en: "a built-in moisture detector cuts power to the pump if the mechanical seals fail, preventing winding damage.", body_ru: "встроенный датчик влажности отключает питание насоса при отказе торцевых уплотнений, предотвращая повреждение обмотки." },
+    { label_en: "Stator Motor", label_ru: "Статор двигателя", body_en: "designed to operate at any supply voltage and vacuum-impregnated.", body_ru: "рассчитан на работу при любом напряжении питания, выполнен с вакуумной пропиткой." },
+    { label_en: "Cantilever Shaft", label_ru: "Консольный вал", body_en: "separates the motor from the pump end, so the mechanical seal operates at submergence pressure rather than discharge pressure.", body_ru: "отделяет двигатель от насосной части, благодаря чему торцевое уплотнение работает под давлением погружения, а не нагнетания." },
+  ],
+  iecExtra: null,
+  appsIntro: ["The Hippo ST range excels in de-watering and drainage applications, and for pumping liquids with entrapped air (froth pumping). Its compact, high-pressure design suits sumps, open pits and pontoons, and units can be installed in series for very high heads such as acid mine-water drainage.", "Насосы серии Hippo ST отлично подходят для водоотлива, дренажа и перекачки жидкостей с вовлечённым воздухом (пенные среды). Компактная конструкция, рассчитанная на высокое давление, подходит для приямков, открытых карьеров и понтонов; возможна последовательная установка насосов для получения очень высокого напора, например при откачке кислотных шахтных вод."],
+  apps: [["General hard dewatering & drainage", "Общий жёсткий водоотлив и дренаж"], ["Slag pits", "Шлаковые приямки"], ["Tailings ponds", "Хвостохранилища"], ["Slurry froth pumping", "Перекачка пенных шламов"], ["Mineral processing", "Переработка полезных ископаемых"], ["Phosphoric acid plants", "Производство фосфорной кислоты"], ["Mine dewatering", "Шахтный водоотлив"]],
+  image: img("st-design-features.jpg"),
+});
+
+pages["hippo-range/verticals"] = {
+  title_en: "Verticals", title_ru: "Вертикальные насосы",
+  eyebrow_en: "Hippo Range", eyebrow_ru: "Линейка Hippo",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Hippo Range", "Линейка Hippo", "/hippo-range/"], ["Verticals", "Вертикальные насосы", null]]),
+  blocks: [
+    { type: "text", maxWidth: "980px",
+      body_en: "<p class='lede'><strong>Hippo Cantilever Vertical Spindle Heavy Duty Slurry &amp; De-watering Pumps.</strong> The world's most versatile pump range — an all-metal vertical-spindle design with Bottom Suction, Bottom Discharge, Top Suction and Vortex configurations. Proven reliability and efficiency let the Hippo range handle high-density abrasive and corrosive slurries, running dry at heads up to 110 m and flows up to 1500 l/s.</p>",
+      body_ru: "<p class='lede'><strong>Консольные вертикальные шпиндельные насосы Hippo для шлама и водоотлива.</strong> Самая универсальная в мире линейка насосов — цельнометаллическая вертикальная шпиндельная конструкция в конфигурациях с нижним всасыванием, нижним нагнетанием, верхним всасыванием и вихревая. Проверенная надёжность и эффективность позволяют линейке Hippo работать с плотными абразивными и коррозионными шламами, выдерживая работу «на сухом ходу» при напоре до 110 м и расходе до 1500 л/с.</p>" },
+    {
+      type: "cards", variant: "product", columns: 2, alt: true,
+      items: [
+        { image: img("vb-design-features.jpg"), title_en: "Vertical Bottom Suction Pump (VB)", title_ru: "Вертикальный насос с нижним всасыванием (VB)",
+          body_en: "Used where solids have already settled out and need to be agitated before being pumped.", body_ru: "Применяется там, где твёрдые частицы уже осели и требуют взмучивания перед откачкой.",
+          link_href: "/hippo-range/verticals/vertical-bottom-suction/", link_en: "Configuration", link_ru: "Конфигурация" },
+        { image: img("vb-design-features.jpg"), title_en: "Vertical Bottom Discharge (VBD)", title_ru: "Вертикальный насос с нижним нагнетанием (VBD)",
+          body_en: "Used where solids have already settled out and need to be agitated before being pumped, with discharge at the base of the pump.", body_ru: "Применяется там, где твёрдые частицы уже осели и требуют взмучивания перед откачкой; нагнетание выполняется в нижней части насоса.",
+          link_href: "/hippo-range/verticals/vertical-bottom-discharge/", link_en: "Configuration", link_ru: "Конфигурация" },
+        { image: img("vbo-impeller.jpg"), title_en: "Vertical Spindle Top Suction Pump (VT)", title_ru: "Вертикальный шпиндельный насос с верхним всасыванием (VT)",
+          body_en: "Used where high discharge pressures exist and for pumping liquids with entrapped air (froth pumping).", body_ru: "Применяется при высоком давлении нагнетания и для перекачки жидкостей с вовлечённым воздухом (пенные среды).",
+          link_href: "/hippo-range/verticals/vertical-top-suction/", link_en: "Configuration", link_ru: "Конфигурация" },
+        { image: img("twin-volute-design-verticals.jpg"), title_en: "Vertical Spindle Vortex Pump (VV)", title_ru: "Вертикальный шпиндельный вихревой насос (VV)",
+          body_en: "Used where solids have already settled out and need to be agitated before being pumped, using a vortex hydraulic design.", body_ru: "Применяется там, где твёрдые частицы уже осели и требуют взмучивания перед откачкой, с вихревой гидравлической конструкцией.",
+          link_href: "/hippo-range/verticals/vertical-spindle-vortex-pump/", link_en: "Configuration", link_ru: "Конфигурация" },
+      ],
+    },
+  ],
+};
+
+pages["hippo-range/verticals/vertical-bottom-suction"] = hippoVariantPage({
+  code: "VB", title_en: "Vertical Bottom Suction Pump", title_ru: "Вертикальный насос с нижним всасыванием",
+  backHref: "/hippo-range/verticals/", backLabelEn: "Verticals", backLabelRu: "Вертикальные насосы",
+  crumbLabelEn: "Verticals", crumbLabelRu: "Вертикальные насосы", crumbHref: "/hippo-range/verticals/",
+  intro: ["The Hippo Vertical Spindle Bottom Suction Pump Range is used where solid particles have already settled out and need to be agitated before being pumped. The all-metal pump, with a high-chrome hydraulic end as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments.",
+    "Вертикальный шпиндельный насос Hippo с нижним всасыванием применяется там, где твёрдые частицы в жидкости уже осели и требуют взмучивания перед откачкой. Цельнометаллическая конструкция со стандартной гидравлической частью из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред."],
+  specs: VERTICAL_SPECS, advantages: VERTICAL_ADVANTAGES, iecExtra: null,
+  appsIntro: ["The Hippo VB range excels in complex slurry and de-watering applications. Its compact design and high-pressure capability suit pits, pontoons, or temporary and fixed installations.", "Насосы серии Hippo VB отлично подходят для сложных задач перекачки шлама и водоотлива. Компактная конструкция и способность работать при высоком давлении позволяют использовать их в карьерах, на понтонах, а также во временных и стационарных установках."],
+  apps: VERTICAL_APPS, image: img("vb-design-features.jpg"),
+});
+
+pages["hippo-range/verticals/vertical-bottom-discharge"] = hippoVariantPage({
+  code: "VBD", title_en: "Vertical Bottom Discharge Pump", title_ru: "Вертикальный насос с нижним нагнетанием",
+  backHref: "/hippo-range/verticals/", backLabelEn: "Verticals", backLabelRu: "Вертикальные насосы",
+  crumbLabelEn: "Verticals", crumbLabelRu: "Вертикальные насосы", crumbHref: "/hippo-range/verticals/",
+  intro: ["The Hippo Vertical Bottom Discharge Pump Range is used where solid particles have already settled out and need to be agitated before being pumped. The all-metal pump, with a high-chrome hydraulic end as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments.",
+    "Вертикальный насос Hippo с нижним нагнетанием применяется там, где твёрдые частицы в жидкости уже осели и требуют взмучивания перед откачкой. Цельнометаллическая конструкция со стандартной гидравлической частью из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред."],
+  specs: VERTICAL_SPECS, advantages: VERTICAL_ADVANTAGES, iecExtra: null,
+  appsIntro: ["The Hippo VBD range is used in complex slurry and de-watering applications. Its compact design and high-pressure capability suit pits, pontoons, or temporary and fixed installations.", "Насосы серии Hippo VBD применяются в сложных задачах перекачки шлама и водоотлива. Компактная конструкция и способность работать при высоком давлении позволяют использовать их в карьерах, на понтонах, а также во временных и стационарных установках."],
+  apps: VERTICAL_APPS, image: img("vb-design-features.jpg"),
+});
+
+pages["hippo-range/verticals/vertical-top-suction"] = hippoVariantPage({
+  code: "VT", title_en: "Vertical Spindle Top Suction Pump", title_ru: "Вертикальный шпиндельный насос с верхним всасыванием",
+  backHref: "/hippo-range/verticals/", backLabelEn: "Verticals", backLabelRu: "Вертикальные насосы",
+  crumbLabelEn: "Verticals", crumbLabelRu: "Вертикальные насосы", crumbHref: "/hippo-range/verticals/",
+  intro: ["The Hippo Vertical Spindle Top Suction Slurry Pump Range is used where high discharge pressures exist and for pumping liquids with entrapped air (froth pumping). The all-metal pump, with high-chrome hydraulics as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments.",
+    "Вертикальный шпиндельный насос Hippo с верхним всасыванием применяется при высоком давлении нагнетания и для перекачки жидкостей с вовлечённым воздухом (пенные среды). Цельнометаллическая конструкция со стандартной гидравликой из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред."],
+  specs: VERTICAL_SPECS, advantages: VERTICAL_ADVANTAGES,
+  iecExtra: ["Type VBO — Open Vane Type Impeller with Agitator.", "Тип VBO — открытое рабочее колесо с мешалкой."],
+  appsIntro: ["The Hippo VT range excels in de-watering and drainage applications, and for pumping liquids with entrapped air (froth pumping). Units can be installed in series to accommodate very high heads, such as acid mine-water drainage.", "Насосы серии Hippo VT отлично подходят для водоотлива, дренажа и перекачки жидкостей с вовлечённым воздухом (пенные среды). Возможна последовательная установка насосов для получения очень высокого напора, например при откачке кислотных шахтных вод."],
+  apps: [["General hard dewatering & drainage", "Общий жёсткий водоотлив и дренаж"], ["Slag pits", "Шлаковые приямки"], ["Tailings ponds", "Хвостохранилища"], ["Slurry froth pumping", "Перекачка пенных шламов"], ["Mineral processing", "Переработка полезных ископаемых"], ["Phosphoric acid plants", "Производство фосфорной кислоты"], ["Mine dewatering", "Шахтный водоотлив"]],
+  image: img("vbo-impeller.jpg"),
+});
+
+pages["hippo-range/verticals/vertical-spindle-vortex-pump"] = hippoVariantPage({
+  code: "VV", title_en: "Vertical Spindle Vortex Pump", title_ru: "Вертикальный шпиндельный вихревой насос",
+  backHref: "/hippo-range/verticals/", backLabelEn: "Verticals", backLabelRu: "Вертикальные насосы",
+  crumbLabelEn: "Verticals", crumbLabelRu: "Вертикальные насосы", crumbHref: "/hippo-range/verticals/",
+  intro: ["The Hippo Vertical Spindle Vortex Pump Range is used where solid particles have already settled out and need to be agitated before being pumped. The all-metal pump, with a high-chrome hydraulic end as standard, offers durability and high efficiency, and can be manufactured in duplex stainless steel alloys (e.g. CD4MCu) for acidic environments.",
+    "Вертикальный шпиндельный вихревой насос Hippo применяется там, где твёрдые частицы в жидкости уже осели и требуют взмучивания перед откачкой. Цельнометаллическая конструкция со стандартной гидравлической частью из хромистого чугуна обеспечивает долговечность и высокую эффективность; доступно исполнение из дуплексной нержавеющей стали (например, CD4MCu) для кислотных сред."],
+  specs: VERTICAL_SPECS, advantages: VERTICAL_ADVANTAGES, iecExtra: null,
+  appsIntro: ["The Hippo VV range performs excellently in complex slurry and de-watering applications. Its compact design and high-pressure capability suit pits, pontoons, or temporary and fixed installations.", "Насосы серии Hippo VV отлично зарекомендовали себя в сложных задачах перекачки шлама и водоотлива. Компактная конструкция и способность работать при высоком давлении позволяют использовать их в карьерах, на понтонах, а также во временных и стационарных установках."],
+  apps: VERTICAL_APPS, image: img("twin-volute-design-verticals.jpg"),
+});
+
+// ------------------------------------------------------------ CASE STUDIES --
+const caseStudies = [
+  { slug: "foskor-richards-bay-south-africa", image: img("case-new-denmark.jpg"),
+    title_en: "Foskor, Richards Bay — South Africa", title_ru: "Фоскор, Ричардс-Бей — ЮАР",
+    challenge_en: "Foskor, a plant producing sulphuric acid (H₂SO₄), phosphoric acid (H₃PO₄) and granular fertiliser (MAP/DAP), needed a durable solution for pumping highly corrosive slurries.",
+    challenge_ru: "Завод Foskor, производящий серную кислоту (H₂SO₄), фосфорную кислоту (H₃PO₄) и гранулированные удобрения (MAP/DAP), нуждался в надёжном решении для перекачки высококоррозионных шламов.",
+    solution: [
+      { en: "Hazleton Pumps International designed and manufactured fit-for-purpose vertical spindle slurry pumps for the project.", ru: "Hazleton Pumps International спроектировала и изготовила вертикальные шпиндельные шламовые насосы, подобранные под задачу проекта." },
+      { en: "Pumps manufactured from CD4MCu duplex stainless steel for resistance to pH below 4.", ru: "Насосы изготовлены из дуплексной нержавеющей стали CD4MCu для устойчивости к средам с pH ниже 4." },
+    ] },
+  { slug: "apatite-phosphate-mine-russia", image: img("case-apatite-russia.webp"),
+    title_en: "Apatite Phosphate Mine — Russia", title_ru: "Апатитовое месторождение — Россия",
+    challenge_en: "", challenge_ru: "",
+    solution: [
+      { en: "The project called for vertical spindle pumps.", ru: "Проект требовал применения вертикальных шпиндельных насосов." },
+      { en: "Motors selected according to voltage and optimal pole speeds.", ru: "Электродвигатели подобраны по напряжению и оптимальной частоте вращения." },
+      { en: "Materials adapted to suit the application.", ru: "Материалы адаптированы под условия применения." },
+      { en: "Best efficiency through custom design.", ru: "Максимальная эффективность за счёт индивидуального проектирования." },
+      { en: "Reasonable cost of ownership.", ru: "Экономически обоснованная стоимость владения." },
+      { en: "Minimum downtime: reliability and durability.", ru: "Минимальные простои: надёжность и долговечность." },
+      { en: "Can run dry.", ru: "Возможность работы «на сухом ходу»." },
+      { en: "Double discharge volute provides balanced radial loads on bearings and seals.", ru: "Двухспиральный корпус обеспечивает сбалансированные радиальные нагрузки на подшипники и уплотнения." },
+    ] },
+  { slug: "rossing-uranium-namibia", image: img("case-rossing-namibia.webp"),
+    title_en: "Rössing Uranium — Namibia", title_ru: "Урановый рудник Рёссинг — Намибия",
+    challenge_en: "The project required heavy-duty vertical spindle slurry pumps for pontoon installation, capable of handling corrosive slurry with a pH below 4, and ambient temperatures of up to 43 °C in Namibia's desert climate.",
+    challenge_ru: "Проект требовал тяжёлых вертикальных шпиндельных шламовых насосов для установки на понтонах, способных работать с коррозионным шламом с pH ниже 4 при температуре окружающей среды до 43 °C в условиях пустынного климата Намибии.",
+    solution: [
+      { en: "Pumps cast and manufactured from CD4MCu duplex stainless steel to withstand corrosion.", ru: "Насосы отлиты и изготовлены из дуплексной нержавеющей стали CD4MCu для устойчивости к коррозии." },
+      { en: "185 kW and 250 kW motors sized for the slurry's specific gravity.", ru: "Электродвигатели 185 кВт и 250 кВт подобраны под удельный вес шлама." },
+      { en: "Reasonable cost of ownership and long-term value.", ru: "Экономически обоснованная стоимость владения и долгосрочная ценность." },
+      { en: "Minimum downtime: reliability and durability.", ru: "Минимальные простои: надёжность и долговечность." },
+      { en: "Design allows the pumps to run dry.", ru: "Конструкция позволяет насосам работать «на сухом ходу»." },
+      { en: "Double discharge volute design provides balanced radial loads, increasing bearing life.", ru: "Двухспиральная конструкция обеспечивает сбалансированные радиальные нагрузки, увеличивая ресурс подшипников." },
+    ] },
+  { slug: "new-denmark-colliery-south-africa", image: img("case-new-denmark.jpg"),
+    title_en: "New Denmark Colliery — South Africa", title_ru: "Угольная шахта Нью-Денмарк — ЮАР",
+    challenge_en: "", challenge_ru: "",
+    solution: [
+      { en: "Certified flameproof submersible slurry pumps with flameproof electrical control panels for added protection.", ru: "Сертифицированные взрывозащищённые погружные шламовые насосы с взрывозащищёнными электрощитами управления для дополнительной защиты." },
+      { en: "Designed for underground coal mines with flammable dust and combustible methane present.", ru: "Разработаны для подземных угольных шахт с наличием горючей пыли и метана." },
+      { en: "Manufactured from cast iron and hard chrome.", ru: "Изготовлены из чугуна и хромистого чугуна." },
+      { en: "Complies with IEC 60079 flameproof specifications.", ru: "Соответствуют взрывозащищённым требованиям IEC 60079." },
+      { en: "Can be designed for any electrical supply voltage, including high voltage, at 50 or 60 Hz.", ru: "Могут изготавливаться под любое напряжение питания, включая высокое, при 50 или 60 Гц." },
+      { en: "Trolley or skid available for ease of movement underground.", ru: "Доступна тележка или салазки для удобства перемещения под землёй." },
+      { en: "Safety controls protect the pumps from overload, heat or excessive vibration.", ru: "Системы защиты оберегают насосы от перегрузки, перегрева и избыточной вибрации." },
+    ] },
+  { slug: "new-vaal-colliery-south-africa", image: img("case-new-vaal.jpg"),
+    title_en: "New Vaal Colliery — South Africa", title_ru: "Угольная шахта Нью-Ваал — ЮАР",
+    challenge_en: "Hazleton Pumps International was approached for a slurry pumping solution at the New Vaal Colliery project in South Africa, where a permanent installation was required for coal slurry.",
+    challenge_ru: "К Hazleton Pumps International обратились за решением для перекачки шлама на проекте угольной шахты Нью-Ваал в ЮАР, где требовалась стационарная установка для угольного шлама.",
+    solution: [
+      { en: "Heavy-duty vertical spindle slurry pumps were supplied complete with motors.", ru: "Поставлены тяжёлые вертикальные шпиндельные шламовые насосы в комплекте с электродвигателями." },
+      { en: "A total of 68 Hippo vertical spindle slurry pumps (75L and 100L models) were designed and manufactured for New Vaal Colliery.", ru: "Всего для шахты Нью-Ваал спроектировано и изготовлено 68 вертикальных шпиндельных насосов Hippo (модели 75L и 100L)." },
+    ] },
+  { slug: "amandelbult-platinum-mine-south-africa", image: img("case-amandelbult.jpg"),
+    title_en: "Amandelbult Platinum Mine — South Africa", title_ru: "Платиновый рудник Амандельбюлт — ЮАР",
+    challenge_en: "Amandelbult mine, in the Thabazimbi area of South Africa's North-West Province, produces platinum-group metals valued for jewellery (for platinum's purity and resistance to tarnishing) and for catalytic converters.",
+    challenge_ru: "Рудник Амандельбюлт расположен в районе Табазимби северо-западной провинции ЮАР и добывает металлы платиновой группы, востребованные в ювелирном деле (благодаря чистоте и устойчивости платины к потускнению) и в производстве каталитических нейтрализаторов.",
+    solution: [
+      { en: "Pumps designed to handle heavy-duty, highly abrasive slurries.", ru: "Насосы рассчитаны на перекачку тяжёлых высокоабразивных шламов." },
+      { en: "Fixed installation on frames within a sump at the plant.", ru: "Стационарная установка на рамах в приямке предприятия." },
+    ] },
+  { slug: "tautona-gold-mine-south-africa", image: img("case-tautona.jpg"),
+    title_en: "TauTona Gold Mine — South Africa", title_ru: "Золотой рудник ТауТона — ЮАР",
+    challenge_en: "This mining operation near Carletonville, South Africa, is the deepest in the world — reaching 3,900 m.",
+    challenge_ru: "Этот рудник близ Карлтонвилля в ЮАР — самый глубокий в мире: глубина разработки достигает 3900 м.",
+    solution: [
+      { en: "Heavy-duty submersible slurry pumps manufactured with a 28% hard-chrome wet end for durability.", ru: "Погружные шламовые насосы повышенной прочности с проточной частью из хромистого чугуна (28% хрома) для долговечности." },
+      { en: "Designed for underground gold-mine conditions with abrasive material.", ru: "Разработаны для условий подземного золотодобывающего рудника с абразивными материалами." },
+      { en: "Pumps can be designed for any electrical supply voltage, including high voltage, at 50 or 60 Hz.", ru: "Насосы могут изготавливаться под любое напряжение питания, включая высокое, при 50 или 60 Гц." },
+    ] },
+  { slug: "cullinan-diamond-mine-south-africa", image: img("case-cullinan.jpg"),
+    title_en: "Cullinan Diamond Mine — South Africa", title_ru: "Алмазный рудник Куллинан — ЮАР",
+    challenge_en: "", challenge_ru: "",
+    solution: [
+      { en: "Hazleton Pumps International designed and manufactured three 350VBDC, 600 kW Hippo Bottom Suction vertical spindle pumps for Petra Diamonds' Cullinan Diamond Mine.", ru: "Hazleton Pumps International спроектировала и изготовила три вертикальных шпиндельных насоса Hippo с нижним всасыванием модели 350VBDC мощностью 600 кВт для алмазного рудника Куллинан компании Petra Diamonds." },
+      { en: "The fixed installation pumps water from the dam to the process plant, where dust and dirt are washed from the diamond-bearing gravel.", ru: "Стационарная установка подаёт воду из дамбы на перерабатывающий завод, где от алмазосодержащего гравия отмываются пыль и грязь." },
+    ] },
+  { slug: "kenmare-titanium-sands-mozambique", image: img("case-kenmare.jpg"),
+    title_en: "Kenmare Titanium Sands — Mozambique", title_ru: "Титановые пески Кенмаре — Мозамбик",
+    challenge_en: "The Kenmare project in Mozambique needed a solution for pumping sand slurry containing titanium; extreme abrasion levels in the slurry challenged equipment durability.",
+    challenge_ru: "Проект Kenmare в Мозамбике требовал решения для перекачки песчаного шлама с содержанием титана; экстремальная абразивность шлама предъявляла высокие требования к долговечности оборудования.",
+    solution: [
+      { en: "Heavy-duty submersible slurry pumps were needed for pontoon installation, with chain blocks and electrical control panels.", ru: "Для установки на понтонах потребовались погружные шламовые насосы повышенной прочности с цепными талями и электрощитами управления." },
+      { en: "A total of 18 Hippo submersible slurry pumps (75M and 200DM models) were designed and manufactured for Kenmare.", ru: "Для компании Kenmare спроектировано и изготовлено 18 погружных шламовых насосов Hippo (модели 75M и 200DM)." },
+    ] },
+];
+
+pages["case-studies"] = {
+  title_en: "Case Studies", title_ru: "Примеры проектов",
+  eyebrow_en: "Resources", eyebrow_ru: "Ресурсы",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Case Studies", "Примеры проектов", null]]),
+  blocks: [
+    {
+      type: "textImage", imageSide: "right", image: img("cd4mcu-steel.jpg"),
+      title_en: "The offering", title_ru: "Наше предложение",
+      body_en: "<p class='lede'>Hazleton Pumps, based in Centurion, South Africa, designs and manufactures the Hippo range of custom-engineered, heavy-duty slurry pumping solutions — cast and assembled in South Africa to the customer's requirements at duty point.</p>",
+      body_ru: "<p class='lede'>Компания Hazleton Pumps из города Сентурион (ЮАР) проектирует и производит линейку шламовых насосных решений Hippo повышенной прочности, изготавливаемых по индивидуальному проекту — отливка и сборка выполняются в Южной Африке под требования заказчика в рабочей точке.</p>",
+    },
+    {
+      type: "list",
+      items: [
+        { en: "Motors from 5.5 kW to 850 kW", ru: "Электродвигатели от 5,5 кВт до 850 кВт" },
+        { en: "Engineered to displace corrosive and abrasive slurry in heavy-duty mining and industrial applications", ru: "Рассчитаны на перекачку коррозионных и абразивных шламов в тяжёлых горнодобывающих и промышленных задачах" },
+        { en: "Capacities up to 1500 litres per second", ru: "Производительность до 1500 литров в секунду" },
+        { en: "Liquids up to 95 °C", ru: "Жидкости с температурой до 95 °C" },
+        { en: "Heads up to 250 m", ru: "Напор до 250 м" },
+        { en: "24-month guarantee", ru: "Гарантия 24 месяца" },
+      ],
+    },
+    {
+      type: "list", style: "tag",
+      title_en: "Materials of manufacture include:", title_ru: "Используемые материалы:",
+      items: [
+        { en: "Hard chrome", ru: "Хромистый чугун" },
+        { en: "CD4MCu duplex stainless steel", ru: "Дуплексная нержавеющая сталь CD4MCu" },
+        { en: "Sanichrome S28", ru: "Sanichrome S28" },
+        { en: "Hastelloy", ru: "Hastelloy" },
+      ],
+    },
+    { type: "caseStudyGrid", title_en: "Projects worldwide", title_ru: "Проекты по всему миру" },
+  ],
+};
+
+// -------------------------------------------------------------- PUMP CURVES --
+const curveGroups = [
+  { title_en: "50 Hz Curves — Low Voltage", title_ru: "Характеристики 50 Гц — низкое напряжение", items: [
+    { title_en: "Hippo 2-Pole 50 Hz Curve — Low Voltage", title_ru: "Hippo, 2 полюса, 50 Гц — низкое напряжение", image: img("Hippo-2-Pole-Speed-50-Hz-Curve-Low-Voltage.jpg") },
+    { title_en: "Hippo 4-Pole 50 Hz Curve — Low Voltage", title_ru: "Hippo, 4 полюса, 50 Гц — низкое напряжение", image: img("Hippo-4-Pole-Speed-50-Hz-Curve-Low-Voltage.jpg") },
+    { title_en: "Hippo 6-Pole 50 Hz Curve — Low Voltage", title_ru: "Hippo, 6 полюсов, 50 Гц — низкое напряжение", image: img("Hippo-6-Pole-Speed-50-Hz-Curve-Low-Voltage.jpg") },
+  ]},
+  { title_en: "50 Hz Curves — Medium/High Voltage", title_ru: "Характеристики 50 Гц — среднее/высокое напряжение", items: [
+    { title_en: "Hippo 2-Pole 50 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 2 полюса, 50 Гц — среднее/высокое напряжение", image: img("Hippo-2-Pole-Speed-50-Hz-Curve-MediumHigh-Voltage.jpg") },
+    { title_en: "Hippo 4-Pole 50 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 4 полюса, 50 Гц — среднее/высокое напряжение", image: img("Hippo-4-Pole-Speed-50-Hz-Curve-MediumHigh-Voltage.jpg") },
+    { title_en: "Hippo 6-Pole 50 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 6 полюсов, 50 Гц — среднее/высокое напряжение", image: img("Hippo-6-Pole-Speed-50-Hz-Curve-MediumHigh-Voltage.jpg") },
+  ]},
+  { title_en: "60 Hz Curves — Low Voltage", title_ru: "Характеристики 60 Гц — низкое напряжение", items: [
+    { title_en: "Hippo 2-Pole 60 Hz Curve — Low Voltage", title_ru: "Hippo, 2 полюса, 60 Гц — низкое напряжение", image: img("Hippo-2-Pole-Speed-60-Hz-Curve-Low-Votage.jpg") },
+    { title_en: "Hippo 4-Pole 60 Hz Curve — Low Voltage", title_ru: "Hippo, 4 полюса, 60 Гц — низкое напряжение", image: img("Hippo-4-Pole-Speed-60-Hz-Curve-Low-Votage.jpg") },
+    { title_en: "Hippo 6-Pole 60 Hz Curve — Low Voltage", title_ru: "Hippo, 6 полюсов, 60 Гц — низкое напряжение", image: img("Hippo-6-Pole-Speed-60-Hz-Curve-Low-Votage.jpg") },
+  ]},
+  { title_en: "60 Hz Curves — Medium/High Voltage", title_ru: "Характеристики 60 Гц — среднее/высокое напряжение", items: [
+    { title_en: "Hippo 2-Pole 60 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 2 полюса, 60 Гц — среднее/высокое напряжение", image: img("Hippo-2-Pole-Speed-60-Hz-Curve-MediumHigh-Voltage.jpg") },
+    { title_en: "Hippo 4-Pole 60 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 4 полюса, 60 Гц — среднее/высокое напряжение", image: img("Hippo-4-Pole-Speed-60-Hz-Curve-MediumHigh-Voltage.jpg") },
+    { title_en: "Hippo 6-Pole 60 Hz Curve — Medium/High Voltage", title_ru: "Hippo, 6 полюсов, 60 Гц — среднее/высокое напряжение", image: img("Hippo-6-Pole-Speed-60-Hz-Curve-MediumHigh-Voltage.jpg") },
+  ]},
+];
+
+pages["pump-curves"] = {
+  title_en: "Pump Performance Curves", title_ru: "Напорные характеристики насосов",
+  eyebrow_en: "Resources", eyebrow_ru: "Ресурсы",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Pump Curves", "Напорные характеристики", null]]),
+  blocks: [
+    { type: "text", body_en: "<p class='lede'>Performance curves for the Hippo pump range, across pole speeds, frequencies and voltage classes. Contact us for curves matching your specific duty point.</p>",
+      body_ru: "<p class='lede'>Напорные характеристики насосов линейки Hippo для различных частот вращения, частот сети и классов напряжения. Свяжитесь с нами, чтобы подобрать кривую под вашу рабочую точку.</p>" },
+    { type: "curveGroups", groups: curveGroups },
+  ],
+};
+
+// ------------------------------------------------------------------ CONTACT --
+pages["contact"] = {
+  title_en: "Contact Us", title_ru: "Контакты",
+  eyebrow_en: "Get in touch", eyebrow_ru: "Связаться с нами",
+  crumbs: crumbs([["Home", "Главная", "/"], ["Contact", "Контакты", null]]),
+  cta: false,
+  blocks: [{ type: "contactBlock" }],
+};
+
+// -------------------------------------------------------------------- ARTICLES --
+const articles = [
+  { slug: "sa-hippo-to-exhibit-at-pdac-in-toronto", image: img("press-sa-pump-toronto.jpg"),
+    title_en: "SA Hippo to exhibit at PDAC in Toronto", title_ru: "Южноафриканский Hippo на выставке PDAC в Торонто",
+    date_en: "2 February 2017", date_ru: "2 февраля 2017 г.",
+    teaser_en: "The PDAC International Convention, Trade Show & Investors Exchange is the world's leading convention for people, companies and organisations connected with mineral exploration, drawing over 900 exhibitors and 22,000 attendees from 100+ countries…",
+    teaser_ru: "Международная конференция, выставка и инвестиционная биржа PDAC — ведущее в мире мероприятие для компаний и специалистов в области геологоразведки, собирающее более 900 экспонентов и 22 000 участников из более чем 100 стран…",
+    body_en: `<p>The PDAC International Convention, Trade Show &amp; Investors Exchange is the world's leading convention for people, companies and organisations in, or connected with, mineral exploration. Over 900 exhibitors and 22,000 attendees from more than 100 countries attend, alongside technical sessions, short courses and networking events. Held annually in Toronto, Canada since 1932, it is today the event of choice for the world's mineral industry.</p>
+<p>PDAC is regarded as a crucial event for the international mining industry, bringing together the main decision-makers for projects across the Americas and Africa, who are always sourcing reliable products for use in their international mining operations — which is why Hazleton Pumps chose to participate again in PDAC 2017.</p>
+<p>Hazleton Pumps, the South African family-owned and managed company, first exhibited at PDAC in 2016, showcasing the Hippo Submersible Slurry Pump range and its capability to pump liquids containing solids.</p>
+<p>To demonstrate these capabilities clearly, the company developed a working model of a solid-separation pumping system — one of the most important mining applications, in which solids are separated from the liquid they are suspended in. A small Hippo submersible slurry pump feeds the cyclone, the solids are separated out, and are then returned to the pump and remixed for the process to repeat — ideal for exhibition demonstrations.</p>
+<p>Since the 2016 PDAC, Hazleton Pumps has received and completed orders from Canada worth more than R8.5 million, and continued participation at this event is essential to sustaining growth in this market. The demonstration unit has also been used at CIM in Vancouver, where the South African Consul General and trade representatives visited the Hazleton Pumps stand.</p>`,
+    body_ru: `<p>Международная конференция, выставка и инвестиционная биржа PDAC — ведущее в мире мероприятие для людей, компаний и организаций, связанных с геологоразведкой. Мероприятие собирает более 900 экспонентов и 22 000 участников из более чем 100 стран; в программе — технические сессии, курсы и сетевые мероприятия. Проводимая ежегодно в Торонто (Канада) с 1932 года, сегодня это главное событие для мировой горнодобывающей отрасли.</p>
+<p>PDAC считается важнейшим событием для международной горнодобывающей отрасли, собирающим ключевых лиц, принимающих решения по проектам в Северной и Южной Америке и Африке — и именно поэтому компания Hazleton Pumps вновь приняла участие в PDAC 2017.</p>
+<p>Hazleton Pumps — южноафриканская семейная компания — впервые представила свою продукцию на PDAC в 2016 году, продемонстрировав линейку погружных шламовых насосов Hippo и их способность перекачивать жидкости с твёрдыми включениями.</p>
+<p>Чтобы наглядно показать эти возможности, компания разработала рабочую модель системы отделения твёрдых частиц — одного из важнейших процессов в горной добыче, при котором твёрдые частицы отделяются от перекачиваемой жидкости. Небольшой погружной насос Hippo подаёт смесь в циклон, где происходит разделение, после чего твёрдые частицы возвращаются обратно в насос для повторного цикла — удобное решение для демонстрации на выставках.</p>
+<p>С момента участия в PDAC 2016 года компания Hazleton Pumps получила и выполнила заказы из Канады на сумму более 8,5 млн южноафриканских рандов, и дальнейшее участие в этом мероприятии остаётся важным условием роста на этом рынке. Демонстрационная установка также использовалась на выставке CIM в Ванкувере, где стенд Hazleton Pumps посетили генеральный консул ЮАР и торговые представители.</p>` },
+  { slug: "reducing-the-hidden-cost-of-electrical-submersible-pumps", image: img("cd4mcu-steel.jpg"),
+    title_en: "Reducing the hidden cost of electrical submersible pumps", title_ru: "Как снизить скрытые расходы на эксплуатацию погружных насосов",
+    date_en: "25 February 2015", date_ru: "25 февраля 2015 г.",
+    teaser_en: "Electrical submersible pumps are, once installed, usually out of sight and out of mind — with little attention paid to their real operating costs. We look at total cost of ownership rather than purchase price alone…",
+    teaser_ru: "После установки погружные электронасосы обычно скрыты из виду, и их реальная стоимость эксплуатации редко оказывается в центре внимания. В статье рассматривается совокупная стоимость владения, а не только цена покупки…",
+    body_en: `<p>Electrical submersible pumps, once installed, are usually fully submerged and out of sight — so their real running costs tend to get little attention. When buying a submersible pump, or any capital equipment, the key measure is total cost of ownership: power usage, maintenance, and the cost of downtime, not just the purchase price. Many factors affect a submersible pump's service life, and getting them wrong leads to costs that could easily have been avoided.</p>
+<h3>Evaluating the system</h3>
+<p>Before a pump is selected, the liquid to be pumped must be characterised: what solids are present, their size, the liquid's specific gravity and, if not neutral, its pH and chemical make-up. This determines the pump's materials of construction. The required flow rate must be calculated accurately, since pump capacity drives cost directly, and the static lift, pipe length, fittings and resulting friction losses must all be established to size the discharge pressure correctly. Undersized pipework wastes energy and accelerates wear.</p>
+<p>Once flow rate and total discharge pressure are known, a pump can be selected against its performance curve, which plots head against flow with power and efficiency on the secondary axis. The curve's "Best Efficiency Point" (BEP) is where the pump should operate — it delivers the most output for the least power, and minimises wear when solids are present. A discharge pressure gauge can confirm the pump is running at its BEP.</p>
+<h3>Materials and failures</h3>
+<p>Where solids or aggressive chemicals are present, materials of construction need careful selection — Duplex Stainless Steels such as CD4MCu are commonly used for acidic slurries. The leading cause of submersible pump failure is overheated electrical windings, usually from running dry; filling the motor housing with oil keeps windings and seals cool even when the pump runs dry. A quality trailing cable with screened conductors is equally important, as cable damage is a frequent failure point.</p>
+<p>Every installation needs a purpose-designed electrical control panel with earth-leakage protection, installed by a qualified electrician with the correct certification.</p>
+<h3>Conclusion</h3>
+<p>Properly specified, electrical submersible pumps are an economically sound, portable alternative to horizontal or vertical spindle pumps for almost any tank or sump application.</p>`,
+    body_ru: `<p>После установки погружные электронасосы обычно полностью скрыты под жидкостью и находятся вне поля зрения, поэтому их реальным эксплуатационным расходам редко уделяется должное внимание. При выборе погружного насоса или любого другого основного оборудования ключевым показателем должна быть совокупная стоимость владения — расходы на электроэнергию, обслуживание и простои, а не только цена покупки. На срок службы погружного насоса влияет множество факторов, и ошибки в их оценке приводят к расходам, которых легко можно было избежать.</p>
+<h3>Оценка насосной системы</h3>
+<p>Прежде чем выбрать насос, необходимо определить характеристики перекачиваемой жидкости: наличие и размер твёрдых частиц, удельный вес жидкости, а если среда не нейтральна — её pH и химический состав. Эти данные определяют материал исполнения насоса. Требуемый расход нужно рассчитать точно, так как производительность насоса напрямую влияет на его стоимость; также необходимо учесть высоту подъёма, длину трубопровода, арматуру и вызванные ими потери на трение, чтобы правильно определить давление нагнетания. Заниженный диаметр труб приводит к лишнему расходу энергии и ускоренному износу.</p>
+<h3>Материалы и причины отказов</h3>
+<p>При наличии твёрдых частиц или агрессивных химических сред материал изготовления насоса требует тщательного подбора — для кислотных шламов часто применяется дуплексная нержавеющая сталь, например CD4MCu. Основная причина отказа погружных насосов — перегрев электрической обмотки, как правило, из-за работы «на сухом ходу»; заполнение корпуса двигателя маслом сохраняет обмотку и уплотнения в холодном состоянии даже при работе без жидкости. Не менее важен качественный кабель с экранированными жилами, так как повреждение кабеля — частая причина отказа.</p>
+<p>Для каждой установки требуется специально спроектированный электрощит защиты с устройством защитного отключения, монтаж которого должен выполнять квалифицированный электрик с соответствующим допуском.</p>
+<h3>Вывод</h3>
+<p>При правильном подборе погружные электронасосы являются экономически выгодной и мобильной альтернативой горизонтальным или вертикальным шпиндельным насосам практически для любой ёмкости или приямка.</p>` },
+];
+
+const content = { settings, nav, pages, caseStudies, articles, leads: [] };
+
+fs.writeFileSync(path.join(__dirname, "content.json"), JSON.stringify(content, null, 2), "utf-8");
+console.log("content.json written with", Object.keys(pages).length, "pages,", caseStudies.length, "case studies,", articles.length, "articles.");
+
+module.exports = { settings, nav, pages, img, crumbs, systemDetailBlocks, IEC_NOTE_EN, IEC_NOTE_RU };
