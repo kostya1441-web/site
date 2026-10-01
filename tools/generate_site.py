@@ -8,6 +8,7 @@ Shared assets (css/js/images) are hand-maintained in assets/ and are not
 touched by this script.
 """
 import os
+import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -222,7 +223,32 @@ def cta_strip():
 """
 
 
+_ROOT_LINK_RE = re.compile(r'(href|src)="(/[^"]*)"')
+
+
+def _relativize(html, depth):
+    """Rewrite root-relative URLs (/assets/..., /history/, /) into relative
+    paths with explicit index.html targets, so the site also works opened
+    directly from disk via file:// (no web server resolving directories)."""
+    prefix = ("../" * depth) if depth else "./"
+
+    def repl(m):
+        attr, url = m.group(1), m.group(2)
+        inner = url[1:]
+        if inner == "":
+            target = "index.html"
+        elif inner.endswith("/"):
+            target = inner + "index.html"
+        else:
+            target = inner
+        return f'{attr}="{prefix}{target}"'
+
+    return _ROOT_LINK_RE.sub(repl, html)
+
+
 def write(path, html):
+    depth = path.count("/")
+    html = _relativize(html, depth)
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
     with open(full, "w", encoding="utf-8") as f:
