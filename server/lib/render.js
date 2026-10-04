@@ -401,7 +401,7 @@ function layout({ settings, nav, titleEn, bodyHtml, assetPrefix = "/", path: url
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titleEn)} | ${esc(settings.companyName)}</title>
 <meta name="description" content="${esc(settings.metaDescription)}">
-<link rel="icon" href="${assetPrefix}assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="${esc(settings.logo || "/assets/img/logo.svg")}">
 <link rel="stylesheet" href="${assetPrefix}assets/css/style.css">
 <script>
 (function(){try{var l=localStorage.getItem('hazleton-lang');if(l==='ru'){document.documentElement.setAttribute('data-lang','ru');document.documentElement.setAttribute('lang','ru');}}catch(e){}})();
@@ -423,7 +423,7 @@ function layout({ settings, nav, titleEn, bodyHtml, assetPrefix = "/", path: url
 <header class="site-header">
   <div class="container nav-row">
     <a href="/" class="brand">
-      <img src="${assetPrefix}assets/img/logo.svg" alt="${esc(settings.companyName)} logo">
+      <img src="${esc(settings.logo || "/assets/img/logo.svg")}" alt="${esc(settings.companyName)} logo">
       <span class="brand-name">${esc(settings.companyName)}<small>${bi("Intl (Pty) Ltd", "Intl (Pty) Ltd · Южная Африка")}</small></span>
     </a>
     <nav class="main-nav"><ul>${renderNav(nav, assetPrefix)}</ul></nav>
@@ -438,7 +438,7 @@ ${bodyHtml}
   <div class="container">
     <div class="grid">
       <div>
-        <div class="brand" style="color:#fff"><img src="${assetPrefix}assets/img/logo.svg" alt="" style="height:34px"></div>
+        <div class="brand" style="color:#fff"><img src="${esc(settings.logo || "/assets/img/logo.svg")}" alt="" style="height:34px"></div>
         ${biBlock(`<p class='tag'>${esc(settings.footerTag_en)}</p>`, `<p class='tag'>${esc(settings.footerTag_ru)}</p>`)}
       </div>
       <div>

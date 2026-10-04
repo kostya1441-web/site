@@ -5,7 +5,11 @@
     var rows = container.querySelectorAll(":scope > .repeater-row");
     rows.forEach(function (row, i) {
       row.querySelectorAll("[name]").forEach(function (el) {
-        el.name = el.name.replace(/\[(items|buttons|groups)\]\[\d+\]/, "[$1][" + i + "]");
+        // Matches "items[3]", "navItems[3]", "children[3]" etc. regardless
+        // of what (if anything) wraps the key itself in brackets, and
+        // renumbers only the FIRST such group — the one belonging to this
+        // row's own repeater level, not any nested repeater inside it.
+        el.name = el.name.replace(/(items|buttons|groups|navItems|children)\[\d+\]/, "$1[" + i + "]");
       });
     });
   }

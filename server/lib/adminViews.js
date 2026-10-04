@@ -11,6 +11,7 @@ function shell({ title, active, body, flash }) {
   const navItems = [
     ["/admin/", "Дашборд"],
     ["/admin/pages/", "Страницы"],
+    ["/admin/nav", "Меню навигации"],
     ["/admin/case-studies/", "Примеры проектов"],
     ["/admin/articles/", "Пресса и статьи"],
     ["/admin/settings", "Настройки и контакты"],
@@ -441,20 +442,38 @@ function pageEditorPage(pathKey, page, flash) {
   return shell({ title: `Страница: ${page.title_en || pathKey}`, active: "/admin/pages/", body, flash });
 }
 
-function pagesListPage(pages) {
+function pagesListPage(pages, flash) {
   const rows = Object.entries(pages)
     .map(
       ([key, p]) => `<tr>
       <td>${esc(p.title_en || key)}</td>
-      <td><code>/${esc(key)}/</code></td>
-      <td><a class="a-btn small" href="/admin/pages/${encodeURIComponent(key)}">Редактировать</a></td>
+      <td><code>${key ? `/${esc(key)}/` : "/"}</code></td>
+      <td class="a-row">
+        <a class="a-btn small" href="/admin/pages/${encodeURIComponent(key)}">Редактировать</a>
+        ${key
+          ? `<form method="post" action="/admin/pages/${encodeURIComponent(key)}/delete" onsubmit="return confirm('Удалить страницу /${esc(key)}/? Ссылки на неё (в меню или на других страницах) перестанут работать.')">
+            <button class="a-btn small danger" type="submit">Удалить</button>
+          </form>`
+          : `<span class="a-badge">Главная</span>`}
+      </td>
     </tr>`
     )
     .join("");
-  const body = `<div class="a-card">
+  const body = `
+  <div class="a-card">
+    <h2>Создать новую страницу</h2>
+    <form method="post" action="/admin/pages/new" class="a-grid" style="align-items:end">
+      ${textField("slug", "URL страницы (латиницей, например about/team)", "", { required: true })}
+      ${textField("title_en", "Заголовок (EN)", "", { required: true })}
+      ${textField("title_ru", "Заголовок (RU)", "", { required: true })}
+      <button class="a-btn accent" type="submit" style="height:40px">+ Создать страницу</button>
+    </form>
+    <p class="hint">Страница будет доступна по адресу /<слаг>/. Пункт в меню навигации нужно будет добавить отдельно на странице «Меню навигации», если он там нужен.</p>
+  </div>
+  <div class="a-card">
     <table class="a-table"><thead><tr><th>Страница</th><th>URL</th><th></th></tr></thead><tbody>${rows}</tbody></table>
   </div>`;
-  return shell({ title: "Страницы сайта", active: "/admin/pages/", body });
+  return shell({ title: "Страницы сайта", active: "/admin/pages/", body, flash });
 }
 
 function dashboardPage(data) {
@@ -484,9 +503,10 @@ function dashboardPage(data) {
 }
 
 function settingsPage(settings, adminUsername, flash) {
-  const body = `<form method="post">
+  const body = `<form method="post" enctype="multipart/form-data">
     <div class="a-card">
-      <h2>Контакты</h2>
+      <h2>Логотип и название</h2>
+      ${imageField("", "logo", "Логотип (SVG/PNG, используется в шапке, футере и вкладке браузера)", settings.logo)}
       ${textField("companyName", "Название компании", settings.companyName)}
       ${textField("phone", "Телефон", settings.phone)}
       ${textField("email", "Email", settings.email)}
@@ -611,6 +631,55 @@ function leadsPage(leads) {
   return shell({ title: "Заявки с сайта", active: "/admin/leads", body });
 }
 
+function navChildRow(prefix, idx, child) {
+  child = child || {};
+  return `<div class="repeater-row">
+    <div class="a-grid">
+      ${textField(`${prefix}[children][${idx}][en]`, "Подпункт — текст (EN)", child.en)}
+      ${textField(`${prefix}[children][${idx}][ru]`, "Подпункт — текст (RU)", child.ru)}
+    </div>
+    ${textField(`${prefix}[children][${idx}][href]`, "Подпункт — ссылка", child.href)}
+    <button type="button" class="a-btn small danger remove-row">Удалить подпункт</button>
+  </div>`;
+}
+
+function navItemRow(idx, item, isTemplate) {
+  item = item || {};
+  const prefix = `navItems[${idx}]`;
+  const childrenContainerId = isTemplate ? null : `nav-children-${idx}`;
+  const childrenHtml = isTemplate
+    ? `<p class="hint">Сохраните страницу и откройте её заново, чтобы добавить вложенные пункты этому разделу.</p>`
+    : `<label class="a-label">Выпадающие подпункты</label>
+       <div id="${childrenContainerId}">${(item.children || []).map((c, j) => navChildRow(prefix, j, c)).join("")}</div>
+       <template id="${childrenContainerId}-template">${navChildRow(prefix, 0, {}).replace(/^<div class="repeater-row">|<\/div>$/g, "")}</template>
+       <button type="button" class="a-btn small ghost" data-add-row="${childrenContainerId}" style="margin-top:6px">+ Добавить подпункт</button>`;
+  return `<div class="repeater-row a-block">
+    <div class="a-grid">
+      ${textField(`${prefix}[en]`, "Пункт меню — текст (EN)", item.en)}
+      ${textField(`${prefix}[ru]`, "Пункт меню — текст (RU)", item.ru)}
+    </div>
+    ${textField(`${prefix}[href]`, "Ссылка (например /history/)", item.href)}
+    ${childrenHtml}
+    <button type="button" class="a-btn small danger remove-row" style="position:static;margin-top:10px">Удалить весь пункт меню</button>
+  </div>`;
+}
+
+function navEditorPage(nav, flash) {
+  const rows = nav.map((item, i) => navItemRow(i, item, false)).join("");
+  const templateInner = navItemRow(0, {}, true).replace(/^<div class="repeater-row a-block">|<\/div>$/g, "");
+  const body = `<form method="post">
+    <div class="a-card">
+      <h2>Пункты меню</h2>
+      <p class="hint">Порядок пунктов совпадает с порядком в этом списке. У каждого пункта может быть набор выпадающих подпунктов.</p>
+      <div id="nav-items">${rows}</div>
+      <template id="nav-items-template"><div class="repeater-row">${templateInner}</div></template>
+      <button type="button" class="a-btn ghost small" data-add-row="nav-items" style="margin-top:10px">+ Добавить пункт меню</button>
+    </div>
+    <button class="a-btn accent" type="submit">Сохранить меню</button>
+  </form>`;
+  return shell({ title: "Меню навигации", active: "/admin/nav", body, flash });
+}
+
 module.exports = {
   shell,
   loginPage,
@@ -623,5 +692,6 @@ module.exports = {
   articlesListPage,
   articleEditorPage,
   leadsPage,
+  navEditorPage,
   BLOCK_LABELS,
 };

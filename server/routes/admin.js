@@ -262,6 +262,62 @@ router.get("/pages/", (req, res) => {
   res.send(views.pagesListPage(store.load().pages));
 });
 
+const RESERVED_SLUGS = new Set(["admin", "assets", "uploads", "case-studies", "press-releases", "contact"]);
+
+router.post("/pages/new", (req, res) => {
+  const slug = (req.body.slug || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, "")
+    .replace(/[^a-z0-9/-]+/g, "-");
+  if (!slug || !req.body.title_en || !req.body.title_ru) {
+    return res.send(views.pagesListPage(store.load().pages, { error: true, text: "Укажите URL и заголовок на обоих языках." }));
+  }
+  if (RESERVED_SLUGS.has(slug.split("/")[0])) {
+    return res.send(
+      views.pagesListPage(store.load().pages, {
+        error: true,
+        text: `URL, начинающиеся с "${slug.split("/")[0]}", зарезервированы системой — выберите другой.`,
+      })
+    );
+  }
+  store
+    .update((data) => {
+      if (data.pages[slug]) throw new Error("exists");
+      data.pages[slug] = {
+        title_en: req.body.title_en,
+        title_ru: req.body.title_ru,
+        eyebrow_en: "",
+        eyebrow_ru: "",
+        crumbs: [
+          { en: "Home", ru: "Главная", href: "/" },
+          { en: req.body.title_en, ru: req.body.title_ru, href: null },
+        ],
+        blocks: [
+          {
+            type: "text",
+            title_en: req.body.title_en,
+            title_ru: req.body.title_ru,
+            body_en: "<p>New page — edit this text.</p>",
+            body_ru: "<p>Новая страница — отредактируйте этот текст.</p>",
+          },
+        ],
+      };
+    })
+    .then(() => res.redirect(`/admin/pages/${encodeURIComponent(slug)}`))
+    .catch(() => res.send(views.pagesListPage(store.load().pages, { error: true, text: `Страница /${slug}/ уже существует.` })));
+});
+
+router.post("/pages/:key(*)/delete", (req, res) => {
+  const key = req.params.key;
+  if (key === "") return res.send(views.pagesListPage(store.load().pages, { error: true, text: "Главную страницу удалить нельзя." }));
+  store
+    .update((data) => {
+      delete data.pages[key];
+    })
+    .then(() => res.redirect("/admin/pages/"));
+});
+
 router.get("/pages/:key(*)", (req, res) => {
   const data = store.load();
   const page = data.pages[req.params.key];
@@ -307,6 +363,38 @@ function defaultBlockFor(type) {
   if (type === "curveGroups") base.groups = [];
   return base;
 }
+
+// --------------------------------------------------------------------- nav --
+
+router.get("/nav", (req, res) => {
+  res.send(views.navEditorPage(store.load().nav));
+});
+
+router.post("/nav", (req, res) => {
+  const rawItems = req.body.navItems || {};
+  const indices = Object.keys(rawItems)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const items = indices.map((i) => {
+    const raw = rawItems[i];
+    const rawChildren = raw.children || {};
+    const childIndices = Object.keys(rawChildren)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const children = childIndices
+      .map((j) => rawChildren[j])
+      .filter((c) => c && (c.en || c.ru || c.href))
+      .map((c) => ({ en: c.en || "", ru: c.ru || "", href: c.href || "" }));
+    const item = { en: raw.en || "", ru: raw.ru || "", href: raw.href || "" };
+    if (children.length) item.children = children;
+    return item;
+  });
+  store
+    .update((data) => {
+      data.nav = items;
+    })
+    .then(() => res.send(views.navEditorPage(items, { text: "Меню сохранено." })));
+});
 
 // ------------------------------------------------------------ case studies --
 
@@ -457,10 +545,11 @@ router.post("/account", (req, res) => {
   );
 });
 
-router.post("/settings", (req, res) => {
+router.post("/settings", upload.any(), (req, res) => {
   store
     .update((data) => {
       Object.assign(data.settings, {
+        logo: resolveImageField(req.body, req.files, "logo") || data.settings.logo,
         companyName: req.body.companyName,
         phone: req.body.phone,
         email: req.body.email,

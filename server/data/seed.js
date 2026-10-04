@@ -8,6 +8,7 @@ const img = (name) => `/assets/img/${name}`;
 
 const settings = {
   companyName: "Hazleton Pumps",
+  logo: "/assets/img/logo.svg",
   phone: "+27 (0) 12 666 8203",
   email: "info@hazletonpumps.co.za",
   address_en: "33 Van Tonder Street<br>Sunderland Ridge, Centurion, South Africa",
