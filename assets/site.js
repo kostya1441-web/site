@@ -67,6 +67,9 @@
     copyright:"© 2026 ООО «Адамко Сибирь». Все права защищены."
   };
 
+  var CONTENT_URL = "assets/content.json";
+  var hasDraft = false;
+  var publishedAt = 0;
   var CATALOG_PAGE = "catalog.html";
   var HOME_PAGE = "index.html";
   var content = null;
@@ -528,11 +531,42 @@
     content = normalize(JSON.parse(JSON.stringify(DEFAULT)));
     showPage();
     render();
-    fetchSaved().then(function(saved){
-      if(saved){ content = normalize(saved); render(); }
+    var after = function(){
+      render();
       var urlCat2 = catFromUrl();
       if(urlCat2 && catById(urlCat2) && activeCat !== urlCat2){ activeCat = urlCat2; renderCatalog(); }
+    };
+    if(hasCloud){
+      fetchSaved().then(function(saved){
+        if(saved) content = normalize(saved);
+        after();
+      });
+      return;
+    }
+    Promise.all([fetchServer(), fetchSaved()]).then(function(res){
+      var server = res[0] ? normalize(res[0]) : null;
+      var draft = res[1] ? normalize(res[1]) : null;
+      publishedAt = server ? (+server.updatedAt || 0) : 0;
+      if(draft && (!server || (+draft.updatedAt || 0) > publishedAt)){
+        content = draft;
+        hasDraft = true;
+      } else {
+        if(server) content = server;
+        if(draft) dropDraft();
+      }
+      after();
     });
+  }
+  function fetchServer(){
+    try{
+      return fetch(CONTENT_URL, {cache:"no-store"}).then(function(r){
+        return r.ok ? r.json() : null;
+      }).catch(function(){ return null; });
+    }catch(e){ return Promise.resolve(null); }
+  }
+  function dropDraft(){
+    try{ localStorage.removeItem(LSKEY); }catch(e){}
+    hasDraft = false;
   }
   function fetchSaved(){
     if(hasCloud){
@@ -547,12 +581,54 @@
     }catch(e){ return Promise.resolve(null); }
   }
   function saveContent(){
+    content.updatedAt = Date.now();
     var json = JSON.stringify(content);
     if(hasCloud){ return window.storage.set(CKEY, json, true); }
     try{
       localStorage.setItem(LSKEY, json);
+      hasDraft = (+content.updatedAt || 0) > publishedAt;
       return Promise.resolve(true);
     }catch(e){ return Promise.reject(e); }
+  }
+
+  function fmtDate(ts){
+    if(!ts) return "—";
+    try{
+      return new Date(ts).toLocaleString("ru-RU", {day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"});
+    }catch(e){ return new Date(ts).toLocaleString(); }
+  }
+
+  function downloadContent(){
+    content.updatedAt = content.updatedAt || Date.now();
+    var json = JSON.stringify(content, null, 2);
+    try{
+      var blob = new Blob([json], {type:"application/json;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "content.json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 400);
+      toast("Файл content.json скачан. Положите его в папку assets на хостинге");
+    }catch(e){ toast("Не удалось скачать файл"); }
+  }
+
+  function importContentFile(file){
+    var reader = new FileReader();
+    reader.onerror = function(){ toast("Не удалось прочитать файл"); };
+    reader.onload = function(){
+      var data;
+      try{ data = JSON.parse(reader.result); }catch(e){ toast("Это не файл content.json"); return; }
+      if(!data || typeof data !== "object"){ toast("Это не файл content.json"); return; }
+      content = normalize(data);
+      saveContent().then(function(){
+        render();
+        renderAdminBody();
+        toast("Контент загружен из файла");
+      }).catch(function(){ toast("Не удалось сохранить загруженный контент"); });
+    };
+    reader.readAsText(file);
   }
 
   /* ---------- вход в админку ---------- */
@@ -601,6 +677,51 @@
     }).join("");
     return '<div class="sr-field"><label>'+esc(label)+'</label><select data-key="'+key+'">'+opts+'</select></div>';
   }
+  function publishBlock(){
+    var draftTime = (+content.updatedAt || 0);
+    return '<div class="sr-publish">' +
+      '<div class="sr-publish-status ' + (hasDraft ? "warn" : "ok") + '">' +
+        (hasDraft ? "● Есть правки, которых ещё нет на сайте" : "● Контент совпадает с опубликованным на сайте") + '</div>' +
+      '<div class="sr-publish-rows">' +
+        '<div><span>Опубликовано на сайте:</span> ' + (publishedAt ? esc(fmtDate(publishedAt)) : "исходный контент") + '</div>' +
+        '<div><span>Сохранено в этом браузере:</span> ' + (draftTime ? esc(fmtDate(draftTime)) : "—") + '</div>' +
+      '</div>' +
+      '<p>Кнопка «Сохранить изменения» записывает правки только в этот браузер. Чтобы их увидели все посетители: ' +
+      'нажмите «Скачать content.json» и положите файл в папку <b>assets</b> на хостинге, заменив старый.</p>' +
+      '<div class="sr-photo-tools">' +
+        '<button type="button" id="sr-pub-download">⬇ Скачать content.json</button>' +
+        '<label>⬆ Загрузить content.json<input type="file" accept=".json,application/json" id="sr-pub-file"></label>' +
+        (hasDraft ? '<button type="button" id="sr-pub-drop">Отменить мои правки</button>' : '') +
+      '</div></div>';
+  }
+  function bindPublishTools(){
+    var dl = $("sr-pub-download");
+    if(dl) dl.onclick = function(){ downloadContent(); renderAdminBody(); };
+    var file = $("sr-pub-file");
+    if(file){
+      file.addEventListener("change", function(){
+        var f = file.files && file.files[0];
+        file.value = "";
+        if(f) importContentFile(f);
+      });
+    }
+    var drop = $("sr-pub-drop");
+    if(drop){
+      drop.onclick = function(){
+        if(!confirm("Отменить правки, сделанные в этом браузере, и вернуть контент, который сейчас на сайте?")) return;
+        dropDraft();
+        fetchServer().then(function(server){
+          content = normalize(server || JSON.parse(JSON.stringify(DEFAULT)));
+          publishedAt = +content.updatedAt || 0;
+          activeCat = "all";
+          render();
+          renderAdminBody();
+          toast("Вернули контент, опубликованный на сайте");
+        });
+      };
+    }
+  }
+
   function checkField(label, checked, key){
     return '<div class="sr-field" style="display:flex;align-items:center;gap:9px;">' +
       '<input type="checkbox" data-check="'+key+'"'+(checked ? ' checked' : '')+' style="width:auto;">' +
@@ -654,11 +775,7 @@
   function renderAdminBody(){
     var body = document.getElementById("sr-admin-body");
     var h = "";
-    if(!hasCloud){
-      h += '<div style="background:#0f1418; border:1px solid #29333a; border-radius:10px; padding:12px 14px; font-size:12px; color:#8e99a3; margin-bottom:18px;">' +
-        'Сайт открыт вне чата Claude, поэтому изменения сохраняются только в этом браузере (localStorage), а не для всех посетителей. ' +
-        'Чтобы правки видели все, сайт нужно разместить на хостинге с собственным бэкендом.</div>';
-    }
+    if(!hasCloud) h += publishBlock();
     h += '<h5>Шапка сайта</h5>';
     h += field("Название компании", content.brandName, "brandName");
     h += field("Слоган", content.tagline, "tagline");
@@ -733,6 +850,7 @@
       el.addEventListener("change", function(){ content[el.getAttribute("data-check")] = el.checked; renderBrand(); });
     });
     bindLogoTools();
+    bindPublishTools();
 
     renderCatsAdmin();
     renderProdsAdmin();
@@ -1038,7 +1156,12 @@
     saveContent().then(function(){
       save.textContent = "Сохранено ✓";
       render();
-      toast(hasCloud ? "Изменения сохранены и видны всем посетителям" : "Изменения сохранены в этом браузере");
+      if(hasCloud){
+        toast("Изменения сохранены и видны всем посетителям");
+      } else {
+        renderAdminBody();
+        toast("Сохранено в браузере. Чтобы увидели посетители — скачайте content.json");
+      }
       setTimeout(function(){ save.textContent = "Сохранить изменения"; }, 1600);
     }).catch(function(err){
       save.textContent = "Сохранить изменения";
@@ -1049,6 +1172,7 @@
   on("sr-admin-reset", "click", function(){
     if(!confirm("Вернуть исходное содержимое сайта? Ваши изменения будут потеряны.")) return;
     content = normalize(JSON.parse(JSON.stringify(DEFAULT)));
+    content.updatedAt = 0;
     activeCat = "all";
     saveContent().then(function(){ render(); renderAdminBody(); toast("Контент сброшен к исходному"); });
   });
