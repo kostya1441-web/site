@@ -17,7 +17,7 @@
     catalogTitle:"Горное и строительное оборудование",
     catalogAllLabel:"Все категории",
     catalogAllCta:"Открыть весь каталог",
-    megaTitle:"Продукция",
+    megaTitle:"Каталог",
     catalogPageLead:"Оборудование сгруппировано по категориям. Выберите категорию, чтобы посмотреть позиции и характеристики.",
     catalogCta:"Уточнить наличие",
     catalogMoreCta:"Подробнее",
@@ -70,9 +70,16 @@
 
   var CONTENT_URL = "assets/content.json";
   var hasDraft = false;
+  var dirty = false;
   var megaCat = "";
-  var canHover = false;
-  try{ canHover = !!(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches); }catch(e){ canHover = false; }
+  var lastPointerTouch = false;
+  document.addEventListener("pointerdown", function(e){
+    if(e && e.pointerType) lastPointerTouch = (e.pointerType !== "mouse");
+  }, true);
+  function hoverMode(){
+    if(lastPointerTouch) return false;
+    try{ return !!(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches); }catch(e){ return true; }
+  }
   var publishedAt = 0;
   var CATALOG_PAGE = "catalog.html";
   var HOME_PAGE = "index.html";
@@ -299,8 +306,10 @@
     var side = $("sr-side-cta");
     if(side) side.href = "mailto:" + content.email;
     setText("sr-side-mini", content.brandName.replace(/^ООО\s*/,"").replace(/[«»"]/g,""));
-    setText("sr-foot-phone", content.phone);
-    setText("sr-foot-email", content.email);
+    var fp = $("sr-foot-phone");
+    if(fp) fp.innerHTML = '<a href="tel:'+esc(String(content.phone||"").replace(/[^+\d]/g,""))+'">'+esc(content.phone)+'</a>';
+    var fe = $("sr-foot-email");
+    if(fe) fe.innerHTML = '<a href="mailto:'+esc(content.email)+'">'+esc(content.email)+'</a>';
     setText("sr-foot-city", content.city);
     setText("sr-foot-brand", content.brandName);
     setText("sr-foot-requisites", content.requisites);
@@ -392,12 +401,14 @@
     var m = $("sr-mega"), b = $("sr-mega-btn");
     if(!m) return;
     m.classList.add("show");
+    document.body.classList.add("sr-mega-open");
     if(b) b.setAttribute("aria-expanded", "true");
   }
   function megaClose(){
     var m = $("sr-mega"), b = $("sr-mega-btn");
     if(!m) return;
     m.classList.remove("show");
+    document.body.classList.remove("sr-mega-open");
     if(b) b.setAttribute("aria-expanded", "false");
   }
   function megaToggle(){
@@ -471,10 +482,10 @@
         });
         renderMegaProds();
       };
-      if(canHover) b.addEventListener("mouseenter", select);
+      b.addEventListener("mouseenter", function(){ if(hoverMode()) select(); });
       b.addEventListener("focus", select);
       b.onclick = function(){
-        if(canHover){
+        if(hoverMode()){
           if(isCatalogPage()){
             megaClose();
             setCat(id);
@@ -495,14 +506,29 @@
     var btn = $("sr-mega-btn"), mega = $("sr-mega"), header = $("sr-header");
     if(!btn || !mega || !header) return;
     btn.onclick = function(){
-      if(canHover) location.href = CATALOG_PAGE;
-      else megaToggle();
+      if(!hoverMode()){ megaToggle(); return; }
+      if(isCatalogPage()){
+        megaClose();
+        setCat("all");
+        var sec = $("sr-catalog");
+        if(sec) sec.scrollIntoView({behavior:"smooth"});
+      } else {
+        location.href = CATALOG_PAGE;
+      }
     };
-    if(canHover){
-      btn.addEventListener("mouseenter", megaOpen);
-      btn.addEventListener("focus", megaOpen);
-      header.addEventListener("mouseleave", megaClose);
+    var allLink = mega.querySelector(".mega-all");
+    if(allLink && isCatalogPage()){
+      allLink.onclick = function(e){
+        e.preventDefault();
+        megaClose();
+        setCat("all");
+        var sec = $("sr-catalog");
+        if(sec) sec.scrollIntoView({behavior:"smooth"});
+      };
     }
+    btn.addEventListener("mouseenter", function(){ if(hoverMode()) megaOpen(); });
+    btn.addEventListener("focus", function(){ if(hoverMode()) megaOpen(); });
+    header.addEventListener("mouseleave", function(){ if(hoverMode()) megaClose(); });
     document.addEventListener("click", function(e){
       if(!mega.classList.contains("show")) return;
       if(mega.contains(e.target) || btn.contains(e.target)) return;
@@ -637,10 +663,25 @@
     document.getElementById("sr-prod-cta").textContent = content.catalogCta;
     var bg = $("sr-prod-bg");
     if(bg) bg.classList.add("show");
+    syncLock();
   }
-  function closeModal(id){ var el = $(id); if(el) el.classList.remove("show"); }
+  function syncLock(){
+    var open = false;
+    ["sr-prod-bg", "sr-login-bg"].forEach(function(id){
+      var el = $(id);
+      if(el && el.classList.contains("show")) open = true;
+    });
+    var dr = $("sr-admin-drawer");
+    if(dr && dr.classList.contains("show")) open = true;
+    document.body.classList.toggle("sr-lock", open);
+  }
+  function closeModal(id){
+    var el = $(id);
+    if(el) el.classList.remove("show");
+    syncLock();
+  }
   on("sr-prod-close", "click", function(){ closeModal("sr-prod-bg"); });
-  on("sr-prod-bg", "click", function(e){ if(e.target === this) this.classList.remove("show"); });
+  on("sr-prod-bg", "click", function(e){ if(e.target === this){ this.classList.remove("show"); syncLock(); } });
   on("sr-prod-cta", "click", function(){ closeModal("sr-prod-bg"); });
   document.addEventListener("keydown", function(e){
     var pb = $("sr-prod-bg");
@@ -701,6 +742,14 @@
       after();
     });
   }
+  window.addEventListener("beforeunload", function(){
+    if(!dirty || hasCloud) return;
+    try{
+      content.updatedAt = Date.now();
+      localStorage.setItem(LSKEY, JSON.stringify(content));
+    }catch(e){}
+  });
+
   function fetchServer(){
     try{
       return fetch(CONTENT_URL, {cache:"no-store"}).then(function(r){
@@ -731,6 +780,7 @@
     try{
       localStorage.setItem(LSKEY, json);
       hasDraft = (+content.updatedAt || 0) > publishedAt;
+      dirty = false;
       return Promise.resolve(true);
     }catch(e){ return Promise.reject(e); }
   }
@@ -743,7 +793,14 @@
   }
 
   function downloadContent(){
-    content.updatedAt = content.updatedAt || Date.now();
+    if(!hasCloud){
+      try{
+        content.updatedAt = Date.now();
+        localStorage.setItem(LSKEY, JSON.stringify(content));
+        hasDraft = (+content.updatedAt || 0) > publishedAt;
+        dirty = false;
+      }catch(e){}
+    }
     var json = JSON.stringify(content, null, 2);
     try{
       var blob = new Blob([json], {type:"application/json;charset=utf-8"});
@@ -781,6 +838,7 @@
     var bg = $("sr-login-bg");
     if(!bg) return;
     bg.classList.add("show");
+    syncLock();
     $("sr-login-err").style.display = "none";
     $("sr-login-pass").value = "";
     $("sr-login-pass").focus();
@@ -788,7 +846,7 @@
   on("sr-admin-fab", "click", openAdminGate);
   on("sr-admin-open", "click", openAdminGate);
   on("sr-login-close", "click", function(){ closeModal("sr-login-bg"); });
-  on("sr-login-bg", "click", function(e){ if(e.target === this) this.classList.remove("show"); });
+  on("sr-login-bg", "click", function(e){ if(e.target === this){ this.classList.remove("show"); syncLock(); } });
   on("sr-login-submit", "click", function(){
     var v = $("sr-login-pass").value;
     if(v === ADMIN_PASSWORD){
@@ -805,6 +863,7 @@
     var d = $("sr-admin-drawer");
     if(!d) return;
     d.classList.add("show");
+    syncLock();
     renderAdminBody();
   }
   on("sr-admin-close", "click", function(){ closeModal("sr-admin-drawer"); });
@@ -854,6 +913,7 @@
       drop.onclick = function(){
         if(!confirm("Отменить правки, сделанные в этом браузере, и вернуть контент, который сейчас на сайте?")) return;
         dropDraft();
+        dirty = false;
         fetchServer().then(function(server){
           content = normalize(server || JSON.parse(JSON.stringify(DEFAULT)));
           publishedAt = +content.updatedAt || 0;
@@ -996,6 +1056,19 @@
     });
     bindLogoTools();
     bindPublishTools();
+    if(!body._dirtyBound){
+      body._dirtyBound = true;
+      var mark = function(e){
+        var btn = e.target && e.target.closest ? e.target.closest("button,label") : null;
+        if(btn && (btn.id === "sr-pub-download" || btn.id === "sr-pub-drop")) return;
+        dirty = true;
+      };
+      body.addEventListener("input", mark);
+      body.addEventListener("change", mark);
+      body.addEventListener("click", function(e){
+        if(e.target && e.target.closest && e.target.closest("button,label")) mark(e);
+      });
+    }
 
     renderCatsAdmin();
     renderProdsAdmin();
