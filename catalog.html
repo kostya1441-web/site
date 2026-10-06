@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>ООО «Адамко Сибирь» — горное и строительное оборудование</title>
-<meta name="description" content="ООО «Адамко Сибирь» — оптовые поставки горного и строительного оборудования в Новокузнецке.">
+<title>Каталог оборудования — ООО «Адамко Сибирь»</title>
+<meta name="description" content="Каталог горного и строительного оборудования по категориям: проходческая техника, ПДМ, буровое оборудование, строительная техника, запчасти.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d0f'/%3E%3Cg fill='none' stroke='%23ff6a21' stroke-width='2.4'%3E%3Ccircle cx='16' cy='16' r='7'/%3E%3Ccircle cx='16' cy='16' r='2.6'/%3E%3Cpath d='M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2.1 2.1M22.4 22.4l2.1 2.1M24.5 7.5l-2.1 2.1M9.6 22.4l-2.1 2.1' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -34,48 +34,26 @@
         <a class="btn" href="#sr-contact" style="padding:11px 20px; font-size:13px;">Контакты</a>
       </div>
       <nav id="sr-nav"><div class="wrap">
-<a href="index.html#sr-hero" class="active">Главная</a><a href="index.html#sr-about">О компании</a><a href="catalog.html">Каталог</a><a href="index.html#sr-features">Услуги</a><a href="index.html#sr-contact">Контакты</a>
+<a href="index.html">Главная</a><a href="index.html#sr-about">О компании</a><a href="catalog.html" class="active">Каталог</a><a href="index.html#sr-features">Услуги</a><a href="#sr-contact">Контакты</a>
 </div></nav>
     </header>
 
-    <section id="sr-hero"><div class="wrap"><div class="grid">
-<div>
-<span class="badge" id="sr-badge">Официальный партнёр JA Engineering Works (ЮАР)</span>
-<h1><span id="sr-h1a">Горное и строительное</span><br><span id="sr-h1b">оборудование</span></h1>
-<p id="sr-herotext">ООО «Адамко Сибирь» — действующая компания в Новокузнецке, которая занимается оптовой торговлей горным и строительным оборудованием и техникой.</p>
-<div class="hero-actions"><a class="btn" href="#sr-contact" id="sr-herocta">Связаться с нами</a><a class="btn-ghost" href="catalog.html">Смотреть каталог</a></div>
-</div>
-<div class="rig">
-  <svg viewBox="0 0 400 400" id="sr-hero-gears" aria-hidden="true"></svg>
-</div>
-</div></div></section>
-
-    <section id="sr-yearsbar"><div class="wrap row">
-      <div class="num" id="sr-yearsnum">С 2020 ГОДА</div>
-      <p id="sr-yearstext">Компания зарегистрирована в Новокузнецке в 2020 году и специализируется на оптовых поставках машин и оборудования для добычи полезных ископаемых и строительства.</p>
-      <a class="btn-ghost" id="sr-yearscta" href="#sr-about" style="flex:none;">О компании</a>
+    <section id="sr-crumbs"><div class="wrap row">
+      <a href="index.html">Главная</a><span class="sep">/</span><span>Каталог</span>
     </div></section>
 
-    <section id="sr-catalog"><div class="wrap">
+    <section id="sr-catalog" style="padding-top:36px;"><div class="wrap">
       <div class="head">
         <p class="eyebrow" id="sr-catalog-eyebrow">Каталог оборудования</p>
         <h2 id="sr-catalog-title">Горное и строительное оборудование</h2>
       </div>
-      <div class="grid" id="sr-cats-preview"></div>
-      <div class="allcta"><a class="btn" href="catalog.html" id="sr-catalog-allcta">Открыть весь каталог</a></div>
-    </div></section>
-
-    <section id="sr-features" style="padding-top:0;"><div class="wrap"><div class="grid" id="sr-features-grid"></div></div></section>
-
-    <section id="sr-about"><div class="wrap grid">
-      <div>
-        <div class="stats" id="sr-stats-grid"></div>
+      <p class="lead" id="sr-catalog-lead"></p>
+      <div class="cats" id="sr-catalog-cats"></div>
+      <div class="headrow">
+        <p class="cat-desc" id="sr-catalog-catdesc"></p>
+        <span class="count" id="sr-catalog-count"></span>
       </div>
-      <div>
-        <p class="eyebrow" id="sr-about-eyebrow">О компании</p>
-        <h2 id="sr-about-title">ООО «Адамко Сибирь»</h2>
-        <div class="body"><p id="sr-about-text"></p></div>
-      </div>
+      <div class="grid" id="sr-catalog-grid"></div>
     </div></section>
 
     <section id="sr-contact"><div class="wrap"><div class="contact-panel">
@@ -122,6 +100,19 @@
       <div class="sr-field"><label>Пароль</label><input id="sr-login-pass" type="password" placeholder="Введите пароль"></div>
       <p id="sr-login-err" style="color:#e0554d; font-size:12.5px; display:none; margin:0 0 10px;">Неверный пароль.</p>
       <div class="sr-modal-actions"><button class="btn" id="sr-login-submit" style="flex:1; justify-content:center;">Войти</button></div>
+    </div>
+  </div>
+
+  <div class="sr-modal-bg" id="sr-prod-bg">
+    <div class="sr-modal" id="sr-prod-modal">
+      <button class="sr-close" id="sr-prod-close">×</button>
+      <div class="sr-prod-photo" id="sr-prod-photo"></div>
+      <div class="sr-prod-thumbs" id="sr-prod-thumbs"></div>
+      <div class="top" style="margin-bottom:10px;"><span class="code" id="sr-prod-code"></span><span class="cat-tag" id="sr-prod-cat"></span></div>
+      <h3 id="sr-prod-title"></h3>
+      <ul id="sr-prod-specs"></ul>
+      <p id="sr-prod-text"></p>
+      <div class="sr-modal-actions"><a class="btn" id="sr-prod-cta" href="#sr-contact" style="flex:1;">Уточнить наличие</a></div>
     </div>
   </div>
 
