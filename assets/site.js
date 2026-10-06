@@ -17,6 +17,7 @@
     catalogTitle:"Горное и строительное оборудование",
     catalogAllLabel:"Все категории",
     catalogAllCta:"Открыть весь каталог",
+    megaTitle:"Продукция",
     catalogPageLead:"Оборудование сгруппировано по категориям. Выберите категорию, чтобы посмотреть позиции и характеристики.",
     catalogCta:"Уточнить наличие",
     catalogMoreCta:"Подробнее",
@@ -69,6 +70,9 @@
 
   var CONTENT_URL = "assets/content.json";
   var hasDraft = false;
+  var megaCat = "";
+  var canHover = false;
+  try{ canHover = !!(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches); }catch(e){ canHover = false; }
   var publishedAt = 0;
   var CATALOG_PAGE = "catalog.html";
   var HOME_PAGE = "index.html";
@@ -96,6 +100,13 @@
   }
   function catalogHref(catId){
     return CATALOG_PAGE + (catId && catId !== "all" ? "?cat=" + encodeURIComponent(catId) : "");
+  }
+  function productHref(p){
+    return CATALOG_PAGE + "?cat=" + encodeURIComponent(p.catId) + "&prod=" + encodeURIComponent(p.id);
+  }
+  function prodFromUrl(){
+    var m = /[?&]prod=([^&#]+)/.exec(location.search || "");
+    return m ? decodeURIComponent(m[1]) : "";
   }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function lines(s){ return String(s==null?"":s).split("\n").map(function(x){return x.trim();}).filter(Boolean); }
@@ -310,6 +321,7 @@
     setText("sr-copyright", content.copyright);
     setText("sr-catalog-allcta", content.catalogAllCta);
     setText("sr-catalog-lead", content.catalogPageLead);
+    setText("sr-mega-title", content.megaTitle);
 
     renderCatalog();
     renderFeatures();
@@ -335,7 +347,6 @@
       }
     }
 
-    if(adminUnlocked) renderAdminBody();
   }
 
   function renderFeatures(){
@@ -377,6 +388,129 @@
     return "";
   }
 
+  function megaOpen(){
+    var m = $("sr-mega"), b = $("sr-mega-btn");
+    if(!m) return;
+    m.classList.add("show");
+    if(b) b.setAttribute("aria-expanded", "true");
+  }
+  function megaClose(){
+    var m = $("sr-mega"), b = $("sr-mega-btn");
+    if(!m) return;
+    m.classList.remove("show");
+    if(b) b.setAttribute("aria-expanded", "false");
+  }
+  function megaToggle(){
+    var m = $("sr-mega");
+    if(!m) return;
+    if(m.classList.contains("show")) megaClose(); else megaOpen();
+  }
+
+  function goToProduct(p){
+    if(isCatalogPage()){
+      megaClose();
+      setCat(p.catId);
+      openProduct(p.id);
+      var sec = $("sr-catalog");
+      if(sec) sec.scrollIntoView({behavior:"smooth"});
+    } else {
+      location.href = productHref(p);
+    }
+  }
+
+  function renderMegaProds(){
+    var box = $("sr-mega-prods");
+    if(!box) return;
+    var cat = catById(megaCat);
+    if(!cat){ box.innerHTML = ""; return; }
+    var items = productsOf(cat.id);
+    var h = '<div class="mega-head"><span>' + esc(cat.name) + '</span>' +
+      '<a href="'+esc(catalogHref(cat.id))+'" data-mega-opencat="'+esc(cat.id)+'">Вся категория ›</a></div>';
+    h += items.length ? items.map(function(p){
+      return '<a class="mega-link" href="'+esc(productHref(p))+'" data-mega-prod="'+esc(p.id)+'">' +
+        '<span class="mega-prodname">' + (p.code ? '<small>'+esc(p.code)+'</small>' : '') + '<span>'+esc(p.name)+'</span></span>' +
+        '<span class="ch" aria-hidden="true">›</span></a>';
+    }).join("") : '<div class="mega-empty">В этой категории пока нет позиций.</div>';
+    box.innerHTML = h;
+    Array.prototype.slice.call(box.querySelectorAll("[data-mega-prod]")).forEach(function(a){
+      a.onclick = function(e){
+        var p = prodById(a.getAttribute("data-mega-prod"));
+        if(!p) return;
+        e.preventDefault();
+        goToProduct(p);
+      };
+    });
+    var opencat = box.querySelector("[data-mega-opencat]");
+    if(opencat && isCatalogPage()){
+      opencat.onclick = function(e){
+        e.preventDefault();
+        megaClose();
+        setCat(opencat.getAttribute("data-mega-opencat"));
+        var sec = $("sr-catalog");
+        if(sec) sec.scrollIntoView({behavior:"smooth"});
+      };
+    }
+  }
+
+  function renderMega(){
+    var box = $("sr-mega-cats");
+    if(!box) return;
+    if(!catById(megaCat)) megaCat = content.categories.length ? content.categories[0].id : "";
+    box.innerHTML = content.categories.map(function(cat){
+      return '<button type="button" class="mega-link'+(cat.id === megaCat ? " active" : "")+'" data-mega-cat="'+esc(cat.id)+'">' +
+        '<span>'+esc(cat.name)+'</span>' +
+        '<span class="cnt3">'+productsOf(cat.id).length+'</span>' +
+        '<span class="ch" aria-hidden="true">›</span></button>';
+    }).join("") || '<div class="mega-empty">Категории пока не добавлены.</div>';
+    Array.prototype.slice.call(box.querySelectorAll("[data-mega-cat]")).forEach(function(b){
+      var id = b.getAttribute("data-mega-cat");
+      var select = function(){
+        megaCat = id;
+        Array.prototype.slice.call(box.querySelectorAll("[data-mega-cat]")).forEach(function(x){
+          x.classList.toggle("active", x === b);
+        });
+        renderMegaProds();
+      };
+      if(canHover) b.addEventListener("mouseenter", select);
+      b.addEventListener("focus", select);
+      b.onclick = function(){
+        if(canHover){
+          if(isCatalogPage()){
+            megaClose();
+            setCat(id);
+            var sec = $("sr-catalog");
+            if(sec) sec.scrollIntoView({behavior:"smooth"});
+          } else {
+            location.href = catalogHref(id);
+          }
+        } else {
+          select();
+        }
+      };
+    });
+    renderMegaProds();
+  }
+
+  function bindMega(){
+    var btn = $("sr-mega-btn"), mega = $("sr-mega"), header = $("sr-header");
+    if(!btn || !mega || !header) return;
+    btn.onclick = function(){
+      if(canHover) location.href = CATALOG_PAGE;
+      else megaToggle();
+    };
+    if(canHover){
+      btn.addEventListener("mouseenter", megaOpen);
+      btn.addEventListener("focus", megaOpen);
+      header.addEventListener("mouseleave", megaClose);
+    }
+    document.addEventListener("click", function(e){
+      if(!mega.classList.contains("show")) return;
+      if(mega.contains(e.target) || btn.contains(e.target)) return;
+      megaClose();
+    });
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape") megaClose(); });
+  }
+
   function renderCatPreview(){
     var grid = $("sr-cats-preview");
     if(!grid) return;
@@ -408,6 +542,7 @@
   function renderCatalog(){
     if(activeCat !== "all" && !catById(activeCat)) activeCat = "all";
     renderCatPreview();
+    renderMega();
 
     var cats = $("sr-catalog-cats");
     if(!cats) return;
@@ -526,6 +661,7 @@
   }
   function loadAll(){
     paintGears();
+    bindMega();
     var urlCat = catFromUrl();
     if(urlCat) activeCat = urlCat;
     content = normalize(JSON.parse(JSON.stringify(DEFAULT)));
@@ -535,6 +671,14 @@
       render();
       var urlCat2 = catFromUrl();
       if(urlCat2 && catById(urlCat2) && activeCat !== urlCat2){ activeCat = urlCat2; renderCatalog(); }
+      var urlProd = prodFromUrl();
+      if(urlProd && isCatalogPage()){
+        var p = prodById(urlProd);
+        if(p){
+          if(activeCat !== p.catId){ activeCat = p.catId; renderCatalog(); }
+          openProduct(p.id);
+        }
+      }
     };
     if(hasCloud){
       fetchSaved().then(function(saved){
@@ -803,6 +947,7 @@
     h += field("Заголовок", content.catalogTitle, "catalogTitle");
     h += field("Название вкладки «все»", content.catalogAllLabel, "catalogAllLabel");
     h += field("Кнопка «весь каталог» на главной", content.catalogAllCta, "catalogAllCta");
+    h += field("Заголовок выпадающего меню в шапке", content.megaTitle, "megaTitle");
     h += field("Подзаголовок страницы каталога", content.catalogPageLead, "catalogPageLead", true);
     h += field("Кнопка на карточке", content.catalogMoreCta, "catalogMoreCta");
     h += field("Кнопка в карточке товара", content.catalogCta, "catalogCta");
@@ -843,7 +988,7 @@
           renderBrand();
         }
         if(k === "logoHeight") renderBrand();
-        if(k === "brandName" || k === "tagline") render();
+        render();
       });
     });
     Array.prototype.slice.call(body.querySelectorAll("[data-check]")).forEach(function(el){
