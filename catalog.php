@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/layout.php';
 
+// Сессию открываем до вывода страницы, иначе PHP ругается на «headers already sent».
+sr_session_boot();
+
 try {
     $content = content_load();
 } catch (Throwable $e) {

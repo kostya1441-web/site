@@ -12,7 +12,7 @@ http_response_code(503);
 body{margin:0;background:#0b0d0f;color:#f4f6f7;font:15px/1.6 Arial,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
 .box{max-width:620px;border:1px solid #273038;border-radius:16px;background:#111519;padding:28px}
 h1{margin:0 0 14px;font-size:22px}
-code{background:#0b0e10;padding:2px 6px;border-radius:5px;color:#ff9a52}
+code{background:#0b0e10;padding:2px 6px;border-radius:5px;color:#a8e05f}
 ol{padding-left:20px;color:#aab3ba}
 li{margin-bottom:8px}
 </style>

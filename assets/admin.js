@@ -159,6 +159,18 @@
     drawer.classList.add("show");
     lock();
     renderBody();
+    restoreScroll();
+  }
+
+  /** Возвращает панель на то место, где её оставили перед сохранением. */
+  function restoreScroll() {
+    var body = $("sr-admin-body");
+    if (!body) return;
+    try {
+      var top = sessionStorage.getItem("sr-admin-scroll");
+      sessionStorage.removeItem("sr-admin-scroll");
+      if (top) body.scrollTop = +top;
+    } catch (e) { /* не критично */ }
   }
 
   function closeDrawer() {
@@ -577,6 +589,10 @@
       dirty = false;
       button.textContent = "Сохранено ✓";
       toast("Изменения сохранены, страница обновится");
+      try {
+        sessionStorage.setItem("sr-admin-reopen", "1");
+        sessionStorage.setItem("sr-admin-scroll", String($("sr-admin-body").scrollTop || 0));
+      } catch (e) { /* не критично */ }
       setTimeout(function () { window.location.reload(); }, 600);
     }).catch(function (err) {
       button.disabled = false;
@@ -624,6 +640,18 @@
       });
     });
   }
+
+  // После перезагрузки, вызванной сохранением, панель открывается сама.
+  (function reopenAfterSave() {
+    var flag = null;
+    try {
+      flag = sessionStorage.getItem("sr-admin-reopen");
+      sessionStorage.removeItem("sr-admin-reopen");
+    } catch (e) { /* не критично */ }
+    if (flag && unlocked) {
+      loadState().then(openDrawer).catch(function (err) { toast(err.message); });
+    }
+  })();
 
   window.addEventListener("beforeunload", function (e) {
     if (!dirty) return;

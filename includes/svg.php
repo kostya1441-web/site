@@ -49,9 +49,9 @@ function gear_markup(array $o): string
     $rOut = (float) $o['rOut'];
     $rIn = (float) $o['rIn'];
     $teeth = (int) ($o['teeth'] ?? 12);
-    $stroke = $o['stroke'] ?? '#e35f1e';
+    $stroke = $o['stroke'] ?? '#64b519';
     $fill = $o['fill'] ?? '#1b2026';
-    $accent = $o['accent'] ?? '#f0a94a';
+    $accent = $o['accent'] ?? '#a8e05f';
     $sw = (string) ($o['sw'] ?? 2);
     $spokes = (int) ($o['spokes'] ?? 5);
 
@@ -73,8 +73,8 @@ function hero_gears_svg(): string
     return '<svg viewBox="0 0 400 400" id="sr-hero-gears" aria-hidden="true">'
         . '<circle cx="200" cy="200" r="182" fill="none" stroke="#333941" stroke-width="1"/>'
         . '<g class="gear" style="animation-duration:18s">' . gear_markup(['cx' => 200, 'cy' => 205, 'rOut' => 112, 'rIn' => 90, 'teeth' => 14, 'spokes' => 6]) . '</g>'
-        . '<g class="gear rev" style="animation-duration:11s">' . gear_markup(['cx' => 315, 'cy' => 96, 'rOut' => 68, 'rIn' => 53, 'teeth' => 10, 'spokes' => 5, 'stroke' => '#f0a94a', 'accent' => '#e35f1e', 'fill' => '#181d23']) . '</g>'
-        . '<g class="gear rev" style="animation-duration:14s">' . gear_markup(['cx' => 86, 'cy' => 322, 'rOut' => 54, 'rIn' => 42, 'teeth' => 9, 'spokes' => 4, 'stroke' => '#7d8892', 'accent' => '#e35f1e', 'fill' => '#151a1f']) . '</g>'
+        . '<g class="gear rev" style="animation-duration:11s">' . gear_markup(['cx' => 315, 'cy' => 96, 'rOut' => 68, 'rIn' => 53, 'teeth' => 10, 'spokes' => 5, 'stroke' => '#a8e05f', 'accent' => '#64b519', 'fill' => '#181d23']) . '</g>'
+        . '<g class="gear rev" style="animation-duration:14s">' . gear_markup(['cx' => 86, 'cy' => 322, 'rOut' => 54, 'rIn' => 42, 'teeth' => 9, 'spokes' => 4, 'stroke' => '#7d8892', 'accent' => '#64b519', 'fill' => '#151a1f']) . '</g>'
         . '</svg>';
 }
 
@@ -95,18 +95,18 @@ function gauge_svg(int $seed): string
     $y = number_format(21 + 12 * sin($angle * M_PI / 180), 2, '.', '');
     return '<svg width="42" height="42" viewBox="0 0 42 42" aria-hidden="true">'
         . '<circle cx="21" cy="21" r="18" fill="none" stroke="#3d434c" stroke-width="2"/>'
-        . '<circle cx="21" cy="21" r="18" fill="none" stroke="#e35f1e" stroke-width="2" stroke-dasharray="70 200"/>'
-        . '<line x1="21" y1="21" x2="' . $x . '" y2="' . $y . '" stroke="#f0a94a" stroke-width="2" stroke-linecap="round"/>'
-        . '<circle cx="21" cy="21" r="2.5" fill="#e35f1e"/></svg>';
+        . '<circle cx="21" cy="21" r="18" fill="none" stroke="#64b519" stroke-width="2" stroke-dasharray="70 200"/>'
+        . '<line x1="21" y1="21" x2="' . $x . '" y2="' . $y . '" stroke="#a8e05f" stroke-width="2" stroke-linecap="round"/>'
+        . '<circle cx="21" cy="21" r="2.5" fill="#64b519"/></svg>';
 }
 
 /** Иконки блока преимуществ. */
 function feature_icon(int $index): string
 {
     $icons = [
-        '<svg viewBox="0 0 42 42" width="42" height="42"><rect x="6" y="6" width="30" height="30" fill="none" stroke="#e35f1e" stroke-width="2"/><rect x="14" y="14" width="14" height="14" fill="none" stroke="#f0a94a" stroke-width="2"/></svg>',
-        '<svg viewBox="0 0 42 42" width="42" height="42"><path d="M21 5 L36 13 V27 L21 37 L6 27 V13 Z" fill="none" stroke="#e35f1e" stroke-width="2"/><path d="M14 21 L19 27 L29 15" fill="none" stroke="#f0a94a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-        '<svg viewBox="0 0 42 42" width="42" height="42"><circle cx="21" cy="21" r="15" fill="none" stroke="#e35f1e" stroke-width="2"/><path d="M21 12v9l7 4" stroke="#f0a94a" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+        '<svg viewBox="0 0 42 42" width="42" height="42"><rect x="6" y="6" width="30" height="30" fill="none" stroke="#64b519" stroke-width="2"/><rect x="14" y="14" width="14" height="14" fill="none" stroke="#a8e05f" stroke-width="2"/></svg>',
+        '<svg viewBox="0 0 42 42" width="42" height="42"><path d="M21 5 L36 13 V27 L21 37 L6 27 V13 Z" fill="none" stroke="#64b519" stroke-width="2"/><path d="M14 21 L19 27 L29 15" fill="none" stroke="#a8e05f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        '<svg viewBox="0 0 42 42" width="42" height="42"><circle cx="21" cy="21" r="15" fill="none" stroke="#64b519" stroke-width="2"/><path d="M21 12v9l7 4" stroke="#a8e05f" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
     ];
     return $icons[$index % count($icons)];
 }

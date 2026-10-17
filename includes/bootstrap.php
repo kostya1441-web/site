@@ -31,22 +31,59 @@ function db(): PDO
     return $pdo;
 }
 
-function sr_session_start(): void
+function is_https(): bool
+{
+    if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+        return true;
+    }
+    // За прокси хостинга признак приходит заголовком.
+    return isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+        && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https';
+}
+
+/**
+ * Открывает сессию. После вывода страницы это уже невозможно,
+ * поэтому молча отказываемся вместо предупреждения PHP.
+ */
+function sr_session_start(): bool
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return true;
+    }
+    if (headers_sent()) {
+        return false;
+    }
+    session_set_cookie_params([
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure'   => is_https(),
+    ]);
+    return session_start();
+}
+
+/**
+ * Вызывается в самом начале страницы, до вывода: продолжает уже открытую сессию.
+ * Посетителям без сессии cookie не ставится.
+ */
+function sr_session_boot(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
-    session_set_cookie_params([
-        'httponly' => true,
-        'samesite' => 'Lax',
-        'secure'   => !empty($_SERVER['HTTPS']),
-    ]);
-    session_start();
+    if (isset($_COOKIE[session_name()])) {
+        sr_session_start();
+    }
 }
 
 function is_admin(): bool
 {
-    sr_session_start();
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        // Сессии нет: либо посетитель не входил, либо страница уже выведена.
+        if (!isset($_COOKIE[session_name()]) || !sr_session_start()) {
+            return false;
+        }
+    }
     return !empty($_SESSION['sr_admin']);
 }
 
