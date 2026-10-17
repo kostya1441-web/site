@@ -1,6 +1,30 @@
 <?php
 declare(strict_types=1);
 
+// Предупреждения PHP не должны попадать в ответ и ломать JSON: пишем их в лог.
+@ini_set('display_errors', '0');
+@ini_set('log_errors', '1');
+ob_start();
+
+// Перехват до подключения файлов — чтобы поймать и сбой внутри config.php или includes.
+register_shutdown_function(static function () {
+    $error = error_get_last();
+    $fatal = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR];
+    if ($error && in_array($error['type'], $fatal, true)) {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        if (!headers_sent()) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+        }
+        echo json_encode([
+            'ok'    => false,
+            'error' => 'Ошибка PHP: ' . $error['message'] . ' (' . basename((string) $error['file']) . ':' . $error['line'] . ')',
+        ], JSON_UNESCAPED_UNICODE);
+    }
+});
+
 require_once __DIR__ . '/includes/content.php';
 
 header('X-Content-Type-Options: nosniff');
@@ -14,6 +38,7 @@ try {
         case 'state':   action_state();   break;
         case 'save':    action_save();    break;
         case 'upload':  action_upload();  break;
+        case 'ping':    action_ping();    break;
         default:
             json_out(['ok' => false, 'error' => 'Неизвестное действие'], 400);
     }
@@ -21,8 +46,85 @@ try {
     error_log('[adamko] db: ' . $e->getMessage());
     json_out(['ok' => false, 'error' => 'Ошибка базы данных. Проверьте настройки в config.php'], 500);
 } catch (Throwable $e) {
-    error_log('[adamko] ' . $e->getMessage());
-    json_out(['ok' => false, 'error' => 'Внутренняя ошибка сервера'], 500);
+    error_log('[adamko] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+    json_out([
+        'ok'    => false,
+        'error' => 'Внутренняя ошибка сервера. Откройте api.php?action=ping — там написана причина',
+    ], 500);
+}
+
+/** Самодиагностика: открывается в браузере как api.php?action=ping */
+function action_ping(): void
+{
+    $result = [
+        'ok'        => true,
+        'php'       => PHP_VERSION,
+        'pdo_mysql' => extension_loaded('pdo_mysql'),
+        'gd'        => extension_loaded('gd'),
+        'session'   => function_exists('session_start'),
+        'uploads'   => 'не проверялась',
+        'config'    => 'ok',
+        'db'        => 'не проверялась',
+        'tables'    => 'не проверялись',
+    ];
+
+    // Настройки читаем отдельно: опечатка в config.php — самая частая причина сбоя.
+    try {
+        $uploads = (string) config('uploads_dir');
+        $result['uploads'] = is_dir($uploads) && is_writable($uploads)
+            ? 'ok'
+            : 'папка uploads недоступна для записи';
+    } catch (Throwable $e) {
+        $result['ok'] = false;
+        $result['config'] = 'ошибка в config.php: ' . short_error($e);
+        json_out($result);
+    }
+
+    try {
+        $pdo = db();
+        $result['db'] = 'ok';
+    } catch (PDOException $e) {
+        $result['ok'] = false;
+        $result['db'] = 'нет подключения (код ' . $e->getCode() . '): ' . db_hint((string) $e->getCode());
+        json_out($result);
+    } catch (Throwable $e) {
+        $result['ok'] = false;
+        $result['db'] = 'не удалось подключиться: ' . short_error($e);
+        json_out($result);
+    }
+
+    try {
+        $pdo->query('SELECT 1 FROM settings LIMIT 1');
+        $result['tables'] = 'ok';
+    } catch (PDOException $e) {
+        $result['ok'] = false;
+        $result['tables'] = 'таблиц нет — импортируйте sql/schema.sql в phpMyAdmin';
+    }
+
+    if ($result['uploads'] !== 'ok') {
+        $result['ok'] = false;
+    }
+    $result['admin'] = is_admin();
+
+    json_out($result);
+}
+
+/** Сообщение об ошибке без полных путей на сервере. */
+function short_error(Throwable $e): string
+{
+    return $e->getMessage() . ' (' . basename($e->getFile()) . ':' . $e->getLine() . ')';
+}
+
+/** Короткая подсказка по коду ошибки подключения. */
+function db_hint(string $code): string
+{
+    $hints = [
+        '1045' => 'неверный пользователь или пароль в config.php',
+        '1049' => 'база с таким именем не найдена — проверьте name в config.php',
+        '2002' => 'сервер базы недоступен — проверьте host в config.php',
+        '2005' => 'неизвестный хост базы — проверьте host в config.php',
+    ];
+    return $hints[$code] ?? 'проверьте раздел db в config.php';
 }
 
 function body_json(): array
@@ -168,12 +270,21 @@ function save_resized_image(string $source, string $target, int $type): bool
         }
     }
 
-    $ok = match ($type) {
-        IMAGETYPE_PNG  => imagealphablending($image, false) && imagesavealpha($image, true) && imagepng($image, $target, 6),
-        IMAGETYPE_WEBP => imagewebp($image, $target, $quality),
-        IMAGETYPE_GIF  => imagegif($image, $target),
-        default        => imagejpeg($image, $target, $quality),
-    };
+    switch ($type) {
+        case IMAGETYPE_PNG:
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+            $ok = imagepng($image, $target, 6);
+            break;
+        case IMAGETYPE_WEBP:
+            $ok = imagewebp($image, $target, $quality);
+            break;
+        case IMAGETYPE_GIF:
+            $ok = imagegif($image, $target);
+            break;
+        default:
+            $ok = imagejpeg($image, $target, $quality);
+    }
     imagedestroy($image);
 
     if ($ok) {

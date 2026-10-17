@@ -72,13 +72,39 @@
     }
     if (options.body) init.body = options.body;
     return fetch("api.php?action=" + action, init).then(function (response) {
-      return response.json().catch(function () {
-        throw new Error("Сервер вернул не JSON. Проверьте, что сайт открыт по http, а не как файл");
-      }).then(function (data) {
-        if (!response.ok || !data.ok) throw new Error(data.error || "Ошибка запроса");
+      return response.text().then(function (text) {
+        var data = null;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error(describeBadResponse(response, text));
+        }
+        if (!response.ok || !data.ok) throw new Error(data.error || "Ошибка запроса (HTTP " + response.status + ")");
         return data;
       });
     });
+  }
+
+  /** Подробное объяснение, когда api.php ответил не JSON. */
+  function describeBadResponse(response, text) {
+    var body = String(text || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    console.error("api.php вернул не JSON. HTTP " + response.status + ". Ответ:\n" + text);
+
+    if (!body) {
+      return "Пустой ответ сервера (HTTP " + response.status + "). Скорее всего PHP прервался с ошибкой — " +
+        "загляните в лог ошибок хостинга и откройте api.php?action=ping";
+    }
+    if (response.status === 404) {
+      return "api.php не найден (HTTP 404). Проверьте, что файл загружен в ту же папку, что и index.php";
+    }
+    if (response.status === 403) {
+      return "Доступ к api.php запрещён (HTTP 403). Это могут быть права на файл или правила .htaccess";
+    }
+    if (/^\s*<\?php/i.test(text)) {
+      return "Сервер отдал исходный код api.php вместо результата: на хостинге не включена обработка PHP";
+    }
+    return "Сервер ответил не JSON (HTTP " + response.status + "): " + body.slice(0, 200) +
+      " — подробности в консоли браузера и на странице api.php?action=ping";
   }
 
   function loadState() {
