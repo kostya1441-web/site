@@ -1,0 +1,4 @@
+# Загруженные через панель фотографии не хранятся в репозитории
+uploads/*
+!uploads/.htaccess
+!uploads/index.html
