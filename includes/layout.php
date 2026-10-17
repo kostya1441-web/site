@@ -136,6 +136,92 @@ function render_mega(array $content): void
 <?php
 }
 
+/** Характеристики: строка «параметр: значение» разбивается на две колонки. */
+function spec_rows(string $specs): array
+{
+    $rows = [];
+    foreach (lines($specs) as $line) {
+        $pos = mb_strpos($line, ':');
+        if ($pos !== false && $pos > 0 && $pos < mb_strlen($line) - 1) {
+            $rows[] = ['k' => trim(mb_substr($line, 0, $pos)), 'v' => trim(mb_substr($line, $pos + 1))];
+        } else {
+            $rows[] = ['k' => '', 'v' => $line];
+        }
+    }
+    return $rows;
+}
+
+/** Полноэкранная карточка позиции (её же собирает site.js при клике). */
+function render_product_view(array $content, array $product): void
+{
+    $s = $content['settings'];
+    $category = null;
+    foreach ($content['categories'] as $row) {
+        if ((int) $row['id'] === (int) $product['category_id']) {
+            $category = $row;
+            break;
+        }
+    }
+    $images = $product['images'];
+    $rows = spec_rows((string) $product['specs']);
+    ?>
+    <div class="prod-top">
+      <a class="prod-back" href="<?= e(catalog_href($category['slug'] ?? null)) ?>">‹ <?= e($category['name'] ?? 'В каталог') ?></a>
+      <button type="button" class="prod-close" id="sr-prod-close" aria-label="Закрыть">×</button>
+    </div>
+    <div class="wrap prod-wrap">
+      <div class="prod-gallery">
+        <div class="prod-photo" id="sr-prod-photo">
+          <?php if ($images): ?>
+            <img src="<?= e($images[0]) ?>" alt="<?= e($product['name']) ?>">
+            <?php if (count($images) > 1): ?><span class="prod-counter">1 / <?= count($images) ?></span><?php endif; ?>
+          <?php else: ?>
+            <div class="ph-empty"><?= gauge_svg(1) ?><span>Фото не добавлено</span></div>
+          <?php endif; ?>
+        </div>
+        <div class="prod-thumbs" id="sr-prod-thumbs">
+          <?php if (count($images) > 1): foreach ($images as $i => $src): ?>
+            <button type="button" class="<?= $i === 0 ? 'active' : '' ?>" data-thumb="<?= $i ?>"><img src="<?= e($src) ?>" alt=""></button>
+          <?php endforeach; endif; ?>
+        </div>
+      </div>
+      <div class="prod-info">
+        <div class="top">
+          <?php if ($product['code'] !== ''): ?><span class="code"><?= e($product['code']) ?></span><?php endif; ?>
+          <?php if ($category): ?><span class="cat-tag"><?= e($category['name']) ?></span><?php endif; ?>
+        </div>
+        <h2 class="prod-title"><?= e($product['name']) ?></h2>
+        <?php if ($rows): ?>
+          <div class="prod-block">
+            <div class="prod-block-head">Характеристики</div>
+            <div class="prod-specs">
+              <?php foreach ($rows as $row): ?>
+                <div class="spec<?= $row['k'] === '' ? ' solo' : '' ?>">
+                  <?php if ($row['k'] !== ''): ?><span class="k"><?= e($row['k']) ?></span><?php endif; ?>
+                  <span class="v"><?= e($row['v']) ?></span>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+        <?php if (trim((string) $product['description']) !== ''): ?>
+          <div class="prod-block">
+            <div class="prod-block-head">Описание</div>
+            <div class="prod-text"><?= nl2br(e($product['description'])) ?></div>
+          </div>
+        <?php endif; ?>
+        <div class="prod-cta">
+          <div class="prod-cta-text"><?= e($s['catalogCta']) ?></div>
+          <div class="prod-cta-row">
+            <a class="btn" href="tel:<?= e(tel_href($s['phone'])) ?>"><?= e($s['phone']) ?></a>
+            <a class="btn-ghost" href="mailto:<?= e($s['email']) ?>">Написать на почту</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
+}
+
 function render_contact(array $content): void
 {
     $s = $content['settings'];
@@ -211,22 +297,10 @@ function render_overlays(array $content, ?array $openProduct = null): void
     ?>
   <div id="sr-toast"></div>
 
-  <div class="sr-modal-bg<?= $openProduct ? ' show' : '' ?>" id="sr-prod-bg">
-    <div class="sr-modal" id="sr-prod-modal">
-      <button class="sr-close" id="sr-prod-close" aria-label="Закрыть">×</button>
-      <div class="sr-prod-photo" id="sr-prod-photo"></div>
-      <div class="sr-prod-thumbs" id="sr-prod-thumbs"></div>
-      <div class="top" style="margin-bottom:10px;">
-        <span class="code" id="sr-prod-code"></span>
-        <span class="cat-tag" id="sr-prod-cat"></span>
-      </div>
-      <h3 id="sr-prod-title"></h3>
-      <ul id="sr-prod-specs"></ul>
-      <p id="sr-prod-text"></p>
-      <div class="sr-modal-actions">
-        <a class="btn" id="sr-prod-cta" href="#sr-contact" style="flex:1;"><?= e($s['catalogCta']) ?></a>
-      </div>
-    </div>
+  <div class="sr-fullview<?= $openProduct ? ' show' : '' ?>" id="sr-prod-bg" role="dialog" aria-modal="true" aria-label="Карточка позиции">
+    <div id="sr-prod-view"><?php if ($openProduct) {
+        render_product_view($content, $openProduct);
+    } ?></div>
   </div>
 
   <div class="sr-modal-bg" id="sr-login-bg">
@@ -261,6 +335,10 @@ function render_scripts(array $content, array $pageData = []): void
     $data = array_merge([
         'catalogCta'     => $content['settings']['catalogCta'],
         'catalogMoreCta' => $content['settings']['catalogMoreCta'],
+        'phone'          => $content['settings']['phone'],
+        'phoneHref'      => tel_href($content['settings']['phone']),
+        'email'          => $content['settings']['email'],
+        'catalogUrl'     => 'catalog.php',
         'isAdmin'        => is_admin(),
     ], $pageData);
     ?>

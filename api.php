@@ -29,7 +29,8 @@ require_once __DIR__ . '/includes/content.php';
 
 header('X-Content-Type-Options: nosniff');
 
-$action = (string) ($_GET['action'] ?? $_POST['action'] ?? '');
+$rawAction = $_GET['action'] ?? $_POST['action'] ?? '';
+$action = is_string($rawAction) ? $rawAction : '';
 
 try {
     switch ($action) {

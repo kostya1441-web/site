@@ -15,11 +15,18 @@ try {
 
 $s = $content['settings'];
 
-$catSlug  = isset($_GET['cat']) ? (string) $_GET['cat'] : '';
-$prodSlug = isset($_GET['prod']) ? (string) $_GET['prod'] : '';
+// Параметры могут прийти массивом (?cat[]=...) — берём только строки.
+$catSlug  = isset($_GET['cat']) && is_string($_GET['cat']) ? $_GET['cat'] : '';
+$prodSlug = isset($_GET['prod']) && is_string($_GET['prod']) ? $_GET['prod'] : '';
 
 $activeCategory = $catSlug !== '' ? category_by_slug($content, $catSlug) : null;
 $openProduct    = $prodSlug !== '' ? product_by_slug($content, $prodSlug) : null;
+
+// Несуществующая категория или позиция: честный 404 вместо тихой подмены на весь каталог.
+$notFound = ($catSlug !== '' && !$activeCategory) || ($prodSlug !== '' && !$openProduct);
+if ($notFound) {
+    http_response_code(404);
+}
 
 if ($openProduct && !$activeCategory) {
     foreach ($content['categories'] as $category) {
@@ -38,25 +45,36 @@ foreach ($content['categories'] as $category) {
     $categoriesById[(int) $category['id']] = $category;
 }
 
-$title = $activeCategory
-    ? $activeCategory['name'] . ' — каталог ' . $s['brandName']
-    : 'Каталог оборудования — ' . $s['brandName'];
-$description = $activeCategory && $activeCategory['description'] !== ''
-    ? $activeCategory['description']
-    : 'Каталог горного и строительного оборудования по категориям.';
+if ($openProduct) {
+    $title = $openProduct['name']
+        . ($activeCategory ? ' — ' . $activeCategory['name'] : '')
+        . ' — ' . $s['brandName'];
+    $description = trim((string) $openProduct['description']) !== ''
+        ? mb_substr(trim((string) $openProduct['description']), 0, 300)
+        : implode(', ', lines((string) $openProduct['specs']));
+} elseif ($activeCategory) {
+    $title = $activeCategory['name'] . ' — каталог ' . $s['brandName'];
+    $description = $activeCategory['description'] !== ''
+        ? $activeCategory['description']
+        : 'Каталог горного и строительного оборудования по категориям.';
+} else {
+    $title = 'Каталог оборудования — ' . $s['brandName'];
+    $description = 'Каталог горного и строительного оборудования по категориям.';
+}
 
 // Данные позиций для карточки товара без перезагрузки страницы.
 $productsData = [];
 foreach ($content['products'] as $product) {
     $category = $categoriesById[(int) $product['category_id']] ?? null;
     $productsData[] = [
-        'slug'     => $product['slug'],
-        'code'     => $product['code'],
-        'name'     => $product['name'],
-        'specs'    => lines($product['specs']),
-        'text'     => $product['description'],
-        'images'   => $product['images'],
-        'category' => $category['name'] ?? '',
+        'slug'         => $product['slug'],
+        'code'         => $product['code'],
+        'name'         => $product['name'],
+        'specs'        => spec_rows((string) $product['specs']),
+        'text'         => $product['description'],
+        'images'       => $product['images'],
+        'category'     => $category['name'] ?? '',
+        'categorySlug' => $category['slug'] ?? '',
     ];
 }
 
@@ -77,7 +95,11 @@ render_header($content, 'catalog');
         <p class="eyebrow"><?= e($s['catalogEyebrow']) ?></p>
         <h1 class="cat-h1"><?= e($activeCategory ? $activeCategory['name'] : $s['catalogTitle']) ?></h1>
       </div>
-      <?php if ($s['catalogPageLead'] !== ''): ?><p class="lead"><?= e($s['catalogPageLead']) ?></p><?php endif; ?>
+      <?php if ($notFound): ?>
+        <p class="lead notfound">Такой раздел не найден — возможно, его переименовали. Ниже весь каталог.</p>
+      <?php elseif ($s['catalogPageLead'] !== ''): ?>
+        <p class="lead"><?= e($s['catalogPageLead']) ?></p>
+      <?php endif; ?>
 
       <div class="cats">
         <a class="chip<?= $activeCategory ? '' : ' active' ?>" href="catalog.php">

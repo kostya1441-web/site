@@ -41,15 +41,65 @@
     syncLock();
   }
 
-  /* ---------- карточка позиции ---------- */
+  /* ---------- карточка позиции во весь экран ---------- */
+  var GAUGE = '<svg width="42" height="42" viewBox="0 0 42 42" aria-hidden="true">' +
+    '<circle cx="21" cy="21" r="18" fill="none" stroke="#3d434c" stroke-width="2"/>' +
+    '<circle cx="21" cy="21" r="18" fill="none" stroke="#64b519" stroke-width="2" stroke-dasharray="70 200"/>' +
+    '<circle cx="21" cy="21" r="2.5" fill="#64b519"/></svg>';
+
   var current = null;
   var photoIndex = 0;
+  var pushedState = false;
 
   function productBySlug(slug) {
     for (var i = 0; i < PRODUCTS.length; i++) {
       if (PRODUCTS[i].slug === slug) return PRODUCTS[i];
     }
     return null;
+  }
+
+  function productViewHtml(product) {
+    var back = product.categorySlug
+      ? (PAGE.catalogUrl || "catalog.php") + "?cat=" + encodeURIComponent(product.categorySlug)
+      : (PAGE.catalogUrl || "catalog.php");
+    var specs = (product.specs || []).map(function (row) {
+      return '<div class="spec' + (row.k ? "" : " solo") + '">' +
+        (row.k ? '<span class="k">' + esc(row.k) + "</span>" : "") +
+        '<span class="v">' + esc(row.v) + "</span></div>";
+    }).join("");
+
+    return '<div class="prod-top">' +
+        '<a class="prod-back" href="' + esc(back) + '">‹ ' + esc(product.category || "В каталог") + "</a>" +
+        '<button type="button" class="prod-close" id="sr-prod-close" aria-label="Закрыть">×</button>' +
+      "</div>" +
+      '<div class="wrap prod-wrap">' +
+        '<div class="prod-gallery">' +
+          '<div class="prod-photo" id="sr-prod-photo"></div>' +
+          '<div class="prod-thumbs" id="sr-prod-thumbs"></div>' +
+        "</div>" +
+        '<div class="prod-info">' +
+          '<div class="top">' +
+            (product.code ? '<span class="code">' + esc(product.code) + "</span>" : "") +
+            (product.category ? '<span class="cat-tag">' + esc(product.category) + "</span>" : "") +
+          "</div>" +
+          '<h2 class="prod-title">' + esc(product.name) + "</h2>" +
+          (specs
+            ? '<div class="prod-block"><div class="prod-block-head">Характеристики</div>' +
+              '<div class="prod-specs">' + specs + "</div></div>"
+            : "") +
+          (product.text
+            ? '<div class="prod-block"><div class="prod-block-head">Описание</div>' +
+              '<div class="prod-text">' + esc(product.text).replace(/\n/g, "<br>") + "</div></div>"
+            : "") +
+          '<div class="prod-cta">' +
+            '<div class="prod-cta-text">' + esc(PAGE.catalogCta || "Уточнить наличие") + "</div>" +
+            '<div class="prod-cta-row">' +
+              '<a class="btn" href="tel:' + esc(PAGE.phoneHref || "") + '">' + esc(PAGE.phone || "Позвонить") + "</a>" +
+              '<a class="btn-ghost" href="mailto:' + esc(PAGE.email || "") + '">Написать на почту</a>' +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>";
   }
 
   function paintGallery() {
@@ -59,7 +109,7 @@
 
     var images = current.images || [];
     if (!images.length) {
-      photo.innerHTML = '<div class="ph-empty"><span>Фото не добавлено</span></div>';
+      photo.innerHTML = '<div class="ph-empty">' + GAUGE + "<span>Фото не добавлено</span></div>";
       thumbs.innerHTML = "";
       return;
     }
@@ -68,9 +118,9 @@
 
     photo.innerHTML = '<img src="' + esc(images[photoIndex]) + '" alt="' + esc(current.name) + '">' +
       (images.length > 1
-        ? '<button class="sr-prod-nav prev" data-step="-1" aria-label="Предыдущее фото">‹</button>' +
-          '<button class="sr-prod-nav next" data-step="1" aria-label="Следующее фото">›</button>' +
-          '<span class="sr-prod-counter">' + (photoIndex + 1) + " / " + images.length + "</span>"
+        ? '<button class="prod-nav prev" data-step="-1" aria-label="Предыдущее фото">‹</button>' +
+          '<button class="prod-nav next" data-step="1" aria-label="Следующее фото">›</button>' +
+          '<span class="prod-counter">' + (photoIndex + 1) + " / " + images.length + "</span>"
         : "");
     photo.querySelectorAll("[data-step]").forEach(function (b) {
       b.onclick = function () { photoIndex += +b.getAttribute("data-step"); paintGallery(); };
@@ -87,37 +137,53 @@
     });
   }
 
-  function openProduct(slug) {
+  function openProduct(slug, fromHistory) {
     var product = productBySlug(slug);
     if (!product) return false;
 
     current = product;
     photoIndex = 0;
-    $("sr-prod-code").textContent = product.code || "—";
-    $("sr-prod-cat").textContent = product.category || "";
-    $("sr-prod-title").textContent = product.name;
-    $("sr-prod-specs").innerHTML = (product.specs || []).map(function (x) {
-      return "<li>" + esc(x) + "</li>";
-    }).join("");
-    $("sr-prod-text").textContent = product.text || "";
+
+    var view = $("sr-prod-view");
+    if (view) view.innerHTML = productViewHtml(product);
     paintGallery();
+
+    var closeBtn = $("sr-prod-close");
+    if (closeBtn) closeBtn.onclick = function () { closeProduct(); };
 
     var bg = $("sr-prod-bg");
     if (bg) bg.classList.add("show");
     syncLock();
+    window.scrollTo(0, 0);
 
-    if (window.history && history.replaceState) {
-      try {
-        var url = new URL(window.location.href);
-        url.searchParams.set("prod", slug);
-        history.replaceState(null, "", url.toString());
-      } catch (e) { /* адрес не меняем */ }
-    }
+    if (!fromHistory) rememberUrl(slug);
     return true;
   }
 
+  function rememberUrl(slug) {
+    if (!window.history || !history.pushState) return;
+    try {
+      var url = new URL(window.location.href);
+      url.searchParams.set("prod", slug);
+      history.pushState({ srProduct: slug }, "", url.toString());
+      pushedState = true;
+    } catch (e) { /* адрес не меняем */ }
+  }
+
+  function hideProduct() {
+    var bg = $("sr-prod-bg");
+    if (bg) bg.classList.remove("show");
+    current = null;
+    syncLock();
+  }
+
   function closeProduct() {
-    closeOverlay("sr-prod-bg");
+    if (pushedState && window.history) {
+      pushedState = false;
+      history.back();
+      return;
+    }
+    hideProduct();
     if (window.history && history.replaceState) {
       try {
         var url = new URL(window.location.href);
@@ -126,6 +192,19 @@
       } catch (e) { /* адрес не меняем */ }
     }
   }
+
+  window.addEventListener("popstate", function () {
+    var slug = "";
+    try {
+      slug = new URL(window.location.href).searchParams.get("prod") || "";
+    } catch (e) { slug = ""; }
+    pushedState = false;
+    if (slug && productBySlug(slug)) {
+      openProduct(slug, true);
+    } else {
+      hideProduct();
+    }
+  });
 
   function bindProductLinks() {
     document.querySelectorAll("[data-prod-slug]").forEach(function (link) {
@@ -215,35 +294,28 @@
   /* ---------- общие обработчики ---------- */
   document.addEventListener("keydown", function (e) {
     var bg = $("sr-prod-bg");
-    if (e.key === "ArrowLeft" && bg && bg.classList.contains("show") && current && (current.images || []).length > 1) {
-      photoIndex--; paintGallery();
-    }
-    if (e.key === "ArrowRight" && bg && bg.classList.contains("show") && current && (current.images || []).length > 1) {
-      photoIndex++; paintGallery();
+    var open = bg && bg.classList.contains("show");
+    if (open && current && (current.images || []).length > 1) {
+      if (e.key === "ArrowLeft") { photoIndex--; paintGallery(); }
+      if (e.key === "ArrowRight") { photoIndex++; paintGallery(); }
     }
     if (e.key === "Escape") {
       megaClose();
-      if (bg && bg.classList.contains("show")) closeProduct();
+      if (open) closeProduct();
       closeOverlay("sr-login-bg");
     }
   });
 
-  var closeBtn = $("sr-prod-close");
-  if (closeBtn) closeBtn.addEventListener("click", closeProduct);
-
-  var prodBg = $("sr-prod-bg");
-  if (prodBg) {
-    prodBg.addEventListener("click", function (e) { if (e.target === this) closeProduct(); });
-  }
-
-  var prodCta = $("sr-prod-cta");
-  if (prodCta) prodCta.addEventListener("click", function () { closeOverlay("sr-prod-bg"); });
+  var serverRenderedClose = $("sr-prod-close");
+  if (serverRenderedClose) serverRenderedClose.onclick = function () { closeProduct(); };
 
   bindMega();
   bindProductLinks();
 
+  // Позиция открыта по прямой ссылке: страница уже отрисована сервером,
+  // новую запись в истории добавлять не нужно.
   if (PAGE.openProduct) {
-    openProduct(PAGE.openProduct);
+    openProduct(PAGE.openProduct, true);
   }
 
   /* Общие помощники для панели администратора. */
