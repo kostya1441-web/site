@@ -129,7 +129,19 @@ nav.main-nav .dropdown {
   border-radius: 8px;
   box-shadow: var(--shadow);
   list-style: none;
-  margin: 6px 0 0;
+  margin: 0;
+}
+/* Invisible bridge over the old gap between the nav-top link and the
+   dropdown — without it, the mouse exits the hoverable <li> for an
+   instant while moving straight down into the menu, and :hover (and
+   the dropdown with it) drops before the pointer arrives. */
+nav.main-nav li::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 10px;
 }
 nav.main-nav li:hover .dropdown, nav.main-nav li:focus-within .dropdown { display: block; }
 nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; }
@@ -169,7 +181,15 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
 .hero p { font-size: 1.08rem; color: var(--paper-dim); max-width: 46ch; margin: 0 0 26px; }
 .hero .hero-art { justify-self: center; }
 .hero .hero-art img { max-height: 340px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.4)); }
+.hero .container { position: relative; z-index: 1; }
 @media (max-width: 860px) { .hero .container { grid-template-columns: 1fr; } .hero .hero-art { order: -1; } }
+
+.hero-fx { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.hero-wave { position: absolute; left: 0; width: 200%; height: 140px; }
+.hero-wave-1 { bottom: -10px; fill: var(--amber); opacity: 0.14; animation: heroWaveScroll 26s linear infinite; }
+.hero-wave-2 { bottom: -30px; fill: var(--paper); opacity: 0.07; animation: heroWaveScroll 40s linear infinite reverse; }
+@keyframes heroWaveScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .hero-wave { animation: none; } }
 
 .btn {
   display: inline-block;

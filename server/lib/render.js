@@ -54,6 +54,23 @@ function crumbsHtml(trail, assetPrefix) {
   return `<div class="breadcrumb">${parts.join(" / ")}</div>`;
 }
 
+// Decorative, purely cosmetic animated backdrop for the homepage hero —
+// two looping "flowing liquid" waves behind the hero text. Each <svg> is
+// drawn twice as wide as its container and holds two identical copies of
+// the wave pattern side by side; animating transform: translateX(-50%)
+// shifts it by exactly one copy's width, so it loops with no visible
+// seam. aria-hidden since it carries no content.
+function heroFxLayer() {
+  const wave =
+    "M0,100 C100,70 200,130 300,100 C400,70 500,130 600,100 C700,70 800,130 900,100 C1000,70 1100,130 1200,100" +
+    " C1300,70 1400,130 1500,100 C1600,70 1700,130 1800,100 C1900,70 2000,130 2100,100 C2200,70 2300,130 2400,100" +
+    " L2400,150 L0,150 Z";
+  return `<div class="hero-fx" aria-hidden="true">
+      <svg class="hero-wave hero-wave-1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="${wave}"/></svg>
+      <svg class="hero-wave hero-wave-2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="${wave}"/></svg>
+    </div>`;
+}
+
 function ctaStrip(settings) {
   return `
 <section class="tight">
@@ -76,6 +93,7 @@ function renderBlock(block, ctx) {
     case "hero":
       return `
 <section class="hero">
+  ${heroFxLayer()}
   <div class="container">
     <div>
       ${block.eyebrow_en ? `<p class="eyebrow" style="color:#e8a768">${bi(block.eyebrow_en, block.eyebrow_ru)}</p>` : ""}

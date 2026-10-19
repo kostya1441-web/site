@@ -204,6 +204,22 @@ def layout(slug_title_en, slug_title_ru, body, breadcrumb=None, canonical="/"):
 """
 
 
+def hero_fx_layer():
+    """Decorative animated 'flowing liquid' waves behind the homepage hero
+    text. Each <svg> is twice its container's width and holds two identical
+    copies of the wave pattern side by side; animating translateX(-50%)
+    shifts by exactly one copy's width, looping with no visible seam."""
+    wave = (
+        "M0,100 C100,70 200,130 300,100 C400,70 500,130 600,100 C700,70 800,130 900,100 C1000,70 1100,130 1200,100"
+        " C1300,70 1400,130 1500,100 C1600,70 1700,130 1800,100 C1900,70 2000,130 2100,100 C2200,70 2300,130 2400,100"
+        " L2400,150 L0,150 Z"
+    )
+    return f"""<div class="hero-fx" aria-hidden="true">
+      <svg class="hero-wave hero-wave-1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="{wave}"/></svg>
+      <svg class="hero-wave hero-wave-2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="{wave}"/></svg>
+    </div>"""
+
+
 def cta_strip():
     return f"""
 <section class="tight">
@@ -263,6 +279,7 @@ def write(path, html):
 def page_home():
     body = f"""
 <section class="hero">
+  {hero_fx_layer()}
   <div class="container">
     <div>
       <p class="eyebrow" style="color:#e8a768">{bi("Custom Technology · Incomparable Quality", "Технологии под заказ · Непревзойдённое качество")}</p>

@@ -10,6 +10,16 @@ If your hosting only offers PHP + MySQL + phpMyAdmin, use this folder.
 If it offers Node.js, `server/` is equally supported — pick whichever
 matches what you actually have.
 
+**Deploy only this folder's contents.** The repository root also holds a
+plain static export of the site (`index.html` and friends) and the
+Node.js version lives in `server/` — both are separate, self-contained
+alternatives, not part of this one. Uploading any of them into the same
+web-server directory as `php/`'s contents causes exactly the kind of
+half-migrated behaviour you'd expect: a stray `index.html` sitting next
+to `index.php` wins on most servers' default directory-index order, so
+`/` (and anything the nav links to) serves the old static page instead
+of routing through `index.php`. Upload `php/`'s contents on their own.
+
 ## What's in the database
 
 Everything editable lives in MySQL, browsable in phpMyAdmin:

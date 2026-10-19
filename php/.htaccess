@@ -1,3 +1,9 @@
+# Force index.php to win if a stray index.html ever ends up in the same
+# folder (e.g. from also uploading the static export) — otherwise Apache's
+# default DirectoryIndex order serves the old static homepage instead of
+# routing through the PHP app.
+DirectoryIndex index.php
+
 RewriteEngine On
 
 # Serve real files/directories (assets, uploads, admin/*.php) as-is.
