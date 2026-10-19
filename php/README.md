@@ -1,24 +1,13 @@
 # Hazleton Pumps — PHP + MySQL version (phpMyAdmin-friendly)
 
-A second implementation of the Hazleton Pumps site, built for classic
-shared PHP/MySQL hosting — the kind that gives you phpMyAdmin and an
-Apache document root, rather than a Node.js runtime. Same bilingual
-(EN/RU) site, same admin panel feature set as the `server/` (Node)
-version, backed by a real MySQL database instead of a JSON file.
+The Hazleton Pumps site, built for classic shared PHP/MySQL hosting —
+the kind that gives you phpMyAdmin and an Apache document root. Bilingual
+(EN/RU), with a full admin panel, backed by a real MySQL database.
 
-If your hosting only offers PHP + MySQL + phpMyAdmin, use this folder.
-If it offers Node.js, `server/` is equally supported — pick whichever
-matches what you actually have.
-
-**Deploy only this folder's contents.** The repository root also holds a
-plain static export of the site (`index.html` and friends) and the
-Node.js version lives in `server/` — both are separate, self-contained
-alternatives, not part of this one. Uploading any of them into the same
-web-server directory as `php/`'s contents causes exactly the kind of
-half-migrated behaviour you'd expect: a stray `index.html` sitting next
-to `index.php` wins on most servers' default directory-index order, so
-`/` (and anything the nav links to) serves the old static page instead
-of routing through `index.php`. Upload `php/`'s contents on their own.
+**Deploy only this folder's contents**, i.e. upload what's *inside*
+`php/` so that `index.php` ends up directly in your hosting's document
+root (`public_html/index.php`, not `public_html/php/index.php`) — see
+`УСТАНОВКА.md` for the full walkthrough.
 
 ## What's in the database
 
@@ -102,7 +91,7 @@ imported and `config.php` pointed at it, same as production.
 
 ## Admin panel
 
-`/admin/login.php` — same feature set as the Node version:
+`/admin/login.php`:
 
 - **Страницы** — edit every page's blocks (EN/RU side by side), add or
   remove blocks, create brand-new pages at any URL, delete pages.
@@ -120,12 +109,11 @@ Images anywhere in the admin have a file picker; uploads land in
 
 ## Regenerating `seed.sql` from scratch
 
-`seed.sql` was generated once from the already-translated content that
-also powers the Node version (`server/data/content.json`), via a one-off
-script (not part of this folder, since it's a migration tool rather than
-app code). Re-importing `schema.sql` + `seed.sql` at any time discards all
-admin edits and restores that original translated content — use this only
-if you want to start over.
+`seed.sql` was generated once from the original translated EN/RU content
+via a one-off migration script (not part of this folder). Re-importing
+`schema.sql` + `seed.sql` at any time discards all admin edits and
+restores that original translated content — use this only if you want to
+start over.
 
 ## Security notes
 
