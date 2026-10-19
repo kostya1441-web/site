@@ -70,7 +70,7 @@ no database tool involved.
 
 ### Requirements
 
-Any shared host with PHP 8.0+ and MySQL 5.7+/MariaDB 10.3+ (for JSON
+Any shared host with PHP 8.1+ and MySQL 5.7+/MariaDB 10.3+ (for JSON
 column support) and `mod_rewrite` enabled works — this covers the
 overwhelming majority of standard hosting plans. No Composer packages or
 PHP extensions beyond the ones PHP ships with by default (`pdo_mysql`,
