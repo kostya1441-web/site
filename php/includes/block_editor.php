@@ -21,6 +21,21 @@ const BLOCK_LABELS = [
     'backLink' => 'Ссылка «Назад»',
 ];
 
+const ICON_OPTIONS = [
+    ['', '— без иконки —'],
+    ['target', 'Цель (мишень)'],
+    ['gear', 'Работа (шестерёнка)'],
+    ['check', 'Применение (галочка)'],
+    ['wave', 'Производительность (волна)'],
+    ['layers', 'Материалы (слои)'],
+    ['pencil', 'Технология (карандаш)'],
+    ['atom', 'Материалы (атом)'],
+    ['bolt', 'Мощность (молния)'],
+    ['shield', 'Надёжность (щит)'],
+    ['truck', 'Логистика (грузовик)'],
+    ['globe', 'География (глобус)'],
+];
+
 function repeater_html(string $id, string $label, array $rows, callable $rowFn): string {
     $rowsHtml = '';
     foreach ($rows as $i => $r) $rowsHtml .= $rowFn($r, $i);
@@ -33,7 +48,9 @@ function repeater_html(string $id, string $label, array $rows, callable $rowFn):
 }
 
 function row_card_item(string $prefix, int $idx, array $it): string {
-    return "<div class=\"repeater-row\"><div class=\"a-grid\">"
+    return "<div class=\"repeater-row\">"
+        . f_select("{$prefix}[$idx][icon]", 'Иконка', ICON_OPTIONS, $it['icon'] ?? '')
+        . "<div class=\"a-grid\">"
         . f_text("{$prefix}[$idx][title_en]", 'Заголовок (EN)', $it['title_en'] ?? '')
         . f_text("{$prefix}[$idx][title_ru]", 'Заголовок (RU)', $it['title_ru'] ?? '')
         . "</div><div class=\"a-grid\">"
@@ -59,7 +76,9 @@ function row_advantage(string $prefix, int $idx, array $it): string {
 }
 
 function row_panel(string $prefix, int $idx, array $it): string {
-    return "<div class=\"repeater-row\"><div class=\"a-grid\">"
+    return "<div class=\"repeater-row\">"
+        . f_select("{$prefix}[$idx][icon]", 'Иконка', ICON_OPTIONS, $it['icon'] ?? '')
+        . "<div class=\"a-grid\">"
         . f_text("{$prefix}[$idx][title_en]", 'Заголовок (EN)', $it['title_en'] ?? '')
         . f_text("{$prefix}[$idx][title_ru]", 'Заголовок (RU)', $it['title_ru'] ?? '')
         . "</div><div class=\"a-grid\">"
@@ -73,6 +92,7 @@ function row_logo(string $prefix, int $idx, array $it): string {
     return "<div class=\"repeater-row\">"
         . f_image("{$prefix}[$idx][image]", 'Изображение', $it['image'] ?? '')
         . f_text("{$prefix}[$idx][alt_en]", 'Подпись (alt)', $it['alt_en'] ?? '')
+        . f_text("{$prefix}[$idx][link]", 'Ссылка на сайт партнёра (необязательно)', $it['link'] ?? '')
         . "<button type=\"button\" class=\"a-btn small danger remove-row\">Удалить</button></div>";
 }
 
@@ -218,6 +238,7 @@ function block_from_form(string $type, int $idx): array {
                     'body_en' => $it['body_en'] ?? '', 'body_ru' => $it['body_ru'] ?? '',
                     'image' => $itemImage($i, $it),
                     'link_href' => $it['link_href'] ?? '', 'link_en' => $it['link_en'] ?? '', 'link_ru' => $it['link_ru'] ?? '',
+                    'icon' => $it['icon'] ?? '',
                 ];
             }
             return [
@@ -230,7 +251,7 @@ function block_from_form(string $type, int $idx): array {
         case 'panelGrid': {
             $out = [];
             foreach ($items('items') as $it) {
-                $out[] = ['title_en' => $it['title_en'] ?? '', 'title_ru' => $it['title_ru'] ?? '', 'body_en' => $it['body_en'] ?? '', 'body_ru' => $it['body_ru'] ?? '', 'wide' => !empty($it['wide'])];
+                $out[] = ['title_en' => $it['title_en'] ?? '', 'title_ru' => $it['title_ru'] ?? '', 'body_en' => $it['body_en'] ?? '', 'body_ru' => $it['body_ru'] ?? '', 'wide' => !empty($it['wide']), 'icon' => $it['icon'] ?? ''];
             }
             return ['items' => $out];
         }
@@ -246,7 +267,7 @@ function block_from_form(string $type, int $idx): array {
         case 'logos': {
             $out = [];
             foreach ($items('items') as $i => $it) {
-                $out[] = ['image' => $itemImage($i, $it), 'alt_en' => $it['alt_en'] ?? ''];
+                $out[] = ['image' => $itemImage($i, $it), 'alt_en' => $it['alt_en'] ?? '', 'link' => trim($it['link'] ?? '')];
             }
             return ['title_en' => $g('title_en'), 'title_ru' => $g('title_ru'), 'items' => $out];
         }

@@ -94,7 +94,11 @@ imported and `config.php` pointed at it, same as production.
 `/admin/login.php`:
 
 - **Страницы** — edit every page's blocks (EN/RU side by side), add or
-  remove blocks, create brand-new pages at any URL, delete pages.
+  remove blocks, create brand-new pages at any URL, delete pages. Card and
+  panel blocks can show a small icon badge (pick one from the "Иконка"
+  dropdown — gear, target, checkmark, etc. — or leave it as "без иконки").
+  Partner logo blocks can link each logo to that partner's own website —
+  leave the link field empty to keep it a plain, non-clickable image.
 - **Меню навигации** — edit the header menu and its dropdown items.
 - **Примеры проектов** / **Пресса и статьи** — full create/edit/delete;
   each becomes its own page automatically.

@@ -1,6 +1,27 @@
 <?php
 require_once __DIR__ . '/helpers.php';
 
+// A small curated set of inline stroke icons (24x24, currentColor) used to
+// badge cards/panels in the admin's "Иконка" field. Returns '' for an
+// unknown/empty name so callers can skip the badge entirely.
+function icon_svg(string $name): string {
+    $paths = [
+        'target' => '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+        'gear' => '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+        'check' => '<path d="M4 12.5l5 5L20 7"/>',
+        'wave' => '<path d="M2 12c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4"/>',
+        'layers' => '<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>',
+        'pencil' => '<path d="M4 20l1-4 11-11 3 3-11 11-4 1z"/><path d="M14 6l3 3"/>',
+        'atom' => '<circle cx="12" cy="12" r="1.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)"/>',
+        'bolt' => '<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>',
+        'shield' => '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>',
+        'truck' => '<path d="M2 7h11v9H2z"/><path d="M13 10h5l3 3v3h-8z"/><circle cx="6" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/>',
+        'globe' => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    ];
+    if (empty($name) || !isset($paths[$name])) return '';
+    return '<span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' . $paths[$name] . '</svg></span>';
+}
+
 function render_nav(array $nav): string {
     $out = '';
     foreach ($nav as $item) {
@@ -40,22 +61,29 @@ function page_head(string $eyebrowEn, string $eyebrowRu, string $titleEn, string
 </section>';
 }
 
-// Decorative, purely cosmetic underwater-bubble backdrop for the homepage
-// hero — a handful of soft circles drifting upward on a loop. Negative
-// animation-delay staggers them so they don't all start at the bottom at
-// once. aria-hidden since it carries no content.
+// Decorative, purely cosmetic underwater backdrop for the homepage hero —
+// soft circles drifting upward, a couple of slowly-swaying light shafts,
+// and a slow-pulsing caustic glow, layered for more depth than a flat set
+// of bubbles. Negative animation-delay staggers everything so it doesn't
+// all start in sync. aria-hidden since it carries no content.
 function hero_fx_layer(): string {
-    // [left%, size px, duration s, negative delay s]
+    // [left%, size px, duration s, negative delay s, blur px]
     $bubbles = [
-        [4, 10, 13, 2], [10, 16, 17, 6], [17, 8, 11, 1], [24, 20, 21, 9],
-        [31, 12, 15, 4], [39, 9, 12, 8], [47, 18, 19, 3], [55, 11, 14, 10],
-        [62, 15, 16, 5], [70, 9, 13, 0], [78, 19, 20, 7], [86, 12, 17, 2],
-        [93, 10, 14, 11],
+        [4, 10, 13, 2, 0], [8, 22, 21, 9, 2], [10, 16, 17, 6, 0], [17, 8, 11, 1, 0],
+        [21, 26, 24, 14, 3], [24, 20, 21, 9, 1], [28, 7, 10, 3, 0], [31, 12, 15, 4, 0],
+        [36, 24, 23, 11, 2], [39, 9, 12, 8, 0], [43, 14, 16, 2, 1], [47, 18, 19, 3, 0],
+        [52, 8, 11, 7, 0], [55, 11, 14, 10, 0], [59, 28, 25, 16, 3], [62, 15, 16, 5, 0],
+        [67, 9, 13, 5, 0], [70, 9, 13, 0, 0], [74, 20, 20, 12, 2], [78, 19, 20, 7, 0],
+        [82, 10, 13, 9, 0], [86, 12, 17, 2, 0], [90, 23, 22, 15, 2], [93, 10, 14, 11, 0],
     ];
     $html = '<div class="hero-fx" aria-hidden="true">';
-    foreach ($bubbles as [$left, $size, $dur, $delay]) {
-        $html .= '<span class="bubble" style="left:' . $left . '%;width:' . $size . 'px;height:' . $size
-            . 'px;animation-duration:' . $dur . 's;animation-delay:-' . $delay . 's;"></span>';
+    $html .= '<div class="glow glow-1"></div><div class="glow glow-2"></div>';
+    $html .= '<div class="ray ray-1"></div><div class="ray ray-2"></div><div class="ray ray-3"></div>';
+    foreach ($bubbles as [$left, $size, $dur, $delay, $blur]) {
+        $style = 'left:' . $left . '%;width:' . $size . 'px;height:' . $size
+            . 'px;animation-duration:' . $dur . 's;animation-delay:-' . $delay . 's;';
+        if ($blur) $style .= 'filter:blur(' . $blur . 'px);';
+        $html .= '<span class="bubble" style="' . $style . '"></span>';
     }
     $html .= '</div>';
     return $html;
@@ -150,8 +178,9 @@ function render_block(array $block, array $ctx): string {
             $cards = '';
             foreach (($d['items'] ?? []) as $i => $it) {
                 if ($variant === 'feature') {
-                    $num = !empty($it['num']) ? '<div class="num">' . esc($it['num']) . '</div>' : '';
-                    $cards .= '<div class="feature-card">' . $num . '<h3>' . bi($it['title_en'] ?? '', $it['title_ru'] ?? '') . '</h3>'
+                    $icon = icon_svg($it['icon'] ?? '');
+                    $num = (!$icon && !empty($it['num'])) ? '<div class="num">' . esc($it['num']) . '</div>' : '';
+                    $cards .= '<div class="feature-card">' . $icon . $num . '<h3>' . bi($it['title_en'] ?? '', $it['title_ru'] ?? '') . '</h3>'
                         . bi_block('<p>' . ($it['body_en'] ?? '') . '</p>', '<p>' . ($it['body_ru'] ?? '') . '</p>') . '</div>';
                 } elseif ($variant === 'product') {
                     $thumb = !empty($it['image']) ? '<div class="thumb"><img src="' . esc($it['image']) . '" alt=""></div>' : '';
@@ -179,7 +208,8 @@ function render_block(array $block, array $ctx): string {
             $panels = '';
             foreach (($d['items'] ?? []) as $it) {
                 $wide = !empty($it['wide']) ? 'grid-column:1/-1' : '';
-                $panels .= "<div class=\"panel\" style=\"$wide\"><h3>" . bi($it['title_en'] ?? '', $it['title_ru'] ?? '') . '</h3>'
+                $icon = icon_svg($it['icon'] ?? '');
+                $panels .= "<div class=\"panel\" style=\"$wide\">" . $icon . "<h3>" . bi($it['title_en'] ?? '', $it['title_ru'] ?? '') . '</h3>'
                     . bi_block('<div>' . ($it['body_en'] ?? '') . '</div>', '<div>' . ($it['body_ru'] ?? '') . '</div>') . '</div>';
             }
             $maxw = esc($d['max_width'] ?? '1020px');
@@ -223,7 +253,10 @@ function render_block(array $block, array $ctx): string {
         case 'logos': {
             $imgs = '';
             foreach (($d['items'] ?? []) as $it) {
-                $imgs .= '<img src="' . esc($it['image'] ?? '') . '" alt="' . esc($it['alt_en'] ?? '') . '">';
+                $img = '<img src="' . esc($it['image'] ?? '') . '" alt="' . esc($it['alt_en'] ?? '') . '">';
+                $imgs .= !empty($it['link'])
+                    ? '<a href="' . esc($it['link']) . '" target="_blank" rel="noopener">' . $img . '</a>'
+                    : $img;
             }
             $title = !empty($d['title_en']) ? '<p class="eyebrow" style="text-align:center">' . bi($d['title_en'], $d['title_ru']) . '</p>' : '';
             return "

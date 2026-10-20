@@ -217,7 +217,45 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
   88% { opacity: 0.3; }
   100% { transform: translateY(-460px) translateX(16px); opacity: 0; }
 }
-@media (prefers-reduced-motion: reduce) { .hero-fx .bubble { animation: none; display: none; } }
+
+.hero-fx .glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(126,195,240,0.25), transparent 70%);
+  animation-name: glowPulse;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.hero-fx .glow-1 { width: 420px; height: 420px; left: -80px; top: -100px; animation-duration: 11s; }
+.hero-fx .glow-2 { width: 360px; height: 360px; right: -60px; bottom: -120px; animation-duration: 14s; animation-delay: -5s; }
+@keyframes glowPulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+.hero-fx .ray {
+  position: absolute;
+  top: -15%;
+  width: 90px;
+  height: 150%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent 75%);
+  transform: rotate(10deg);
+  filter: blur(4px);
+  animation-name: rayDrift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.hero-fx .ray-1 { left: 10%; animation-duration: 16s; }
+.hero-fx .ray-2 { left: 45%; width: 70px; animation-duration: 20s; animation-delay: -7s; }
+.hero-fx .ray-3 { left: 78%; width: 110px; animation-duration: 18s; animation-delay: -12s; }
+@keyframes rayDrift {
+  0%, 100% { transform: translateX(0) rotate(8deg); opacity: 0.5; }
+  50% { transform: translateX(50px) rotate(14deg); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-fx .bubble, .hero-fx .glow, .hero-fx .ray { animation: none; display: none; }
+}
 
 .btn {
   display: inline-block;
@@ -279,7 +317,21 @@ h2.section-title { font-size: clamp(1.5rem, 3vw, 2rem); margin: 0 0 16px; }
 
 .feature-card { background: var(--navy); color: var(--paper-dim); border-radius: var(--radius); padding: 28px; }
 .feature-card h3 { color: var(--white); margin: 0 0 10px; }
-.feature-card .num { color: var(--amber); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.08em; }
+.feature-card .num { color: var(--accent-light); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.08em; }
+
+.icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--white);
+  margin-bottom: 14px;
+}
+.icon-badge svg { width: 24px; height: 24px; }
+.feature-card .icon-badge { background: rgba(255,255,255,0.14); }
 
 .product-card {
   background: var(--white);
