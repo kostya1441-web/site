@@ -17,49 +17,46 @@ namespace Rabota3
             InitializeComponent();
         }
 
-        private void Add_B_Click(object sender, EventArgs e)
+        private void BtnDobavit_Click(object sender, EventArgs e)
         {
-            Form2 Dialog = new Form2();
-            Dialog.Text = "Добавление человека";
-            if (Dialog.ShowDialog() == DialogResult.OK)
+            Form2 Okno = new Form2();
+            Okno.Text = "Добавление блюда";
+            if (Okno.ShowDialog() == DialogResult.OK)
             {
-                Person Chel = new Person();
-                Chel.Surname = Dialog.Surname_TB.Text.Trim();
-                Chel.BirthYear = Convert.ToInt32(Dialog.Year_TB.Text);
-                Chel.Gender = Dialog.Male_RB.Checked ? "М" : "Ж";
-                Chel.Height = Convert.ToInt32(Dialog.Height_TB.Text);
-                listBox1.Items.Add(Chel);
+                Blyudo Item = new Blyudo();
+                Item.Nazvanie = Okno.Nazv_TB.Text.Trim();
+                Item.Ves = Convert.ToDouble(Okno.Ves_TB.Text);
+                Item.Sebestoimost = Convert.ToInt32(Okno.Seb_TB.Text);
+                Item.Cena = Convert.ToInt32(Okno.Cena_TB.Text);
+                listBox1.Items.Add(Item);
             }
         }
 
-        private void Change_B_Click(object sender, EventArgs e)
+        private void BtnIzmenit_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex != -1)
             {
-                Form2 Dialog = new Form2();
-                Dialog.Text = "Изменение данных";
-                Person Chel = listBox1.SelectedItem as Person;
-                Dialog.Surname_TB.Text = Chel.Surname;
-                Dialog.Year_TB.Text = Chel.BirthYear.ToString();
-                if (Chel.Gender == "М")
-                    Dialog.Male_RB.Checked = true;
-                else
-                    Dialog.Female_RB.Checked = true;
-                Dialog.Height_TB.Text = Chel.Height.ToString();
-                if (Dialog.ShowDialog() == DialogResult.OK)
+                Blyudo Item = listBox1.SelectedItem as Blyudo;
+                Form2 Okno = new Form2();
+                Okno.Text = "Изменение блюда";
+                Okno.Nazv_TB.Text = Item.Nazvanie;
+                Okno.Ves_TB.Text = Item.Ves.ToString();
+                Okno.Seb_TB.Text = Item.Sebestoimost.ToString();
+                Okno.Cena_TB.Text = Item.Cena.ToString();
+                if (Okno.ShowDialog() == DialogResult.OK)
                 {
-                    Chel.Surname = Dialog.Surname_TB.Text.Trim();
-                    Chel.BirthYear = Convert.ToInt32(Dialog.Year_TB.Text);
-                    Chel.Gender = Dialog.Male_RB.Checked ? "М" : "Ж";
-                    Chel.Height = Convert.ToInt32(Dialog.Height_TB.Text);
-                    listBox1.Items[listBox1.SelectedIndex] = Chel;
+                    Item.Nazvanie = Okno.Nazv_TB.Text.Trim();
+                    Item.Ves = Convert.ToDouble(Okno.Ves_TB.Text);
+                    Item.Sebestoimost = Convert.ToInt32(Okno.Seb_TB.Text);
+                    Item.Cena = Convert.ToInt32(Okno.Cena_TB.Text);
+                    listBox1.Items[listBox1.SelectedIndex] = Item;
                 }
             }
             else
                 MessageBox.Show("Не выбран элемент в списке", "Информация");
         }
 
-        private void Del_B_Click(object sender, EventArgs e)
+        private void BtnUdalit_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex != -1)
                 listBox1.Items.RemoveAt(listBox1.SelectedIndex);

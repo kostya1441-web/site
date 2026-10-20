@@ -28,136 +28,119 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.Surname_TB = new System.Windows.Forms.TextBox();
-            this.Year_TB = new System.Windows.Forms.TextBox();
-            this.Male_RB = new System.Windows.Forms.RadioButton();
-            this.Female_RB = new System.Windows.Forms.RadioButton();
-            this.Height_TB = new System.Windows.Forms.TextBox();
-            this.Ok_B = new System.Windows.Forms.Button();
-            this.Cancel_B = new System.Windows.Forms.Button();
+            this.lblNazv = new System.Windows.Forms.Label();
+            this.lblVes = new System.Windows.Forms.Label();
+            this.lblSeb = new System.Windows.Forms.Label();
+            this.lblCena = new System.Windows.Forms.Label();
+            this.Nazv_TB = new System.Windows.Forms.TextBox();
+            this.Ves_TB = new System.Windows.Forms.TextBox();
+            this.Seb_TB = new System.Windows.Forms.TextBox();
+            this.Cena_TB = new System.Windows.Forms.TextBox();
+            this.BtnOk = new System.Windows.Forms.Button();
+            this.BtnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
-            // label1
+            // lblNazv
             //
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Фамилия";
+            this.lblNazv.AutoSize = true;
+            this.lblNazv.Location = new System.Drawing.Point(14, 18);
+            this.lblNazv.Name = "lblNazv";
+            this.lblNazv.Size = new System.Drawing.Size(63, 13);
+            this.lblNazv.TabIndex = 0;
+            this.lblNazv.Text = "Название";
             //
-            // label2
+            // lblVes
             //
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Год рождения";
+            this.lblVes.AutoSize = true;
+            this.lblVes.Location = new System.Drawing.Point(14, 49);
+            this.lblVes.Name = "lblVes";
+            this.lblVes.Size = new System.Drawing.Size(49, 13);
+            this.lblVes.TabIndex = 1;
+            this.lblVes.Text = "Вес, кг";
             //
-            // label3
+            // lblSeb
             //
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 74);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(24, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Пол";
+            this.lblSeb.AutoSize = true;
+            this.lblSeb.Location = new System.Drawing.Point(14, 80);
+            this.lblSeb.Name = "lblSeb";
+            this.lblSeb.Size = new System.Drawing.Size(108, 13);
+            this.lblSeb.TabIndex = 2;
+            this.lblSeb.Text = "Себестоимость, руб.";
             //
-            // label4
+            // lblCena
             //
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 103);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(49, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Рост, см";
+            this.lblCena.AutoSize = true;
+            this.lblCena.Location = new System.Drawing.Point(14, 111);
+            this.lblCena.Name = "lblCena";
+            this.lblCena.Size = new System.Drawing.Size(66, 13);
+            this.lblCena.TabIndex = 3;
+            this.lblCena.Text = "Цена, руб.";
             //
-            // Surname_TB
+            // Nazv_TB
             //
-            this.Surname_TB.Location = new System.Drawing.Point(120, 13);
-            this.Surname_TB.Name = "Surname_TB";
-            this.Surname_TB.Size = new System.Drawing.Size(150, 20);
-            this.Surname_TB.TabIndex = 4;
+            this.Nazv_TB.Location = new System.Drawing.Point(150, 15);
+            this.Nazv_TB.Name = "Nazv_TB";
+            this.Nazv_TB.Size = new System.Drawing.Size(160, 20);
+            this.Nazv_TB.TabIndex = 4;
             //
-            // Year_TB
+            // Ves_TB
             //
-            this.Year_TB.Location = new System.Drawing.Point(120, 42);
-            this.Year_TB.Name = "Year_TB";
-            this.Year_TB.Size = new System.Drawing.Size(150, 20);
-            this.Year_TB.TabIndex = 5;
+            this.Ves_TB.Location = new System.Drawing.Point(150, 46);
+            this.Ves_TB.Name = "Ves_TB";
+            this.Ves_TB.Size = new System.Drawing.Size(160, 20);
+            this.Ves_TB.TabIndex = 5;
             //
-            // Male_RB
+            // Seb_TB
             //
-            this.Male_RB.AutoSize = true;
-            this.Male_RB.Location = new System.Drawing.Point(120, 73);
-            this.Male_RB.Name = "Male_RB";
-            this.Male_RB.Size = new System.Drawing.Size(47, 17);
-            this.Male_RB.TabIndex = 6;
-            this.Male_RB.TabStop = true;
-            this.Male_RB.Text = "Муж.";
-            this.Male_RB.UseVisualStyleBackColor = true;
+            this.Seb_TB.Location = new System.Drawing.Point(150, 77);
+            this.Seb_TB.Name = "Seb_TB";
+            this.Seb_TB.Size = new System.Drawing.Size(160, 20);
+            this.Seb_TB.TabIndex = 6;
             //
-            // Female_RB
+            // Cena_TB
             //
-            this.Female_RB.AutoSize = true;
-            this.Female_RB.Location = new System.Drawing.Point(195, 73);
-            this.Female_RB.Name = "Female_RB";
-            this.Female_RB.Size = new System.Drawing.Size(45, 17);
-            this.Female_RB.TabIndex = 7;
-            this.Female_RB.TabStop = true;
-            this.Female_RB.Text = "Жен.";
-            this.Female_RB.UseVisualStyleBackColor = true;
+            this.Cena_TB.Location = new System.Drawing.Point(150, 108);
+            this.Cena_TB.Name = "Cena_TB";
+            this.Cena_TB.Size = new System.Drawing.Size(160, 20);
+            this.Cena_TB.TabIndex = 7;
             //
-            // Height_TB
+            // BtnOk
             //
-            this.Height_TB.Location = new System.Drawing.Point(120, 100);
-            this.Height_TB.Name = "Height_TB";
-            this.Height_TB.Size = new System.Drawing.Size(150, 20);
-            this.Height_TB.TabIndex = 8;
+            this.BtnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.BtnOk.Location = new System.Drawing.Point(93, 150);
+            this.BtnOk.Name = "BtnOk";
+            this.BtnOk.Size = new System.Drawing.Size(80, 28);
+            this.BtnOk.TabIndex = 8;
+            this.BtnOk.Text = "&Ok";
+            this.BtnOk.UseVisualStyleBackColor = true;
             //
-            // Ok_B
+            // BtnCancel
             //
-            this.Ok_B.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Ok_B.Location = new System.Drawing.Point(66, 140);
-            this.Ok_B.Name = "Ok_B";
-            this.Ok_B.Size = new System.Drawing.Size(75, 28);
-            this.Ok_B.TabIndex = 9;
-            this.Ok_B.Text = "&Ok";
-            this.Ok_B.UseVisualStyleBackColor = true;
-            //
-            // Cancel_B
-            //
-            this.Cancel_B.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_B.Location = new System.Drawing.Point(155, 140);
-            this.Cancel_B.Name = "Cancel_B";
-            this.Cancel_B.Size = new System.Drawing.Size(90, 28);
-            this.Cancel_B.TabIndex = 10;
-            this.Cancel_B.Text = "&Отмена";
-            this.Cancel_B.UseVisualStyleBackColor = true;
+            this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.BtnCancel.Location = new System.Drawing.Point(187, 150);
+            this.BtnCancel.Name = "BtnCancel";
+            this.BtnCancel.Size = new System.Drawing.Size(95, 28);
+            this.BtnCancel.TabIndex = 9;
+            this.BtnCancel.Text = "&Отмена";
+            this.BtnCancel.UseVisualStyleBackColor = true;
             //
             // Form2
             //
-            this.AcceptButton = this.Ok_B;
-            this.CancelButton = this.Cancel_B;
+            this.AcceptButton = this.BtnOk;
+            this.CancelButton = this.BtnCancel;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(293, 185);
-            this.Controls.Add(this.Cancel_B);
-            this.Controls.Add(this.Ok_B);
-            this.Controls.Add(this.Height_TB);
-            this.Controls.Add(this.Female_RB);
-            this.Controls.Add(this.Male_RB);
-            this.Controls.Add(this.Year_TB);
-            this.Controls.Add(this.Surname_TB);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(330, 196);
+            this.Controls.Add(this.BtnCancel);
+            this.Controls.Add(this.BtnOk);
+            this.Controls.Add(this.Cena_TB);
+            this.Controls.Add(this.Seb_TB);
+            this.Controls.Add(this.Ves_TB);
+            this.Controls.Add(this.Nazv_TB);
+            this.Controls.Add(this.lblCena);
+            this.Controls.Add(this.lblSeb);
+            this.Controls.Add(this.lblVes);
+            this.Controls.Add(this.lblNazv);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -173,16 +156,15 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button Ok_B;
-        private System.Windows.Forms.Button Cancel_B;
-        public System.Windows.Forms.TextBox Surname_TB;
-        public System.Windows.Forms.TextBox Year_TB;
-        public System.Windows.Forms.RadioButton Male_RB;
-        public System.Windows.Forms.RadioButton Female_RB;
-        public System.Windows.Forms.TextBox Height_TB;
+        private System.Windows.Forms.Label lblNazv;
+        private System.Windows.Forms.Label lblVes;
+        private System.Windows.Forms.Label lblSeb;
+        private System.Windows.Forms.Label lblCena;
+        private System.Windows.Forms.Button BtnOk;
+        private System.Windows.Forms.Button BtnCancel;
+        public System.Windows.Forms.TextBox Nazv_TB;
+        public System.Windows.Forms.TextBox Ves_TB;
+        public System.Windows.Forms.TextBox Seb_TB;
+        public System.Windows.Forms.TextBox Cena_TB;
     }
 }

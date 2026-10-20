@@ -22,55 +22,75 @@ namespace Rabota3
             if (DialogResult == DialogResult.OK)
                 try
                 {
-                    if (Surname_TB.Text.Trim() == "")
+                    if (Nazv_TB.Text.Trim() == "")
                     {
-                        Surname_TB.Focus();
-                        throw new Exception("Вы не ввели фамилию");
+                        Nazv_TB.Focus();
+                        throw new Exception("Вы не ввели название блюда");
                     }
-                    if (Year_TB.Text.Trim() == "")
+                    if (Ves_TB.Text.Trim() == "")
                     {
-                        Year_TB.Focus();
-                        throw new Exception("Вы не ввели год рождения");
+                        Ves_TB.Focus();
+                        throw new Exception("Вы не ввели вес блюда");
                     }
-                    int Year;
+                    double Ves;
                     try
                     {
-                        Year = Convert.ToInt32(Year_TB.Text);
+                        Ves = Convert.ToDouble(Ves_TB.Text);
                     }
                     catch (FormatException)
                     {
-                        Year_TB.Focus();
-                        throw new Exception("Недопустимые символы в строке года рождения");
+                        Ves_TB.Focus();
+                        throw new Exception("Недопустимые символы в строке веса");
                     }
-                    if (Year < 1900 || Year > DateTime.Now.Year)
+                    if (Ves < 0.1 || Ves > 3.0)
                     {
-                        Year_TB.Focus();
-                        throw new Exception("Год рождения должен быть в диапазоне от 1900 до " + DateTime.Now.Year);
+                        Ves_TB.Focus();
+                        throw new Exception("Вес должен быть в диапазоне от 0,1 до 3,0");
                     }
-                    if (!Male_RB.Checked && !Female_RB.Checked)
+                    if (Seb_TB.Text.Trim() == "")
                     {
-                        Male_RB.Focus();
-                        throw new Exception("Вы не выбрали пол");
+                        Seb_TB.Focus();
+                        throw new Exception("Вы не ввели себестоимость блюда");
                     }
-                    if (Height_TB.Text.Trim() == "")
-                    {
-                        Height_TB.Focus();
-                        throw new Exception("Вы не ввели рост");
-                    }
-                    int Height;
+                    int Seb;
                     try
                     {
-                        Height = Convert.ToInt32(Height_TB.Text);
+                        Seb = Convert.ToInt32(Seb_TB.Text);
                     }
                     catch (FormatException)
                     {
-                        Height_TB.Focus();
-                        throw new Exception("Недопустимые символы в строке роста");
+                        Seb_TB.Focus();
+                        throw new Exception("Недопустимые символы в строке себестоимости");
                     }
-                    if (Height < 30 || Height > 250)
+                    if (Seb < 1 || Seb > 5000)
                     {
-                        Height_TB.Focus();
-                        throw new Exception("Рост должен быть в диапазоне от 30 до 250");
+                        Seb_TB.Focus();
+                        throw new Exception("Себестоимость должна быть в диапазоне от 1 до 5000");
+                    }
+                    if (Cena_TB.Text.Trim() == "")
+                    {
+                        Cena_TB.Focus();
+                        throw new Exception("Вы не ввели цену блюда");
+                    }
+                    int Cena;
+                    try
+                    {
+                        Cena = Convert.ToInt32(Cena_TB.Text);
+                    }
+                    catch (FormatException)
+                    {
+                        Cena_TB.Focus();
+                        throw new Exception("Недопустимые символы в строке цены");
+                    }
+                    if (Cena < 1 || Cena > 10000)
+                    {
+                        Cena_TB.Focus();
+                        throw new Exception("Цена должна быть в диапазоне от 1 до 10000");
+                    }
+                    if (Cena <= Seb)
+                    {
+                        Cena_TB.Focus();
+                        throw new Exception("Цена должна быть больше себестоимости");
                     }
                 }
                 catch (Exception Vse)

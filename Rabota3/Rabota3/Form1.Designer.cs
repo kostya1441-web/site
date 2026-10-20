@@ -28,74 +28,74 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Spisok_L = new System.Windows.Forms.Label();
+            this.SpisokL = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.Add_B = new System.Windows.Forms.Button();
-            this.Change_B = new System.Windows.Forms.Button();
-            this.Del_B = new System.Windows.Forms.Button();
+            this.BtnDobavit = new System.Windows.Forms.Button();
+            this.BtnIzmenit = new System.Windows.Forms.Button();
+            this.BtnUdalit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
-            // Spisok_L
+            // SpisokL
             //
-            this.Spisok_L.AutoSize = true;
-            this.Spisok_L.Location = new System.Drawing.Point(13, 13);
-            this.Spisok_L.Name = "Spisok_L";
-            this.Spisok_L.Size = new System.Drawing.Size(84, 13);
-            this.Spisok_L.TabIndex = 0;
-            this.Spisok_L.Text = "Список людей";
+            this.SpisokL.AutoSize = true;
+            this.SpisokL.Location = new System.Drawing.Point(12, 11);
+            this.SpisokL.Name = "SpisokL";
+            this.SpisokL.Size = new System.Drawing.Size(67, 13);
+            this.SpisokL.TabIndex = 0;
+            this.SpisokL.Text = "Список блюд";
             //
             // listBox1
             //
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(16, 30);
+            this.listBox1.Location = new System.Drawing.Point(15, 28);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(250, 160);
+            this.listBox1.Size = new System.Drawing.Size(280, 173);
             this.listBox1.TabIndex = 1;
             //
-            // Add_B
+            // BtnDobavit
             //
-            this.Add_B.Location = new System.Drawing.Point(280, 30);
-            this.Add_B.Name = "Add_B";
-            this.Add_B.Size = new System.Drawing.Size(100, 28);
-            this.Add_B.TabIndex = 2;
-            this.Add_B.Text = "&Добавить";
-            this.Add_B.UseVisualStyleBackColor = true;
-            this.Add_B.Click += new System.EventHandler(this.Add_B_Click);
+            this.BtnDobavit.Location = new System.Drawing.Point(305, 28);
+            this.BtnDobavit.Name = "BtnDobavit";
+            this.BtnDobavit.Size = new System.Drawing.Size(105, 30);
+            this.BtnDobavit.TabIndex = 2;
+            this.BtnDobavit.Text = "&Добавить";
+            this.BtnDobavit.UseVisualStyleBackColor = true;
+            this.BtnDobavit.Click += new System.EventHandler(this.BtnDobavit_Click);
             //
-            // Change_B
+            // BtnIzmenit
             //
-            this.Change_B.Location = new System.Drawing.Point(280, 64);
-            this.Change_B.Name = "Change_B";
-            this.Change_B.Size = new System.Drawing.Size(100, 28);
-            this.Change_B.TabIndex = 3;
-            this.Change_B.Text = "&Изменить";
-            this.Change_B.UseVisualStyleBackColor = true;
-            this.Change_B.Click += new System.EventHandler(this.Change_B_Click);
+            this.BtnIzmenit.Location = new System.Drawing.Point(305, 64);
+            this.BtnIzmenit.Name = "BtnIzmenit";
+            this.BtnIzmenit.Size = new System.Drawing.Size(105, 30);
+            this.BtnIzmenit.TabIndex = 3;
+            this.BtnIzmenit.Text = "&Изменить";
+            this.BtnIzmenit.UseVisualStyleBackColor = true;
+            this.BtnIzmenit.Click += new System.EventHandler(this.BtnIzmenit_Click);
             //
-            // Del_B
+            // BtnUdalit
             //
-            this.Del_B.Location = new System.Drawing.Point(280, 98);
-            this.Del_B.Name = "Del_B";
-            this.Del_B.Size = new System.Drawing.Size(100, 28);
-            this.Del_B.TabIndex = 4;
-            this.Del_B.Text = "&Удалить";
-            this.Del_B.UseVisualStyleBackColor = true;
-            this.Del_B.Click += new System.EventHandler(this.Del_B_Click);
+            this.BtnUdalit.Location = new System.Drawing.Point(305, 100);
+            this.BtnUdalit.Name = "BtnUdalit";
+            this.BtnUdalit.Size = new System.Drawing.Size(105, 30);
+            this.BtnUdalit.TabIndex = 4;
+            this.BtnUdalit.Text = "&Удалить";
+            this.BtnUdalit.UseVisualStyleBackColor = true;
+            this.BtnUdalit.Click += new System.EventHandler(this.BtnUdalit_Click);
             //
             // Form1
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(398, 210);
-            this.Controls.Add(this.Del_B);
-            this.Controls.Add(this.Change_B);
-            this.Controls.Add(this.Add_B);
+            this.ClientSize = new System.Drawing.Size(425, 220);
+            this.Controls.Add(this.BtnUdalit);
+            this.Controls.Add(this.BtnIzmenit);
+            this.Controls.Add(this.BtnDobavit);
             this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.Spisok_L);
+            this.Controls.Add(this.SpisokL);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "Список людей";
+            this.Text = "Список блюд";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -103,10 +103,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Label Spisok_L;
+        private System.Windows.Forms.Label SpisokL;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button Add_B;
-        private System.Windows.Forms.Button Change_B;
-        private System.Windows.Forms.Button Del_B;
+        private System.Windows.Forms.Button BtnDobavit;
+        private System.Windows.Forms.Button BtnIzmenit;
+        private System.Windows.Forms.Button BtnUdalit;
     }
 }
