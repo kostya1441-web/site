@@ -184,7 +184,7 @@ function render_block(array $block, array $ctx): string {
                         . bi_block('<p>' . ($it['body_en'] ?? '') . '</p>', '<p>' . ($it['body_ru'] ?? '') . '</p>') . '</div>';
                 } elseif ($variant === 'product') {
                     $thumb = !empty($it['image']) ? '<div class="thumb"><img src="' . esc($it['image']) . '" alt=""></div>' : '';
-                    $link = !empty($it['link_href']) ? '<a class="btn dark" href="' . esc($it['link_href']) . '">' . bi($it['link_en'] ?? 'Find out more', $it['link_ru'] ?? 'Подробнее') . '</a>' : '';
+                    $link = !empty($it['link_href']) ? '<a class="btn" href="' . esc($it['link_href']) . '">' . bi($it['link_en'] ?? 'Find out more', $it['link_ru'] ?? 'Подробнее') . '</a>' : '';
                     $cards .= '<div class="product-card">' . $thumb . '<div class="body"><h3>' . bi($it['title_en'] ?? '', $it['title_ru'] ?? '') . '</h3>'
                         . bi_block('<p>' . ($it['body_en'] ?? '') . '</p>', '<p>' . ($it['body_ru'] ?? '') . '</p>') . $link . '</div></div>';
                 } else {

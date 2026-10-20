@@ -21,7 +21,13 @@
       if (e.key === 'Escape') close();
     });
 
-    var skip = 'header, footer, .topbar, .lightbox-overlay';
+    // Skip images that are already a link to somewhere (partner logos,
+    // case-study/article cards linking to their own page, etc.) — zooming
+    // would fight with the click navigating away, so only plain, unlinked
+    // content images (diagrams, product photos) get the lightbox. Partner
+    // and award logos are excluded outright, even before a link is set on
+    // them — they're brand badges, not content meant to be viewed large.
+    var skip = 'header, footer, .topbar, .lightbox-overlay, a, .assoc-row, .award-card';
     document.querySelectorAll('main img, section img, .container img').forEach(function (img) {
       if (img.closest(skip)) return;
       img.classList.add('lightbox-zoomable');
