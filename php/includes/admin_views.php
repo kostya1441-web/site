@@ -27,13 +27,13 @@ function admin_shell(string $title, string $active, string $body, ?array $flash 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>' . esc($title) . ' — Админка Hazleton Pumps</title>
+<title>' . esc($title) . ' — Админка Адамко</title>
 <link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body class="admin">
 <div class="a-shell">
   <aside class="a-sidebar">
-    <div class="brand"><img src="/assets/img/logo.svg" alt=""> Hazleton CMS</div>
+    <div class="brand"><img src="/assets/img/logo.svg" alt=""> Адамко</div>
     <nav>' . $nav . '</nav>
     <div class="group-label">&nbsp;</div>
     <nav>
@@ -55,12 +55,12 @@ function admin_login_page(?string $error = null): string {
     $errHtml = $error ? '<div class="a-flash error">' . esc($error) . '</div>' : '';
     return '<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Вход в админку — Hazleton Pumps</title>
+<title>Вход в админку — Адамко</title>
 <link rel="stylesheet" href="/assets/css/admin.css"></head>
 <body class="admin">
 <div class="login-wrap">
   <form class="login-card" method="post" action="/admin/login.php">
-    <h1>Hazleton Pumps</h1>
+    <h1>Адамко</h1>
     <p>Вход в панель администратора</p>
     ' . $errHtml . '
     <div class="a-field"><label class="a-label">Логин</label><input type="text" name="username" required autofocus></div>

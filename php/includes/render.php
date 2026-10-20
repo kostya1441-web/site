@@ -40,22 +40,6 @@ function page_head(string $eyebrowEn, string $eyebrowRu, string $titleEn, string
 </section>';
 }
 
-// Decorative, purely cosmetic animated backdrop for the homepage hero —
-// two looping "flowing liquid" waves behind the hero text. Each <svg> is
-// drawn twice as wide as its container and holds two identical copies of
-// the wave pattern side by side; animating transform: translateX(-50%)
-// shifts it by exactly one copy's width, so it loops with no visible
-// seam. aria-hidden since it carries no content.
-function hero_fx_layer(): string {
-    $wave = 'M0,100 C100,70 200,130 300,100 C400,70 500,130 600,100 C700,70 800,130 900,100 C1000,70 1100,130 1200,100'
-        . ' C1300,70 1400,130 1500,100 C1600,70 1700,130 1800,100 C1900,70 2000,130 2100,100 C2200,70 2300,130 2400,100'
-        . ' L2400,150 L0,150 Z';
-    return '<div class="hero-fx" aria-hidden="true">
-      <svg class="hero-wave hero-wave-1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="' . $wave . '"/></svg>
-      <svg class="hero-wave hero-wave-2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="' . $wave . '"/></svg>
-    </div>';
-}
-
 function cta_strip(array $settings): string {
     return '
 <section class="tight">
@@ -86,7 +70,6 @@ function render_block(array $block, array $ctx): string {
             $image = !empty($d['image']) ? '<div class="hero-art"><img src="' . esc($d['image']) . '" alt=""></div>' : '';
             return '
 <section class="hero">
-  ' . hero_fx_layer() . '
   <div class="container">
     <div>
       ' . $eyebrow . '
@@ -353,6 +336,13 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
 <meta name="description" content="' . esc($settings['meta_description']) . '">
 <link rel="icon" href="' . $logo . '">
 <link rel="stylesheet" href="/assets/css/style.css">
+<style>
+:root {
+  --navy: ' . esc($settings['theme_navy']) . ';
+  --amber: ' . esc($settings['theme_amber']) . ';
+  --paper: ' . esc($settings['theme_paper']) . ';
+}
+</style>
 <script>
 (function(){try{var l=localStorage.getItem(\'hazleton-lang\');if(l===\'ru\'){document.documentElement.setAttribute(\'data-lang\',\'ru\');document.documentElement.setAttribute(\'lang\',\'ru\');}}catch(e){}})();
 </script>
@@ -374,7 +364,7 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   <div class="container nav-row">
     <a href="/" class="brand">
       <img src="' . $logo . '" alt="' . esc($settings['company_name']) . ' logo">
-      <span class="brand-name">' . esc($settings['company_name']) . '<small>' . bi('Intl (Pty) Ltd', 'Intl (Pty) Ltd · Южная Африка') . '</small></span>
+      <span class="brand-name">' . esc($settings['company_name']) . '</span>
     </a>
     <nav class="main-nav"><ul>' . render_nav($nav) . '</ul></nav>
     <div class="nav-actions">
@@ -424,6 +414,7 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   </div>
 </footer>
 <script src="/assets/js/i18n.js"></script>
+<script src="/assets/js/lightbox.js"></script>
 </body>
 </html>';
 }

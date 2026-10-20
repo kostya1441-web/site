@@ -99,13 +99,20 @@ imported and `config.php` pointed at it, same as production.
 - **Примеры проектов** / **Пресса и статьи** — full create/edit/delete;
   each becomes its own page automatically.
 - **Настройки и контакты** — company info, logo upload, the CTA block
-  text, and the admin login itself (change username/password here).
+  text, the site's three theme colors ("Внешний вид" section — picking a
+  new navy/accent/background color updates the whole site immediately,
+  no code involved), and the admin login itself (change username/password
+  here).
 - **Заявки** — contact-form submissions. There's no outgoing email
   configured (that needs SMTP credentials this project doesn't have) —
   submissions only appear here, they aren't emailed anywhere automatically.
 
 Images anywhere in the admin have a file picker; uploads land in
 `uploads/` and are served at `/uploads/<filename>`.
+
+Every image on the public site can be clicked to open it full-size in a
+lightbox overlay (click the image again, the × button, or press Escape to
+close) — this needs no admin configuration, it just works.
 
 ## Regenerating `seed.sql` from scratch
 
@@ -114,6 +121,19 @@ via a one-off migration script (not part of this folder). Re-importing
 `schema.sql` + `seed.sql` at any time discards all admin edits and
 restores that original translated content — use this only if you want to
 start over.
+
+## Upgrading an existing install
+
+`schema.sql` only creates tables that don't exist yet, so if you already
+imported it once (e.g. before the "Внешний вид" / appearance colors were
+added), re-importing it won't add the new columns. Run this once instead:
+
+```sql
+ALTER TABLE settings
+  ADD COLUMN theme_navy VARCHAR(20) NOT NULL DEFAULT '#122a3a',
+  ADD COLUMN theme_amber VARCHAR(20) NOT NULL DEFAULT '#d97a28',
+  ADD COLUMN theme_paper VARCHAR(20) NOT NULL DEFAULT '#f5f3ee';
+```
 
 ## Security notes
 

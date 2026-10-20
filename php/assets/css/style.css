@@ -1,4 +1,4 @@
-/* Hazleton Pumps — site styles */
+/* Site styles */
 :root {
   --ink: #0f1b24;
   --navy: #122a3a;
@@ -184,13 +184,6 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
 .hero .container { position: relative; z-index: 1; }
 @media (max-width: 860px) { .hero .container { grid-template-columns: 1fr; } .hero .hero-art { order: -1; } }
 
-.hero-fx { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.hero-wave { position: absolute; left: 0; width: 200%; height: 140px; }
-.hero-wave-1 { bottom: -10px; fill: var(--amber); opacity: 0.14; animation: heroWaveScroll 26s linear infinite; }
-.hero-wave-2 { bottom: -30px; fill: var(--paper); opacity: 0.07; animation: heroWaveScroll 40s linear infinite reverse; }
-@keyframes heroWaveScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .hero-wave { animation: none; } }
-
 .btn {
   display: inline-block;
   background: var(--amber);
@@ -375,3 +368,17 @@ footer.site-footer .brand { margin-bottom: 14px; }
 footer.site-footer p.tag { color: var(--steel-light); font-size: 0.9rem; max-width: 36ch; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 20px; font-size: 0.8rem; color: var(--steel-light); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 860px) { footer.site-footer .grid { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- Image lightbox ---------- */
+.lightbox-zoomable { cursor: zoom-in; }
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(10, 14, 20, 0.92);
+  display: flex; align-items: center; justify-content: center; padding: 40px;
+  opacity: 0; visibility: hidden; transition: opacity 0.2s ease;
+}
+.lightbox-overlay.is-open { opacity: 1; visibility: visible; }
+.lightbox-overlay img { max-width: 92vw; max-height: 88vh; box-shadow: 0 20px 60px rgba(0,0,0,0.5); cursor: zoom-out; }
+.lightbox-close {
+  position: absolute; top: 20px; right: 28px; background: none; border: none; color: var(--white);
+  font-size: 2.2rem; line-height: 1; cursor: pointer; padding: 6px 10px;
+}
