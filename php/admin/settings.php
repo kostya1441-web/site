@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare('UPDATE settings SET
             logo = ?, company_name = ?, phone = ?, email = ?,
             address_en = ?, address_ru = ?, footer_tag_en = ?, footer_tag_ru = ?, year = ?,
-            cta_title_en = ?, cta_title_ru = ?, cta_body_en = ?, cta_body_ru = ?, meta_description = ?,
-            theme_navy = ?, theme_amber = ?, theme_paper = ?
+            cta_title_en = ?, cta_title_ru = ?, cta_body_en = ?, cta_body_ru = ?, meta_description = ?
             WHERE id = 1');
         $stmt->execute([
             $logo,
@@ -32,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['ctaTitle_en'] ?? ''), trim($_POST['ctaTitle_ru'] ?? ''),
             trim($_POST['ctaBody_en'] ?? ''), trim($_POST['ctaBody_ru'] ?? ''),
             trim($_POST['metaDescription'] ?? ''),
-            trim($_POST['themeNavy'] ?? '#122a3a'), trim($_POST['themeAmber'] ?? '#d97a28'), trim($_POST['themePaper'] ?? '#f5f3ee'),
         ]);
         $flash = ['text' => 'Настройки сохранены.'];
     }
@@ -63,12 +61,6 @@ $body = '<form method="post" enctype="multipart/form-data">
   <div class="a-card">
     <h2>SEO</h2>
     ' . f_textarea('metaDescription', 'Meta description', $settings['meta_description']) . '
-  </div>
-  <div class="a-card">
-    <h2>Внешний вид</h2>
-    ' . f_text('themeNavy', 'Основной цвет (тёмный)', $settings['theme_navy'], ['type' => 'color']) . '
-    ' . f_text('themeAmber', 'Акцентный цвет', $settings['theme_amber'], ['type' => 'color']) . '
-    ' . f_text('themePaper', 'Цвет фона (светлый)', $settings['theme_paper'], ['type' => 'color']) . '
   </div>
   <button class="a-btn accent" type="submit">Сохранить</button>
 </form>

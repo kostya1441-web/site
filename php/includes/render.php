@@ -358,13 +358,6 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
 <meta name="description" content="' . esc($settings['meta_description']) . '">
 <link rel="icon" href="' . $logo . '">
 <link rel="stylesheet" href="/assets/css/style.css">
-<style>
-:root {
-  --navy: ' . esc($settings['theme_navy']) . ';
-  --amber: ' . esc($settings['theme_amber']) . ';
-  --paper: ' . esc($settings['theme_paper']) . ';
-}
-</style>
 <script>
 (function(){try{var l=localStorage.getItem(\'hazleton-lang\');if(l===\'ru\'){document.documentElement.setAttribute(\'data-lang\',\'ru\');document.documentElement.setAttribute(\'lang\',\'ru\');}}catch(e){}})();
 </script>

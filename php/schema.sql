@@ -19,10 +19,7 @@ CREATE TABLE IF NOT EXISTS settings (
   cta_title_ru VARCHAR(255),
   cta_body_en TEXT,
   cta_body_ru TEXT,
-  meta_description TEXT,
-  theme_navy VARCHAR(20) NOT NULL DEFAULT '#122a3a',
-  theme_amber VARCHAR(20) NOT NULL DEFAULT '#d97a28',
-  theme_paper VARCHAR(20) NOT NULL DEFAULT '#f5f3ee'
+  meta_description TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS nav_items (
