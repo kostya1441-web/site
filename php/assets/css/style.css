@@ -1,16 +1,17 @@
 /* Site styles */
 :root {
   --ink: #0f1b24;
-  --navy: #122a3a;
-  --navy-light: #1b3a50;
+  --navy: #2d4356;
+  --navy-light: #3c566c;
   --steel: #4d6475;
   --steel-light: #7d93a1;
-  --paper: #f5f3ee;
-  --paper-dim: #e9e5dc;
-  --amber: #d97a28;
-  --amber-dark: #b5611a;
+  --paper: #ffffff;
+  --paper-dim: #eef2f5;
+  --amber: #c0272d;
+  --amber-dark: #961f24;
+  --red-light: #ff8a80;
   --white: #ffffff;
-  --line: #d8d3c7;
+  --line: #dde3e7;
   --radius: 10px;
   --maxw: 1180px;
   --shadow: 0 10px 30px -14px rgba(15, 27, 36, 0.35);
@@ -27,6 +28,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3, h4, .eyebrow, .btn, .btn-quote, nav.main-nav a, nav.main-nav .nav-top {
+  font-family: "Oswald", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+h1, h2, h3, h4 { font-weight: 600; }
 
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
@@ -59,14 +67,14 @@ span[data-i18n-group="en"] { display: inline; }
   cursor: pointer;
 }
 .lang-switch button.active {
-  background: var(--amber);
-  color: var(--ink);
+  background: var(--white);
+  color: var(--amber);
 }
 
 /* ---------- Top bar ---------- */
 .topbar {
-  background: var(--ink);
-  color: var(--paper-dim);
+  background: var(--amber);
+  color: var(--white);
   font-size: 0.82rem;
 }
 .topbar .container {
@@ -146,7 +154,7 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
 .nav-actions { display: flex; align-items: center; gap: 14px; }
 .btn-quote {
   background: var(--amber);
-  color: var(--ink);
+  color: var(--white);
   font-weight: 700;
   font-size: 0.82rem;
   padding: 10px 18px;
@@ -187,7 +195,7 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
   position: absolute;
   bottom: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(217,122,40,0.12) 60%, transparent 72%);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(192,39,45,0.12) 60%, transparent 72%);
   opacity: 0;
   animation-name: bubbleRise;
   animation-timing-function: ease-in;
@@ -204,7 +212,7 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
 .btn {
   display: inline-block;
   background: var(--amber);
-  color: var(--ink);
+  color: var(--white);
   font-weight: 700;
   padding: 13px 26px;
   border-radius: 999px;
@@ -213,8 +221,8 @@ nav.main-nav .dropdown a { display: block; padding: 9px 12px; font-weight: 500; 
   letter-spacing: 0.02em;
 }
 .btn:hover { background: var(--amber-dark); }
-.btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: var(--white); }
-.btn.ghost:hover { background: rgba(255,255,255,0.1); }
+.btn.ghost { background: transparent; border: 1px solid var(--amber); color: var(--white); }
+.btn.ghost:hover { background: var(--amber); }
 .btn.dark { background: var(--navy); color: var(--white); }
 
 /* ---------- Page header (inner pages) ---------- */
@@ -334,7 +342,7 @@ table.spec-table th { color: var(--steel); font-weight: 700; width: 40%; }
 .press-clip-list .src { color: var(--steel); font-size: 0.85rem; }
 
 .cta-strip {
-  background: var(--navy);
+  background: var(--ink);
   color: var(--white);
   border-radius: var(--radius);
   padding: 40px;

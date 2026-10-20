@@ -34,7 +34,7 @@ function page_head(string $eyebrowEn, string $eyebrowRu, string $titleEn, string
 <section class="page-head">
   <div class="container">
     ' . crumbs_html($crumbTrail) . '
-    <p class="eyebrow" style="color:#e8a768">' . bi($eyebrowEn, $eyebrowRu) . '</p>
+    <p class="eyebrow" style="color:var(--red-light)">' . bi($eyebrowEn, $eyebrowRu) . '</p>
     <h1>' . bi($titleEn, $titleRu) . '</h1>
   </div>
 </section>';
@@ -87,7 +87,7 @@ function render_block(array $block, array $ctx): string {
                 $cls = $i === 0 ? '' : 'ghost';
                 $buttons .= '<a class="btn ' . $cls . '" href="' . esc($b['href']) . '">' . bi($b['label_en'], $b['label_ru']) . '</a>';
             }
-            $eyebrow = !empty($d['eyebrow_en']) ? '<p class="eyebrow" style="color:#e8a768">' . bi($d['eyebrow_en'], $d['eyebrow_ru']) . '</p>' : '';
+            $eyebrow = !empty($d['eyebrow_en']) ? '<p class="eyebrow" style="color:var(--red-light)">' . bi($d['eyebrow_en'], $d['eyebrow_ru']) . '</p>' : '';
             $image = !empty($d['image']) ? '<div class="hero-art"><img src="' . esc($d['image']) . '" alt=""></div>' : '';
             return '
 <section class="hero">
@@ -357,6 +357,9 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
 <title>' . esc($titleEn) . ' | ' . esc($settings['company_name']) . '</title>
 <meta name="description" content="' . esc($settings['meta_description']) . '">
 <link rel="icon" href="' . $logo . '">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <script>
 (function(){try{var l=localStorage.getItem(\'hazleton-lang\');if(l===\'ru\'){document.documentElement.setAttribute(\'data-lang\',\'ru\');document.documentElement.setAttribute(\'lang\',\'ru\');}}catch(e){}})();
