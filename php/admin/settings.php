@@ -32,7 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['ctaBody_en'] ?? ''), trim($_POST['ctaBody_ru'] ?? ''),
             trim($_POST['metaDescription'] ?? ''),
         ]);
-        $flash = ['text' => 'Настройки сохранены.'];
+        $uploadErrors = upload_errors();
+        if ($uploadErrors) {
+            $flash = ['error' => true, 'text' => 'Настройки сохранены, но логотип не изменился: ' . implode('; ', $uploadErrors)];
+        } else {
+            $flash = ['text' => 'Настройки сохранены.'];
+        }
     }
 }
 

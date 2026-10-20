@@ -4,6 +4,22 @@
 # routing through the PHP app.
 DirectoryIndex index.php
 
+# Raise the default upload limit (many hosts ship 2M, too small for a
+# real photo) — only takes effect where PHP runs as an Apache module;
+# harmless no-op otherwise. PHP-FPM hosts pick up .user.ini instead.
+<IfModule mod_php.c>
+  php_value upload_max_filesize 12M
+  php_value post_max_size 14M
+</IfModule>
+<IfModule mod_php8.c>
+  php_value upload_max_filesize 12M
+  php_value post_max_size 14M
+</IfModule>
+<IfModule mod_php7.c>
+  php_value upload_max_filesize 12M
+  php_value post_max_size 14M
+</IfModule>
+
 RewriteEngine On
 
 # Serve real files/directories (assets, uploads, admin/*.php) as-is.

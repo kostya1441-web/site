@@ -105,7 +105,10 @@ imported and `config.php` pointed at it, same as production.
   submissions only appear here, they aren't emailed anywhere automatically.
 
 Images anywhere in the admin have a file picker; uploads land in
-`uploads/` and are served at `/uploads/<filename>`.
+`uploads/` and are served at `/uploads/<filename>`. Allowed formats: PNG,
+JPEG, GIF, WEBP, SVG, up to 12MB — if an upload is rejected (wrong format,
+too large) the admin shows the reason instead of silently keeping the old
+image.
 
 Every image on the public site can be clicked to open it full-size in a
 lightbox overlay (click the image again, the × button, or press Escape to
