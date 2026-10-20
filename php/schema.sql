@@ -116,4 +116,4 @@ CREATE TABLE IF NOT EXISTS admin_users (
   UNIQUE KEY uq_admin_users_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO settings (id, logo, company_name, phone, email, year) VALUES (1, '/assets/img/logo.svg', 'Hazleton Pumps', '', '', '2026');
+INSERT IGNORE INTO settings (id, logo, company_name, phone, email, year) VALUES (1, '/assets/img/logo-adamko.jpg', 'АДАМКО Сибирь', '', '', '2026');

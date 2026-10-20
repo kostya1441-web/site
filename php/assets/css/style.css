@@ -97,9 +97,7 @@ header.site-header {
   gap: 24px;
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--white); }
-.brand img { height: 38px; width: auto; }
-.brand-name { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.01em; color: var(--white); }
-.brand-name small { display: block; font-weight: 500; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--steel-light); text-transform: uppercase; }
+.brand img { height: 52px; width: auto; border-radius: 6px; }
 
 nav.main-nav { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
 nav.main-nav > ul { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; }

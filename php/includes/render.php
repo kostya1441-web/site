@@ -364,7 +364,6 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   <div class="container nav-row">
     <a href="/" class="brand">
       <img src="' . $logo . '" alt="' . esc($settings['company_name']) . ' logo">
-      <span class="brand-name">' . esc($settings['company_name']) . '</span>
     </a>
     <nav class="main-nav"><ul>' . render_nav($nav) . '</ul></nav>
     <div class="nav-actions">
@@ -378,7 +377,7 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   <div class="container">
     <div class="grid">
       <div>
-        <div class="brand" style="color:#fff"><img src="' . $logo . '" alt="" style="height:34px"></div>
+        <div class="brand" style="color:#fff"><img src="' . $logo . '" alt="" style="height:46px"></div>
         ' . bi_block('<p class=\'tag\'>' . esc($settings['footer_tag_en']) . '</p>', '<p class=\'tag\'>' . esc($settings['footer_tag_ru']) . '</p>') . '
       </div>
       <div>

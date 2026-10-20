@@ -3,8 +3,8 @@ SET NAMES utf8mb4;
 
 -- settings --
 UPDATE settings SET
-  logo = '/assets/img/logo.svg',
-  company_name = 'Hazleton Pumps',
+  logo = '/assets/img/logo-adamko.jpg',
+  company_name = 'АДАМКО Сибирь',
   phone = '+27 (0) 12 666 8203',
   email = 'info@hazletonpumps.co.za',
   address_en = '33 Van Tonder Street<br>Sunderland Ridge, Centurion, South Africa',
