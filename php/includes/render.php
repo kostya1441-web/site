@@ -40,6 +40,27 @@ function page_head(string $eyebrowEn, string $eyebrowRu, string $titleEn, string
 </section>';
 }
 
+// Decorative, purely cosmetic underwater-bubble backdrop for the homepage
+// hero — a handful of soft circles drifting upward on a loop. Negative
+// animation-delay staggers them so they don't all start at the bottom at
+// once. aria-hidden since it carries no content.
+function hero_fx_layer(): string {
+    // [left%, size px, duration s, negative delay s]
+    $bubbles = [
+        [4, 10, 13, 2], [10, 16, 17, 6], [17, 8, 11, 1], [24, 20, 21, 9],
+        [31, 12, 15, 4], [39, 9, 12, 8], [47, 18, 19, 3], [55, 11, 14, 10],
+        [62, 15, 16, 5], [70, 9, 13, 0], [78, 19, 20, 7], [86, 12, 17, 2],
+        [93, 10, 14, 11],
+    ];
+    $html = '<div class="hero-fx" aria-hidden="true">';
+    foreach ($bubbles as [$left, $size, $dur, $delay]) {
+        $html .= '<span class="bubble" style="left:' . $left . '%;width:' . $size . 'px;height:' . $size
+            . 'px;animation-duration:' . $dur . 's;animation-delay:-' . $delay . 's;"></span>';
+    }
+    $html .= '</div>';
+    return $html;
+}
+
 function cta_strip(array $settings): string {
     return '
 <section class="tight">
@@ -70,6 +91,7 @@ function render_block(array $block, array $ctx): string {
             $image = !empty($d['image']) ? '<div class="hero-art"><img src="' . esc($d['image']) . '" alt=""></div>' : '';
             return '
 <section class="hero">
+  ' . hero_fx_layer() . '
   <div class="container">
     <div>
       ' . $eyebrow . '
