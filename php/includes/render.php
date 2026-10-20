@@ -34,7 +34,7 @@ function page_head(string $eyebrowEn, string $eyebrowRu, string $titleEn, string
 <section class="page-head">
   <div class="container">
     ' . crumbs_html($crumbTrail) . '
-    <p class="eyebrow" style="color:var(--red-light)">' . bi($eyebrowEn, $eyebrowRu) . '</p>
+    <p class="eyebrow" style="color:var(--accent-light)">' . bi($eyebrowEn, $eyebrowRu) . '</p>
     <h1>' . bi($titleEn, $titleRu) . '</h1>
   </div>
 </section>';
@@ -87,7 +87,7 @@ function render_block(array $block, array $ctx): string {
                 $cls = $i === 0 ? '' : 'ghost';
                 $buttons .= '<a class="btn ' . $cls . '" href="' . esc($b['href']) . '">' . bi($b['label_en'], $b['label_ru']) . '</a>';
             }
-            $eyebrow = !empty($d['eyebrow_en']) ? '<p class="eyebrow" style="color:var(--red-light)">' . bi($d['eyebrow_en'], $d['eyebrow_ru']) . '</p>' : '';
+            $eyebrow = !empty($d['eyebrow_en']) ? '<p class="eyebrow" style="color:var(--accent-light)">' . bi($d['eyebrow_en'], $d['eyebrow_ru']) . '</p>' : '';
             $image = !empty($d['image']) ? '<div class="hero-art"><img src="' . esc($d['image']) . '" alt=""></div>' : '';
             return '
 <section class="hero">
@@ -382,6 +382,7 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   <div class="container nav-row">
     <a href="/" class="brand">
       <img src="' . $logo . '" alt="' . esc($settings['company_name']) . ' logo">
+      <span class="brand-name">' . esc($settings['company_name']) . '</span>
     </a>
     <nav class="main-nav"><ul>' . render_nav($nav) . '</ul></nav>
     <div class="nav-actions">
@@ -395,7 +396,7 @@ function layout(array $settings, array $nav, string $titleEn, string $bodyHtml):
   <div class="container">
     <div class="grid">
       <div>
-        <div class="brand" style="color:#fff"><img src="' . $logo . '" alt="" style="height:46px"></div>
+        <div class="brand" style="color:#fff"><img src="' . $logo . '" alt="" style="height:46px"><span class="brand-name">' . esc($settings['company_name']) . '</span></div>
         ' . bi_block('<p class=\'tag\'>' . esc($settings['footer_tag_en']) . '</p>', '<p class=\'tag\'>' . esc($settings['footer_tag_ru']) . '</p>') . '
       </div>
       <div>

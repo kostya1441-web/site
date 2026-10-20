@@ -33,7 +33,7 @@ function admin_shell(string $title, string $active, string $body, ?array $flash 
 <body class="admin">
 <div class="a-shell">
   <aside class="a-sidebar">
-    <div class="brand"><img src="/assets/img/logo.svg" alt=""> Адамко</div>
+    <div class="brand"><img src="/assets/img/logo-adamko.jpg" alt=""> Адамко</div>
     <nav>' . $nav . '</nav>
     <div class="group-label">&nbsp;</div>
     <nav>
@@ -60,6 +60,7 @@ function admin_login_page(?string $error = null): string {
 <body class="admin">
 <div class="login-wrap">
   <form class="login-card" method="post" action="/admin/login.php">
+    <img src="/assets/img/logo-adamko.jpg" alt="" style="height:48px;border-radius:6px;margin-bottom:14px">
     <h1>Адамко</h1>
     <p>Вход в панель администратора</p>
     ' . $errHtml . '
