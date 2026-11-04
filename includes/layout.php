@@ -70,11 +70,13 @@ function render_header(array $content, string $active): void
           </div>
         </div>
         <div class="contacts">
-          <span>☎ <b id="sr-phone"><?= e($s['phone']) ?></b></span>
-          <span id="sr-email"><?= e($s['email']) ?></span>
-          <span id="sr-city"><?= e($s['city']) ?></span>
+          <span class="c-phone">☎ <b><?= e($s['phone']) ?></b></span>
+          <span class="c-email"><?= e($s['email']) ?></span>
+          <span class="c-city"><?= e($s['city']) ?></span>
         </div>
-        <a class="btn" href="<?= $home ? '#sr-contact' : 'index.php#sr-contact' ?>" style="padding:11px 20px; font-size:13px;">Контакты</a>
+        <a class="btn btn-contacts" href="<?= $home ? '#sr-contact' : 'index.php#sr-contact' ?>" style="padding:11px 20px; font-size:13px;">Контакты</a>
+        <?php /* На телефоне контакты в шапке скрыты, поэтому справа — кнопка звонка. */ ?>
+        <a class="btn btn-call" href="tel:<?= e(tel_href($s['phone'])) ?>">☎ Позвонить</a>
       </div>
       <nav id="sr-nav"><div class="wrap">
         <a href="index.php"<?= $home ? ' class="active"' : '' ?>>Главная</a>
