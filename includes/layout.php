@@ -46,10 +46,8 @@ function render_header(array $content, string $active): void
     if ($logo === '' && is_file(SR_ROOT . '/assets/logo.png')) {
         $logo = 'assets/logo.png';
     }
-    // Фирменный логотип уже содержит название и слоган, поэтому рядом их не дублируем,
-    // а на узком экране подменяем знаком с названием текстом — мелкий слоган там не читается.
+    // Фирменный логотип уже содержит название и слоган, поэтому рядом их не дублируем.
     $isLockup = $logo === 'assets/logo.png';
-    $hasMarkFile = $isLockup && is_file(SR_ROOT . '/assets/logo-mark.png');
     $showText = $logo === '' || ($s['logoShowText'] === '1' && !$isLockup);
     $height = max(24, min(110, (int) $s['logoHeight']));
     $padded = $logo !== '' && $s['logoPad'] === '1';
@@ -62,15 +60,11 @@ function render_header(array $content, string $active): void
              style="--logo-h:<?= $height ?>px">
             <?php if ($logo !== ''): ?>
               <img class="logo-img" src="<?= e($logo) ?>" alt="<?= e($s['brandName']) ?>">
-              <?php if ($hasMarkFile): ?>
-                <?php /* На узком экране мелкий слоган внутри логотипа нечитаем — показываем только знак. */ ?>
-                <img class="logo-mark-img" src="assets/logo-mark.png" alt="<?= e($s['brandName']) ?>">
-              <?php endif; ?>
             <?php else: ?>
               <?= emblem_svg('h') ?>
             <?php endif; ?>
           </a>
-          <div id="sr-brandtext" class="<?= $showText ? '' : 'brand-text-hidden' ?><?= $hasMarkFile ? ' lockup-text' : '' ?>">
+          <div id="sr-brandtext" class="<?= $showText ? '' : 'brand-text-hidden' ?>">
             <a class="brand-name wordmark" id="sr-brandname" href="index.php"><?= e($s['brandName']) ?></a>
             <div class="brand-tag" id="sr-tagline"><?= e($s['tagline']) ?></div>
           </div>
