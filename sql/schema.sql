@@ -74,9 +74,9 @@ CREATE TABLE `stats` (
 INSERT INTO `settings` (`skey`, `svalue`) VALUES
 ('brandName', 'АДАМКО Сибирь'),
 ('tagline', 'новый вектор в горнодобывающем оборудовании'),
-('logo', ''),
-('logoShowText', '1'),
-('logoHeight', '44'),
+('logo', 'assets/logo.png'),
+('logoShowText', '0'),
+('logoHeight', '56'),
 ('logoPad', '0'),
 ('phone', '+7 (000) 000-00-00'),
 ('email', 'mail@adamko-sib.ru'),

@@ -27,7 +27,8 @@ function render_head(array $content, string $title, string $description): void
 <title><?= e($title) ?></title>
 <meta name="description" content="<?= e($description) ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d0f'/%3E%3Cg fill='none' stroke='%237ed321' stroke-width='2.4'%3E%3Ccircle cx='16' cy='16' r='7'/%3E%3Ccircle cx='16' cy='16' r='2.6'/%3E%3Cpath d='M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2.1 2.1M22.4 22.4l2.1 2.1M24.5 7.5l-2.1 2.1M9.6 22.4l-2.1 2.1' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 </head>
@@ -41,7 +42,15 @@ function render_header(array $content, string $active): void
 {
     $s = $content['settings'];
     $logo = trim((string) $s['logo']);
-    $showText = $logo === '' || $s['logoShowText'] === '1';
+    // Если свой логотип не задан, берём фирменный файл из assets.
+    if ($logo === '' && is_file(SR_ROOT . '/assets/logo.png')) {
+        $logo = 'assets/logo.png';
+    }
+    // Фирменный логотип уже содержит название и слоган, поэтому рядом их не дублируем,
+    // а на узком экране подменяем знаком с названием текстом — мелкий слоган там не читается.
+    $isLockup = $logo === 'assets/logo.png';
+    $hasMarkFile = $isLockup && is_file(SR_ROOT . '/assets/logo-mark.png');
+    $showText = $logo === '' || ($s['logoShowText'] === '1' && !$isLockup);
     $height = max(24, min(110, (int) $s['logoHeight']));
     $padded = $logo !== '' && $s['logoPad'] === '1';
     $home = $active === 'home';
@@ -53,11 +62,15 @@ function render_header(array $content, string $active): void
              style="--logo-h:<?= $height ?>px">
             <?php if ($logo !== ''): ?>
               <img class="logo-img" src="<?= e($logo) ?>" alt="<?= e($s['brandName']) ?>">
+              <?php if ($hasMarkFile): ?>
+                <?php /* На узком экране мелкий слоган внутри логотипа нечитаем — показываем только знак. */ ?>
+                <img class="logo-mark-img" src="assets/logo-mark.png" alt="<?= e($s['brandName']) ?>">
+              <?php endif; ?>
             <?php else: ?>
               <?= emblem_svg('h') ?>
             <?php endif; ?>
           </a>
-          <div id="sr-brandtext"<?= $showText ? '' : ' style="display:none"' ?>>
+          <div id="sr-brandtext" class="<?= $showText ? '' : 'brand-text-hidden' ?><?= $hasMarkFile ? ' lockup-text' : '' ?>">
             <a class="brand-name wordmark" id="sr-brandname" href="index.php"><?= e($s['brandName']) ?></a>
             <div class="brand-tag" id="sr-tagline"><?= e($s['tagline']) ?></div>
           </div>
@@ -252,13 +265,17 @@ function render_footer(array $content, string $active): void
     $s = $content['settings'];
     $logo = trim((string) $s['logo']);
     $padded = $logo !== '' && $s['logoPad'] === '1';
+    // В подвале рядом с названием показываем только знак, без повторного набора букв.
+    $footMark = is_file(SR_ROOT . '/assets/logo-mark.png')
+        ? '<img src="assets/logo-mark.png" alt="">'
+        : ($logo !== '' ? '<img src="' . e($logo) . '" alt="">' : emblem_svg('f'));
     $contactsHref = $active === 'home' ? '#sr-contact' : 'index.php#sr-contact';
     ?>
     <footer id="sr-footer"><div class="wrap">
       <div class="grid">
         <div>
           <div class="foot-brandrow<?= $padded ? ' padded' : '' ?>" style="--logo-hf:<?= min(46, max(24, (int) $s['logoHeight'])) ?>px">
-            <span id="sr-foot-mark"><?= $logo !== '' ? '<img src="' . e($logo) . '" alt="">' : emblem_svg('f') ?></span>
+            <span id="sr-foot-mark"><?= $footMark ?></span>
             <span class="brand-name" style="font-size:17px;"><?= e($s['brandName']) ?></span>
           </div>
           <p style="font-size:13px; color:var(--muted); max-width:250px;">Оптовая торговля горным и строительным оборудованием в Новокузнецке.</p>
