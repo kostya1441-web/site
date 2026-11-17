@@ -22,86 +22,64 @@ namespace Rabota3
             if (DialogResult != DialogResult.OK)
                 return;
 
-            if (Nazv_TB.Text.Trim() == "")
+            if (Surname_TB.Text.Trim() == "")
             {
-                MessageBox.Show("Вы не ввели название блюда", "Ошибка");
-                Nazv_TB.Focus();
+                MessageBox.Show("Вы не ввели фамилию", "Ошибка");
+                Surname_TB.Focus();
                 e.Cancel = true;
                 return;
             }
 
-            if (Ves_TB.Text.Trim() == "")
+            if (Year_TB.Text.Trim() == "")
             {
-                MessageBox.Show("Вы не ввели вес блюда", "Ошибка");
-                Ves_TB.Focus();
+                MessageBox.Show("Вы не ввели год рождения", "Ошибка");
+                Year_TB.Focus();
                 e.Cancel = true;
                 return;
             }
-            double Ves;
-            if (!double.TryParse(Ves_TB.Text, out Ves))
+            int Year;
+            if (!int.TryParse(Year_TB.Text, out Year))
             {
-                MessageBox.Show("Недопустимые символы в строке веса", "Ошибка");
-                Ves_TB.Focus();
+                MessageBox.Show("Недопустимые символы в строке года рождения", "Ошибка");
+                Year_TB.Focus();
                 e.Cancel = true;
                 return;
             }
-            if (Ves < 0.1 || Ves > 3.0)
+            if (Year < 1900 || Year > DateTime.Now.Year)
             {
-                MessageBox.Show("Вес должен быть в диапазоне от 0,1 до 3,0", "Ошибка");
-                Ves_TB.Focus();
-                e.Cancel = true;
-                return;
-            }
-
-            if (Seb_TB.Text.Trim() == "")
-            {
-                MessageBox.Show("Вы не ввели себестоимость блюда", "Ошибка");
-                Seb_TB.Focus();
-                e.Cancel = true;
-                return;
-            }
-            int Seb;
-            if (!int.TryParse(Seb_TB.Text, out Seb))
-            {
-                MessageBox.Show("Недопустимые символы в строке себестоимости", "Ошибка");
-                Seb_TB.Focus();
-                e.Cancel = true;
-                return;
-            }
-            if (Seb < 1 || Seb > 5000)
-            {
-                MessageBox.Show("Себестоимость должна быть в диапазоне от 1 до 5000", "Ошибка");
-                Seb_TB.Focus();
+                MessageBox.Show("Год рождения должен быть в диапазоне от 1900 до " + DateTime.Now.Year, "Ошибка");
+                Year_TB.Focus();
                 e.Cancel = true;
                 return;
             }
 
-            if (Cena_TB.Text.Trim() == "")
+            if (!Male_RB.Checked && !Female_RB.Checked)
             {
-                MessageBox.Show("Вы не ввели цену блюда", "Ошибка");
-                Cena_TB.Focus();
+                MessageBox.Show("Вы не выбрали пол", "Ошибка");
+                Male_RB.Focus();
                 e.Cancel = true;
                 return;
             }
-            int Cena;
-            if (!int.TryParse(Cena_TB.Text, out Cena))
+
+            if (Height_TB.Text.Trim() == "")
             {
-                MessageBox.Show("Недопустимые символы в строке цены", "Ошибка");
-                Cena_TB.Focus();
+                MessageBox.Show("Вы не ввели рост", "Ошибка");
+                Height_TB.Focus();
                 e.Cancel = true;
                 return;
             }
-            if (Cena < 1 || Cena > 10000)
+            int Height;
+            if (!int.TryParse(Height_TB.Text, out Height))
             {
-                MessageBox.Show("Цена должна быть в диапазоне от 1 до 10000", "Ошибка");
-                Cena_TB.Focus();
+                MessageBox.Show("Недопустимые символы в строке роста", "Ошибка");
+                Height_TB.Focus();
                 e.Cancel = true;
                 return;
             }
-            if (Cena <= Seb)
+            if (Height < 30 || Height > 250)
             {
-                MessageBox.Show("Цена должна быть больше себестоимости", "Ошибка");
-                Cena_TB.Focus();
+                MessageBox.Show("Рост должен быть в диапазоне от 30 до 250", "Ошибка");
+                Height_TB.Focus();
                 e.Cancel = true;
                 return;
             }

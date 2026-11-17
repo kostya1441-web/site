@@ -40,9 +40,9 @@
             this.SpisokL.AutoSize = true;
             this.SpisokL.Location = new System.Drawing.Point(12, 11);
             this.SpisokL.Name = "SpisokL";
-            this.SpisokL.Size = new System.Drawing.Size(67, 13);
+            this.SpisokL.Size = new System.Drawing.Size(84, 13);
             this.SpisokL.TabIndex = 0;
-            this.SpisokL.Text = "Список блюд";
+            this.SpisokL.Text = "Список людей";
             //
             // listBox1
             //
@@ -95,7 +95,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "Список блюд";
+            this.Text = "Список людей";
             this.ResumeLayout(false);
             this.PerformLayout();
 

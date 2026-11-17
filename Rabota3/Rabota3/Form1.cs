@@ -20,15 +20,15 @@ namespace Rabota3
         private void BtnDobavit_Click(object sender, EventArgs e)
         {
             Form2 Okno = new Form2();
-            Okno.Text = "Добавление блюда";
+            Okno.Text = "Добавление человека";
             if (Okno.ShowDialog() == DialogResult.OK)
             {
-                Blyudo Item = new Blyudo();
-                Item.Nazvanie = Okno.Nazv_TB.Text.Trim();
-                Item.Ves = Convert.ToDouble(Okno.Ves_TB.Text);
-                Item.Sebestoimost = Convert.ToInt32(Okno.Seb_TB.Text);
-                Item.Cena = Convert.ToInt32(Okno.Cena_TB.Text);
-                listBox1.Items.Add(Item);
+                Person Chel = new Person();
+                Chel.Surname = Okno.Surname_TB.Text.Trim();
+                Chel.BirthYear = Convert.ToInt32(Okno.Year_TB.Text);
+                Chel.Gender = Okno.Male_RB.Checked ? "М" : "Ж";
+                Chel.Height = Convert.ToInt32(Okno.Height_TB.Text);
+                listBox1.Items.Add(Chel);
             }
         }
 
@@ -36,20 +36,23 @@ namespace Rabota3
         {
             if (listBox1.SelectedIndex != -1)
             {
-                Blyudo Item = listBox1.SelectedItem as Blyudo;
+                Person Chel = listBox1.SelectedItem as Person;
                 Form2 Okno = new Form2();
-                Okno.Text = "Изменение блюда";
-                Okno.Nazv_TB.Text = Item.Nazvanie;
-                Okno.Ves_TB.Text = Item.Ves.ToString();
-                Okno.Seb_TB.Text = Item.Sebestoimost.ToString();
-                Okno.Cena_TB.Text = Item.Cena.ToString();
+                Okno.Text = "Изменение данных";
+                Okno.Surname_TB.Text = Chel.Surname;
+                Okno.Year_TB.Text = Chel.BirthYear.ToString();
+                if (Chel.Gender == "М")
+                    Okno.Male_RB.Checked = true;
+                else
+                    Okno.Female_RB.Checked = true;
+                Okno.Height_TB.Text = Chel.Height.ToString();
                 if (Okno.ShowDialog() == DialogResult.OK)
                 {
-                    Item.Nazvanie = Okno.Nazv_TB.Text.Trim();
-                    Item.Ves = Convert.ToDouble(Okno.Ves_TB.Text);
-                    Item.Sebestoimost = Convert.ToInt32(Okno.Seb_TB.Text);
-                    Item.Cena = Convert.ToInt32(Okno.Cena_TB.Text);
-                    listBox1.Items[listBox1.SelectedIndex] = Item;
+                    Chel.Surname = Okno.Surname_TB.Text.Trim();
+                    Chel.BirthYear = Convert.ToInt32(Okno.Year_TB.Text);
+                    Chel.Gender = Okno.Male_RB.Checked ? "М" : "Ж";
+                    Chel.Height = Convert.ToInt32(Okno.Height_TB.Text);
+                    listBox1.Items[listBox1.SelectedIndex] = Chel;
                 }
             }
             else
