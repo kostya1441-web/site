@@ -19,85 +19,92 @@ namespace Rabota3
 
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (DialogResult == DialogResult.OK)
-                try
-                {
-                    if (Nazv_TB.Text.Trim() == "")
-                    {
-                        Nazv_TB.Focus();
-                        throw new Exception("Вы не ввели название блюда");
-                    }
-                    if (Ves_TB.Text.Trim() == "")
-                    {
-                        Ves_TB.Focus();
-                        throw new Exception("Вы не ввели вес блюда");
-                    }
-                    double Ves;
-                    try
-                    {
-                        Ves = Convert.ToDouble(Ves_TB.Text);
-                    }
-                    catch (FormatException)
-                    {
-                        Ves_TB.Focus();
-                        throw new Exception("Недопустимые символы в строке веса");
-                    }
-                    if (Ves < 0.1 || Ves > 3.0)
-                    {
-                        Ves_TB.Focus();
-                        throw new Exception("Вес должен быть в диапазоне от 0,1 до 3,0");
-                    }
-                    if (Seb_TB.Text.Trim() == "")
-                    {
-                        Seb_TB.Focus();
-                        throw new Exception("Вы не ввели себестоимость блюда");
-                    }
-                    int Seb;
-                    try
-                    {
-                        Seb = Convert.ToInt32(Seb_TB.Text);
-                    }
-                    catch (FormatException)
-                    {
-                        Seb_TB.Focus();
-                        throw new Exception("Недопустимые символы в строке себестоимости");
-                    }
-                    if (Seb < 1 || Seb > 5000)
-                    {
-                        Seb_TB.Focus();
-                        throw new Exception("Себестоимость должна быть в диапазоне от 1 до 5000");
-                    }
-                    if (Cena_TB.Text.Trim() == "")
-                    {
-                        Cena_TB.Focus();
-                        throw new Exception("Вы не ввели цену блюда");
-                    }
-                    int Cena;
-                    try
-                    {
-                        Cena = Convert.ToInt32(Cena_TB.Text);
-                    }
-                    catch (FormatException)
-                    {
-                        Cena_TB.Focus();
-                        throw new Exception("Недопустимые символы в строке цены");
-                    }
-                    if (Cena < 1 || Cena > 10000)
-                    {
-                        Cena_TB.Focus();
-                        throw new Exception("Цена должна быть в диапазоне от 1 до 10000");
-                    }
-                    if (Cena <= Seb)
-                    {
-                        Cena_TB.Focus();
-                        throw new Exception("Цена должна быть больше себестоимости");
-                    }
-                }
-                catch (Exception Vse)
-                {
-                    e.Cancel = true;
-                    MessageBox.Show(Vse.Message, "Ошибка");
-                }
+            if (DialogResult != DialogResult.OK)
+                return;
+
+            if (Nazv_TB.Text.Trim() == "")
+            {
+                MessageBox.Show("Вы не ввели название блюда", "Ошибка");
+                Nazv_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+
+            if (Ves_TB.Text.Trim() == "")
+            {
+                MessageBox.Show("Вы не ввели вес блюда", "Ошибка");
+                Ves_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            double Ves;
+            if (!double.TryParse(Ves_TB.Text, out Ves))
+            {
+                MessageBox.Show("Недопустимые символы в строке веса", "Ошибка");
+                Ves_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            if (Ves < 0.1 || Ves > 3.0)
+            {
+                MessageBox.Show("Вес должен быть в диапазоне от 0,1 до 3,0", "Ошибка");
+                Ves_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+
+            if (Seb_TB.Text.Trim() == "")
+            {
+                MessageBox.Show("Вы не ввели себестоимость блюда", "Ошибка");
+                Seb_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            int Seb;
+            if (!int.TryParse(Seb_TB.Text, out Seb))
+            {
+                MessageBox.Show("Недопустимые символы в строке себестоимости", "Ошибка");
+                Seb_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            if (Seb < 1 || Seb > 5000)
+            {
+                MessageBox.Show("Себестоимость должна быть в диапазоне от 1 до 5000", "Ошибка");
+                Seb_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+
+            if (Cena_TB.Text.Trim() == "")
+            {
+                MessageBox.Show("Вы не ввели цену блюда", "Ошибка");
+                Cena_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            int Cena;
+            if (!int.TryParse(Cena_TB.Text, out Cena))
+            {
+                MessageBox.Show("Недопустимые символы в строке цены", "Ошибка");
+                Cena_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            if (Cena < 1 || Cena > 10000)
+            {
+                MessageBox.Show("Цена должна быть в диапазоне от 1 до 10000", "Ошибка");
+                Cena_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
+            if (Cena <= Seb)
+            {
+                MessageBox.Show("Цена должна быть больше себестоимости", "Ошибка");
+                Cena_TB.Focus();
+                e.Cancel = true;
+                return;
+            }
         }
     }
 }
